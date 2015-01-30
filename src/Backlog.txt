@@ -1,8 +1,7 @@
--   Add criteria (from old project; ketogenic diet)
+-   Add criteria (from old project; ketogenic diet; TODOs); use Maybe data type?
 -   Create meal templates; helper functions for specifying amounts easily (different units); allow recursive structure (e.g. chicken with sour cream sauce or fish with sour cream sauce)
 -   Evaluate and improve current evolutionary algorithm (getNextGeneration()); compare also with algorithm in old software
 -   Write tests (to test correctness but also execution time; avoid randomness)
--   Use Git
 -   Create user interface (run evolutionary algorithm in background)
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.
 -   About, warnings and information (only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol)

@@ -60,6 +60,8 @@ public class GenePoolTest {
                 final Scores scores = new Scores();
 
                 final int numberOfMeals = requirements.getNumberOfMeals();
+
+                final Limits4 alphaLinolenicAcidLimits = requirements.getAlphaLinolenicAcidLimits();
                 final Limits4 energyLimits = requirements.getEnergyLimits();
                 final Limits4 mealAlcoholLimits = requirements.getMealAlcoholLimits();
                 final Limits4 mealEnergyLimits = requirements.getMealEnergyLimits();
@@ -67,6 +69,7 @@ public class GenePoolTest {
                 // Criteria for complete diet plan
                 final DietPlan dietPlan = dietPlan(mealTemplates.computeMeals(numberOfMeals, genome));
                 final FoodProperties dietPlanProperties = dietPlan.getProperties();
+                addScore(scores, "Alpha-linolenic acid", dietPlanProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), alphaLinolenicAcidLimits);
                 addScore(scores, "Energy", dietPlanProperties.get(FoodProperty.ENERGY), energyLimits);
 
                 // Criteria for individual meals
