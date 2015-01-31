@@ -8,6 +8,7 @@ public class DietPlan {
     private final ArrayList<Meal> meals;
     private final LazyValue<FoodItems> foodItems;
     private final LazyValue<FoodProperties> properties;
+    private final LazyValue<Double> costs;
 
     public static DietPlan dietPlan(final ArrayList<Meal> meals) {
         return new DietPlan(meals);
@@ -39,6 +40,18 @@ public class DietPlan {
                 return properties;
             }
         };
+
+        costs = new LazyValue<Double>() {
+            @Override
+            protected Double compute() {
+                double costs = 0;
+                final ArrayList<Meal> meals = getMeals();
+                for (final Meal meal : meals) {
+                    costs += meal.getCosts();
+                }
+                return costs;
+            }
+        };
     }
 
     public ArrayList<Meal> getMeals() {
@@ -55,5 +68,9 @@ public class DietPlan {
 
     public FoodProperties getProperties() {
         return properties.get();
+    }
+
+    public double getCosts() {
+        return costs.get();
     }
 }

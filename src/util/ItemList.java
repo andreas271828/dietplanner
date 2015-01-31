@@ -1,6 +1,7 @@
 package util;
 
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -37,6 +38,11 @@ public class ItemList<K extends Enum<K>> {
         for (final Map.Entry<K, Double> entry : items.entrySet()) {
             action.accept(entry.getKey(), entry.getValue());
         }
+    }
+
+    // TODO: Not happy with this
+    protected Iterator<Map.Entry<K, Double>> getIterator() {
+        return items.entrySet().iterator();
     }
 
     @Override

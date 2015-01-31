@@ -21,6 +21,7 @@ public class Requirements {
     private final EnumMap<Requirement, LazyValue<Optional<Limits4>>> requirements;
 
     private final LazyValue<Optional<Double>> alphaLinolenicAcidAIPerDay; // g
+    private final LazyValue<Optional<Double>> carbohydratesLimitPerDay; // g
     private final LazyValue<Optional<Double>> energyDemandPerDay; // kJ
 
     public Requirements(final PersonalDetails personalDetails, final double days, final int numberOfMeals) {
@@ -35,6 +36,12 @@ public class Requirements {
                 return computeAlphaLinolenicAcidLimits();
             }
         });
+        requirements.put(Requirement.CARBOHYDRATES, new LazyValue<Optional<Limits4>>() {
+            @Override
+            protected Optional<Limits4> compute() {
+                return computeCarbohydratesLimits();
+            }
+        });
         requirements.put(Requirement.ENERGY, new LazyValue<Optional<Limits4>>() {
             @Override
             protected Optional<Limits4> compute() {
@@ -45,6 +52,12 @@ public class Requirements {
             @Override
             protected Optional<Limits4> compute() {
                 return computeMealAlcoholLimits();
+            }
+        });
+        requirements.put(Requirement.MEAL_CARBOHYDRATES, new LazyValue<Optional<Limits4>>() {
+            @Override
+            protected Optional<Limits4> compute() {
+                return computeMealCarbohydratesLimits();
             }
         });
         requirements.put(Requirement.MEAL_ENERGY, new LazyValue<Optional<Limits4>>() {
@@ -58,6 +71,12 @@ public class Requirements {
             @Override
             protected Optional<Double> compute() {
                 return computeAlphaLinolenicAcidAIPerDay();
+            }
+        };
+        carbohydratesLimitPerDay = new LazyValue<Optional<Double>>() {
+            @Override
+            protected Optional<Double> compute() {
+                return computeCarbohydratesLimitPerDay();
             }
         };
         energyDemandPerDay = new LazyValue<Optional<Double>>() {
@@ -96,6 +115,15 @@ public class Requirements {
         });
     }
 
+    private Optional<Limits4> computeCarbohydratesLimits() {
+        return limitsFromValuePerDay(carbohydratesLimitPerDay, new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4(0, 0, 0.9 * total, total);
+            }
+        });
+    }
+
     private Optional<Limits4> computeEnergyLimits() {
         // http://www.nrv.gov.au/dietary-energy
         return limitsFromValuePerDay(energyDemandPerDay, new Function<Double, Limits4>() {
@@ -108,6 +136,16 @@ public class Requirements {
 
     private Optional<Limits4> computeMealAlcoholLimits() {
         return Optional.of(limits4UC(0.5)); // g
+    }
+
+    private Optional<Limits4> computeMealCarbohydratesLimits() {
+        return limitsFromValuePerDay(carbohydratesLimitPerDay, new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                final double upperCritical = 1.2 * total / numberOfMeals;
+                return limits4(0, 0, 0.8 * upperCritical, upperCritical);
+            }
+        });
     }
 
     private Optional<Limits4> computeMealEnergyLimits() {
@@ -151,6 +189,11 @@ public class Requirements {
             }
         }
         return Optional.empty();
+    }
+
+    private Optional<Double> computeCarbohydratesLimitPerDay() {
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        return Optional.of(personalDetails.getCarbohydratesLimit());
     }
 
     private Optional<Double> computeEnergyDemandPerDay() {

@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public enum PersonalDetails {
-    ANDREAS(Gender.MALE, 81, 1.91, "14/08/1982", 2, false, false);
+    ANDREAS(Gender.MALE, 81, 1.91, "14/08/1982", 2, 60, false, false);
 
     public enum Gender {
         MALE,
@@ -19,6 +19,7 @@ public enum PersonalDetails {
     private final double bodyHeight; // m
     private final double age; // years
     private final double physicalActivityLevel; // http://www.nrv.gov.au/dietary-energy
+    private final double carbohydratesLimit; // g
     private final boolean pregnancy;
     private final boolean lactation;
 
@@ -27,6 +28,7 @@ public enum PersonalDetails {
                     final double bodyHeight,
                     final String dateOfBirth,
                     final double physicalActivityLevel,
+                    final double carbohydratesLimit,
                     final boolean pregnancy,
                     final boolean lactation) {
         this.gender = gender;
@@ -34,6 +36,7 @@ public enum PersonalDetails {
         this.bodyHeight = bodyHeight;
         this.age = convertDateOfBirthToAge(dateOfBirth);
         this.physicalActivityLevel = physicalActivityLevel;
+        this.carbohydratesLimit = carbohydratesLimit;
         this.pregnancy = pregnancy;
         this.lactation = lactation;
     }
@@ -60,6 +63,10 @@ public enum PersonalDetails {
 
     public double getPhysicalActivityLevel() {
         return physicalActivityLevel;
+    }
+
+    public double getCarbohydratesLimit() {
+        return carbohydratesLimit;
     }
 
     public boolean getPregnancy() {

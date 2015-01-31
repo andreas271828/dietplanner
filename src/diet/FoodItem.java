@@ -192,16 +192,19 @@ public enum FoodItem {
             protected FoodProperties compute() {
                 final FoodProperties properties = new FoodProperties();
                 final FoodProperties foodProperties = food.getProperties();
-                final BiConsumer<FoodProperty, Double> addProperty = new BiConsumer<FoodProperty, Double>() {
+                foodProperties.forEach(new BiConsumer<FoodProperty, Double>() {
                     @Override
                     public void accept(FoodProperty foodProperty, Double amount) {
                         properties.set(foodProperty, amount * weightFactor);
                     }
-                };
-                foodProperties.forEach(addProperty);
+                });
                 return properties;
             }
         };
+    }
+
+    public double getPrice() {
+        return price;
     }
 
     public FoodProperties getProperties() {
