@@ -3,6 +3,7 @@ package diet;
 import util.LazyValue;
 import util.Limits4;
 
+import java.util.EnumMap;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -17,11 +18,7 @@ public class Requirements {
     private final double days;
     private final int numberOfMeals;
 
-    private final LazyValue<Optional<Limits4>> alphaLinolenicAcidLimits; // g
-    private final LazyValue<Optional<Limits4>> energyLimits; // kJ
-
-    private final LazyValue<Optional<Limits4>> mealAlcoholLimits; // g
-    private final LazyValue<Optional<Limits4>> mealEnergyLimits; // kJ
+    private final EnumMap<Requirement, LazyValue<Optional<Limits4>>> requirements;
 
     private final LazyValue<Optional<Double>> alphaLinolenicAcidAIPerDay; // g
     private final LazyValue<Optional<Double>> energyDemandPerDay; // kJ
@@ -31,31 +28,31 @@ public class Requirements {
         this.days = days;
         this.numberOfMeals = numberOfMeals;
 
-        alphaLinolenicAcidLimits = new LazyValue<Optional<Limits4>>() {
+        requirements = new EnumMap<Requirement, LazyValue<Optional<Limits4>>>(Requirement.class);
+        requirements.put(Requirement.ALPHA_LINOLENIC_ACID, new LazyValue<Optional<Limits4>>() {
             @Override
             protected Optional<Limits4> compute() {
                 return computeAlphaLinolenicAcidLimits();
             }
-        };
-        energyLimits = new LazyValue<Optional<Limits4>>() {
+        });
+        requirements.put(Requirement.ENERGY, new LazyValue<Optional<Limits4>>() {
             @Override
             protected Optional<Limits4> compute() {
                 return computeEnergyLimits();
             }
-        };
-
-        mealAlcoholLimits = new LazyValue<Optional<Limits4>>() {
+        });
+        requirements.put(Requirement.MEAL_ALCOHOL, new LazyValue<Optional<Limits4>>() {
             @Override
             protected Optional<Limits4> compute() {
                 return computeMealAlcoholLimits();
             }
-        };
-        mealEnergyLimits = new LazyValue<Optional<Limits4>>() {
+        });
+        requirements.put(Requirement.MEAL_ENERGY, new LazyValue<Optional<Limits4>>() {
             @Override
             protected Optional<Limits4> compute() {
                 return computeMealEnergyLimits();
             }
-        };
+        });
 
         alphaLinolenicAcidAIPerDay = new LazyValue<Optional<Double>>() {
             @Override
@@ -75,20 +72,8 @@ public class Requirements {
         return numberOfMeals;
     }
 
-    public Optional<Limits4> getAlphaLinolenicAcidLimits() {
-        return alphaLinolenicAcidLimits.get();
-    }
-
-    public Optional<Limits4> getEnergyLimits() {
-        return energyLimits.get();
-    }
-
-    public Optional<Limits4> getMealAlcoholLimits() {
-        return mealAlcoholLimits.get();
-    }
-
-    public Optional<Limits4> getMealEnergyLimits() {
-        return mealEnergyLimits.get();
+    public Optional<Limits4> getLimits(final Requirement requirement) {
+        return requirements.containsKey(requirement) ? requirements.get(requirement).get() : Optional.<Limits4>empty();
     }
 
     private Optional<Limits4> limitsFromValuePerDay(final LazyValue<Optional<Double>> maybeValuePerDay,
@@ -122,7 +107,7 @@ public class Requirements {
     }
 
     private Optional<Limits4> computeMealAlcoholLimits() {
-        return Optional.of(limits4UC(0.5));
+        return Optional.of(limits4UC(0.5)); // g
     }
 
     private Optional<Limits4> computeMealEnergyLimits() {
@@ -173,6 +158,6 @@ public class Requirements {
         // TODO: Infants, children, adolescents
         final double bmr = personalDetails.getBasalMetabolicRate();
         final double pal = personalDetails.getPhysicalActivityLevel();
-        return Optional.of(bmr * pal);
+        return Optional.of(bmr * pal); // kJ
     }
 }

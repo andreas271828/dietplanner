@@ -1,3 +1,4 @@
+-   Faster: not containsKey + get --- only 1 search?!
 -   Add criteria (from old project; ketogenic diet; TODOs)
 -   Create meal templates; helper functions for specifying amounts easily (different units); allow recursive structure (e.g. chicken with sour cream sauce or fish with sour cream sauce)
 -   Evaluate and improve current evolutionary algorithm (getNextGeneration()); compare also with algorithm in old software

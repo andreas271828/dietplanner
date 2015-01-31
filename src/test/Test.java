@@ -5,11 +5,11 @@ import java.util.Arrays;
 public class Test {
     public static void main(String[] args) {
         System.out.println("You have 10 seconds to start the profiler.");
-//        try {
-//            Thread.sleep(10000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println("Tests start.");
 
         (new Thread(new Runnable() {

@@ -20,7 +20,7 @@ public class GenePoolTest {
         final int numberOfMeals = 3;
         final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 1, numberOfMeals);
         final Function<Genome, Scores> fitnessFunction = getFitnessFunction(mealTemplates, requirements);
-        final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(100, 500, fitnessFunction);
+        final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(100, 50, fitnessFunction);
         bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
             @Override
             public void accept(final EvaluatedGenome bestGenome) {
@@ -66,23 +66,20 @@ public class GenePoolTest {
 
                 final int numberOfMeals = requirements.getNumberOfMeals();
 
-                final Optional<Limits4> alphaLinolenicAcidLimits = requirements.getAlphaLinolenicAcidLimits();
-                final Optional<Limits4> energyLimits = requirements.getEnergyLimits();
-                final Optional<Limits4> mealAlcoholLimits = requirements.getMealAlcoholLimits();
-                final Optional<Limits4> mealEnergyLimits = requirements.getMealEnergyLimits();
-
                 // Criteria for complete diet plan
                 final DietPlan dietPlan = dietPlan(mealTemplates.computeMeals(numberOfMeals, genome));
                 final FoodProperties dietPlanProperties = dietPlan.getProperties();
-                addScore(scores, "Alpha-linolenic acid", dietPlanProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), alphaLinolenicAcidLimits);
-                addScore(scores, "Energy", dietPlanProperties.get(FoodProperty.ENERGY), energyLimits);
+                final Optional<Integer> noMeal = Optional.empty();
+                addScore(scores, Requirement.ALPHA_LINOLENIC_ACID, requirements, dietPlanProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), noMeal);
+                addScore(scores, Requirement.ENERGY, requirements, dietPlanProperties.get(FoodProperty.ENERGY), noMeal);
 
                 // Criteria for individual meals
                 for (int i = 0; i < numberOfMeals; ++i) {
                     final Meal meal = dietPlan.getMeal(i);
                     final FoodProperties mealProperties = meal.getProperties();
-                    addMealScore(scores, "Alcohol", i, mealProperties.get(FoodProperty.ALCOHOL), mealAlcoholLimits);
-                    addMealScore(scores, "Energy", i, mealProperties.get(FoodProperty.ENERGY), mealEnergyLimits);
+                    final Optional<Integer> mealIndex = Optional.of(i);
+                    addScore(scores, Requirement.MEAL_ALCOHOL, requirements, mealProperties.get(FoodProperty.ALCOHOL), mealIndex);
+                    addScore(scores, Requirement.ENERGY, requirements, mealProperties.get(FoodProperty.ENERGY), mealIndex);
                 }
 
                 return scores;
@@ -91,23 +88,25 @@ public class GenePoolTest {
     }
 
     private static void addScore(final Scores scores,
-                                 final String name,
+                                 final Requirement requirement,
+                                 final Requirements requirements,
                                  final double value,
-                                 final Optional<Limits4> maybeLimits) {
-        maybeLimits.ifPresent(new Consumer<Limits4>() {
+                                 final Optional<Integer> mealIndex) {
+        requirements.getLimits(requirement).ifPresent(new Consumer<Limits4>() {
             @Override
             public void accept(final Limits4 limits) {
                 final double score = ScoreFunctions.standard(value, limits, 1000 * limits.getUpperCritical());
-                scores.addScore(name, score);
+                final StringBuilder sb = new StringBuilder(requirement.getName());
+                mealIndex.ifPresent(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer mealIndex) {
+                        sb.append(" (meal ");
+                        sb.append(mealIndex + 1);
+                        sb.append(")");
+                    }
+                });
+                scores.addScore(sb.toString(), score);
             }
         });
-    }
-
-    private static void addMealScore(final Scores scores,
-                                     final String name,
-                                     final int index,
-                                     final double value,
-                                     final Optional<Limits4> maybeLimits) {
-        addScore(scores, name + " (meal " + (index + 1) + ")", value, maybeLimits);
     }
 }
