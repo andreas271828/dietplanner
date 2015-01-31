@@ -8,6 +8,8 @@ import util.Limits4;
 import util.ScoreFunctions;
 import util.Scores;
 
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static diet.DietPlan.dietPlan;
@@ -18,24 +20,27 @@ public class GenePoolTest {
         final int numberOfMeals = 3;
         final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 1, numberOfMeals);
         final Function<Genome, Scores> fitnessFunction = getFitnessFunction(mealTemplates, requirements);
-        final EvaluatedGenome bestGenome = GenePool.findBestGenome(100, 500, fitnessFunction);
-        if (bestGenome != null) {
-            final DietPlan dietPlan = dietPlan(mealTemplates.computeMeals(numberOfMeals, bestGenome.getGenome()));
-            final Scores scores = bestGenome.getScores();
+        final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(100, 500, fitnessFunction);
+        bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
+            @Override
+            public void accept(final EvaluatedGenome bestGenome) {
+                final DietPlan dietPlan = dietPlan(mealTemplates.computeMeals(numberOfMeals, bestGenome.getGenome()));
+                final Scores scores = bestGenome.getScores();
 
-            System.out.println();
-            System.out.println("Meals:");
-            System.out.println(dietPlan.getMeals());
-            System.out.println();
-            System.out.println("Foods items:");
-            System.out.println(dietPlan.getFoodItems());
-            System.out.println();
-            System.out.println("Properties:");
-            System.out.println(dietPlan.getProperties());
-            System.out.println();
-            System.out.println("Scores:");
-            System.out.println(scores);
-        }
+                System.out.println();
+                System.out.println("Meals:");
+                System.out.println(dietPlan.getMeals());
+                System.out.println();
+                System.out.println("Foods items:");
+                System.out.println(dietPlan.getFoodItems());
+                System.out.println();
+                System.out.println("Properties:");
+                System.out.println(dietPlan.getProperties());
+                System.out.println();
+                System.out.println("Scores:");
+                System.out.println(scores);
+            }
+        });
     }
 
     private static MealTemplates getMealTemplates() {
@@ -61,10 +66,10 @@ public class GenePoolTest {
 
                 final int numberOfMeals = requirements.getNumberOfMeals();
 
-                final Limits4 alphaLinolenicAcidLimits = requirements.getAlphaLinolenicAcidLimits();
-                final Limits4 energyLimits = requirements.getEnergyLimits();
-                final Limits4 mealAlcoholLimits = requirements.getMealAlcoholLimits();
-                final Limits4 mealEnergyLimits = requirements.getMealEnergyLimits();
+                final Optional<Limits4> alphaLinolenicAcidLimits = requirements.getAlphaLinolenicAcidLimits();
+                final Optional<Limits4> energyLimits = requirements.getEnergyLimits();
+                final Optional<Limits4> mealAlcoholLimits = requirements.getMealAlcoholLimits();
+                final Optional<Limits4> mealEnergyLimits = requirements.getMealEnergyLimits();
 
                 // Criteria for complete diet plan
                 final DietPlan dietPlan = dietPlan(mealTemplates.computeMeals(numberOfMeals, genome));
@@ -88,16 +93,21 @@ public class GenePoolTest {
     private static void addScore(final Scores scores,
                                  final String name,
                                  final double value,
-                                 final Limits4 limits) {
-        final double score = ScoreFunctions.standard(value, limits, 1000 * limits.getUpperCritical());
-        scores.addScore(name, score);
+                                 final Optional<Limits4> maybeLimits) {
+        maybeLimits.ifPresent(new Consumer<Limits4>() {
+            @Override
+            public void accept(final Limits4 limits) {
+                final double score = ScoreFunctions.standard(value, limits, 1000 * limits.getUpperCritical());
+                scores.addScore(name, score);
+            }
+        });
     }
 
     private static void addMealScore(final Scores scores,
                                      final String name,
                                      final int index,
                                      final double value,
-                                     final Limits4 limits) {
-        addScore(scores, name + " (meal " + (index + 1) + ")", value, limits);
+                                     final Optional<Limits4> maybeLimits) {
+        addScore(scores, name + " (meal " + (index + 1) + ")", value, maybeLimits);
     }
 }

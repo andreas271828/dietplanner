@@ -1,9 +1,9 @@
 package util;
 
-public class BinarySearch {
-    public final static int NOT_FOUND = -1;
+import java.util.Optional;
 
-    public static int findInRange(double selector, double[] ranges) {
+public class BinarySearch {
+    public static Optional<Integer> findInRange(double selector, double[] ranges) {
         int lowerBound = 0;
         int upperBound = ranges.length - 1;
         while (lowerBound <= upperBound) {
@@ -11,13 +11,13 @@ public class BinarySearch {
             final double start = midpoint > 0 ? ranges[midpoint - 1] : 0;
             final double end = ranges[midpoint];
             if (selector >= start && selector < end) {
-                return midpoint;
+                return Optional.of(midpoint);
             } else if (selector < start) {
                 upperBound = midpoint - 1;
             } else {
                 lowerBound = midpoint + 1;
             }
         }
-        return NOT_FOUND;
+        return Optional.empty();
     }
 }

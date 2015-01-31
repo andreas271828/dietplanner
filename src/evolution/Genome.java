@@ -3,7 +3,9 @@ package evolution;
 import util.Pair;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Function;
 
 public class Genome {
     public final static int GENE_STATES = 16;
@@ -32,21 +34,23 @@ public class Genome {
         return genes.length;
     }
 
-    public static Genome[] recombine(final Genome parent1, final Genome parent2, final int offspringCnt) {
+    public static Genome[] recombine(final Optional<Genome> parent1, final Optional<Genome> parent2, final int offspringCnt) {
         final Genome[] offspring = new Genome[offspringCnt];
         int curOffspringCnt = 0;
 
-        final int shorterLength = Math.min(parent1.genes.length, parent2.genes.length);
+        final int[] genesParent1 = getGenes(parent1);
+        final int[] genesParent2 = getGenes(parent2);
+        final int shorterLength = Math.min(genesParent1.length, genesParent2.length);
         final int crossOverPoint = RANDOM.nextInt(shorterLength + 1);
         while (curOffspringCnt < offspringCnt) {
-            final int[] genesOffspring1 = getRandomOffspringGenes(parent1.genes, parent2.genes, crossOverPoint);
-            if (genesOffspring1 != null) {
+            final int[] genesOffspring1 = getRandomOffspringGenes(genesParent1, genesParent2, crossOverPoint);
+            if (genesOffspring1.length > 0) {
                 offspring[curOffspringCnt++] = new Genome(genesOffspring1);
             }
 
             if (curOffspringCnt < offspringCnt) {
-                final int[] genesOffspring2 = getRandomOffspringGenes(parent2.genes, parent1.genes, crossOverPoint);
-                if (genesOffspring2 != null) {
+                final int[] genesOffspring2 = getRandomOffspringGenes(genesParent2, genesParent1, crossOverPoint);
+                if (genesOffspring2.length > 0) {
                     offspring[curOffspringCnt++] = new Genome(genesOffspring2);
                 }
             }
@@ -55,12 +59,21 @@ public class Genome {
         return offspring;
     }
 
+    private static int[] getGenes(final Optional<Genome> genome) {
+        return genome.map(new Function<Genome, int[]>() {
+            @Override
+            public int[] apply(final Genome genome) {
+                return genome.genes;
+            }
+        }).orElse(new int[0]);
+    }
+
     private static int[] getRandomOffspringGenes(final int[] genesParent1, final int[] genesParent2, final int crossOverPoint) {
         final int factor = RANDOM.nextDouble() < DUPLICATION_RATE ? 2 : 1;
         final int addend = RANDOM.nextDouble() < REDUCTION_RATE ? -1 : 0;
         final int[] genesOffspring = getOffspringGenes(genesParent1, genesParent2, crossOverPoint, factor, addend);
 
-        if (genesOffspring != null) {
+        if (genesOffspring.length > 0) {
             final int mutationCnt = (int) Math.round(MUTATION_RATE * genesOffspring.length);
             final ArrayList<Pair<Integer, Integer>> mutations = getRandomMutations(genesOffspring, mutationCnt);
             applyMutations(genesOffspring, mutations);
@@ -70,13 +83,13 @@ public class Genome {
     }
 
     public static int[] getOffspringGenes(final int[] genesParent1,
-                                           final int[] genesParent2,
-                                           final int crossOverPoint,
-                                           final int factor,
-                                           final int addend) {
+                                          final int[] genesParent2,
+                                          final int crossOverPoint,
+                                          final int factor,
+                                          final int addend) {
         final int genomeLengthOffspring = genesParent2.length * factor + addend;
         if (genomeLengthOffspring < 1) {
-            return null;
+            return new int[0];
         }
 
         final int[] genesOffspring = new int[genomeLengthOffspring];

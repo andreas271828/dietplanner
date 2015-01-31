@@ -4,15 +4,18 @@ import util.BinarySearch;
 import util.LazyValue;
 import util.Scores;
 
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class GenePool {
     private final static Random RANDOM = new Random();
 
     private final EvaluatedGenome[] evaluatedGenomes;
     private final Function<Genome, Scores> fitnessFunction;
-    private final LazyValue<EvaluatedGenome> bestGenome;
+    private final LazyValue<Optional<EvaluatedGenome>> bestGenome;
     private final LazyValue<double[]> qualityAccumulation;
 
     public GenePool(final int genePoolSize, final Function<Genome, Scores> fitnessFunction) {
@@ -32,15 +35,18 @@ public class GenePool {
         qualityAccumulation = getLazyQualityAccumulation();
     }
 
-    private LazyValue<EvaluatedGenome> getLazyBestGenome() {
-        return new LazyValue<EvaluatedGenome>() {
+    private LazyValue<Optional<EvaluatedGenome>> getLazyBestGenome() {
+        return new LazyValue<Optional<EvaluatedGenome>>() {
             @Override
-            protected EvaluatedGenome compute() {
-                EvaluatedGenome bestGenome = null;
+            protected Optional<EvaluatedGenome> compute() {
+                Optional<EvaluatedGenome> bestGenome = Optional.empty();
                 for (final EvaluatedGenome evaluatedGenome : evaluatedGenomes) {
-                    if (bestGenome == null || evaluatedGenome.getFitness() > bestGenome.getFitness()) {
-                        bestGenome = evaluatedGenome;
-                    }
+                    bestGenome = Optional.of(bestGenome.filter(new Predicate<EvaluatedGenome>() {
+                        @Override
+                        public boolean test(final EvaluatedGenome bestGenome) {
+                            return bestGenome.getFitness() >= evaluatedGenome.getFitness();
+                        }
+                    }).orElse(evaluatedGenome));
                 }
                 return bestGenome;
             }
@@ -60,7 +66,7 @@ public class GenePool {
         };
     }
 
-    public EvaluatedGenome getBestGenome() {
+    public Optional<EvaluatedGenome> getBestGenome() {
         return bestGenome.get();
     }
 
@@ -73,18 +79,24 @@ public class GenePool {
         int genomeCnt = 0;
 
         // Keep best genome
-        final EvaluatedGenome bestGenome = getBestGenome();
-        nextGeneration[genomeCnt++] = new EvaluatedGenome(bestGenome.getGenome(), fitnessFunction,
-                bestGenome.getFitness());
+        genomeCnt += getBestGenome().map(new Function<EvaluatedGenome, Integer>() {
+            @Override
+            public Integer apply(final EvaluatedGenome bestGenome) {
+                nextGeneration[0] = new EvaluatedGenome(bestGenome.getGenome(), fitnessFunction, bestGenome.getFitness());
+                return 1;
+            }
+        }).orElse(0);
 
         // Recombine genomes
         while (genomeCnt < nextGeneration.length) {
-            final EvaluatedGenome parent1 = selectRandomGenome();
-            final EvaluatedGenome parent2 = selectRandomGenome();
-            // final double fitnessBase = Math.max(parent1.getFitness(), parent2.getFitness());
-            final double fitnessBase = (parent1.getFitness() + parent2.getFitness()) / 2;
+            final Optional<EvaluatedGenome> parent1 = selectRandomGenome();
+            final Optional<EvaluatedGenome> parent2 = selectRandomGenome();
+            final double fitnessParent1 = getFitness(parent1);
+            final double fitnessParent2 = getFitness(parent2);
+            // final double fitnessBase = Math.max(fitnessParent1, fitnessParent2);
+            final double fitnessBase = (fitnessParent1 + fitnessParent2) / 2;
             final int offspringCnt = genomeCnt + 1 < nextGeneration.length ? 2 : 1;
-            final Genome[] offspring = Genome.recombine(parent1.getGenome(), parent2.getGenome(), offspringCnt);
+            final Genome[] offspring = Genome.recombine(getGenome(parent1), getGenome(parent2), offspringCnt);
             for (int i = 0; i < offspringCnt; ++i) {
                 nextGeneration[genomeCnt++] = new EvaluatedGenome(offspring[i], fitnessFunction, fitnessBase);
             }
@@ -93,33 +105,66 @@ public class GenePool {
         return new GenePool(nextGeneration, fitnessFunction);
     }
 
-    public static EvaluatedGenome findBestGenome(final int genePoolSize,
-                                                 final int generations,
-                                                 final Function<Genome, Scores> fitnessFunction) {
+    private static Double getFitness(final Optional<EvaluatedGenome> evaluatedGenome) {
+        return evaluatedGenome.map(new Function<EvaluatedGenome, Double>() {
+            @Override
+            public Double apply(final EvaluatedGenome evaluatedGenome) {
+                return evaluatedGenome.getFitness();
+            }
+        }).orElse(0.0);
+    }
+
+    private static Optional<Genome> getGenome(final Optional<EvaluatedGenome> evaluatedGenome) {
+        return evaluatedGenome.map(new Function<EvaluatedGenome, Optional<Genome>>() {
+            @Override
+            public Optional<Genome> apply(final EvaluatedGenome evaluatedGenome) {
+                return Optional.of(evaluatedGenome.getGenome());
+            }
+        }).orElse(Optional.<Genome>empty());
+    }
+
+    public static Optional<EvaluatedGenome> findBestGenome(final int genePoolSize,
+                                                           final int generations,
+                                                           final Function<Genome, Scores> fitnessFunction) {
         GenePool genePool = new GenePool(genePoolSize, fitnessFunction);
         for (int i = 2; i <= generations; ++i) {
             genePool = genePool.getNextGeneration();
 
             // TODO: No printing; call callback instead
             if (i % 100 == 0) {
-                final EvaluatedGenome bestGenome = genePool.getBestGenome();
-                if (bestGenome != null) {
-                    System.out.println("Best genome in generation " + i + " (genome length = " + bestGenome.getGenome().getGenomeLength() + "): " + bestGenome.getFitness());
-                }
+                final Optional<EvaluatedGenome> bestGenome = genePool.getBestGenome();
+                final int generation = i;
+                bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
+                    @Override
+                    public void accept(EvaluatedGenome bestGenome) {
+                        final StringBuilder sb = new StringBuilder();
+                        sb.append("Best genome in generation ");
+                        sb.append(generation);
+                        sb.append(" (genome length = ");
+                        sb.append(bestGenome.getGenome().getGenomeLength());
+                        sb.append("): ");
+                        sb.append(bestGenome.getFitness());
+                        System.out.println(sb);
+                    }
+                });
             }
         }
 
         return genePool.getBestGenome();
     }
 
-    private EvaluatedGenome selectRandomGenome() {
+    private Optional<EvaluatedGenome> selectRandomGenome() {
         if (evaluatedGenomes.length > 0) {
             final double[] qualityAccumulation = getQualityAccumulation();
             final double selector = RANDOM.nextDouble() * qualityAccumulation[evaluatedGenomes.length - 1];
-            final int index = BinarySearch.findInRange(selector, qualityAccumulation);
-            return index == BinarySearch.NOT_FOUND ? null : evaluatedGenomes[index];
+            return BinarySearch.findInRange(selector, qualityAccumulation).map(new Function<Integer, EvaluatedGenome>() {
+                @Override
+                public EvaluatedGenome apply(final Integer index) {
+                    return evaluatedGenomes[index];
+                }
+            });
         }
 
-        return null;
+        return Optional.empty();
     }
 }
