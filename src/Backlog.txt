@@ -1,4 +1,5 @@
--   Calculate all requirements (from old project; ketogenic diet; TODOs)
+-   Calculate all requirements (from old project; ketogenic diet; comment on units everywhere; TODOs)
+        There can probably be done some refactoring again after introducing limits for iron - not all values lazy?
 -   Create meal templates; helper functions for specifying amounts easily (different units); allow recursive structure (e.g. chicken with sour cream sauce or fish with sour cream sauce)
 -   Evaluate and improve current evolutionary algorithm (getNextGeneration()); compare also with algorithm in old software
 -   Write tests (to test correctness but also execution time; avoid randomness)

@@ -24,6 +24,12 @@ public class Limits4 {
                 (1 + relOptimal) * optimalCentre, (1 + relCritical) * optimalCentre);
     }
 
+    public static Limits4 limits4LOUORC(final double lowerOptimal,
+                                        final double upperOptimal,
+                                        final double relCritical) {
+        return new Limits4((1 - relCritical) * lowerOptimal, lowerOptimal, upperOptimal, (1 + relCritical) * upperOptimal);
+    }
+
     public static Limits4 limits4UC(final double upperCritical) {
         return new Limits4(0, 0, 0, upperCritical);
     }
