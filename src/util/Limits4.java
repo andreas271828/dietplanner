@@ -14,24 +14,28 @@ public class Limits4 {
     }
 
     public static Limits4 limits4ORC(final double optimal, final double relCritical) {
-        return new Limits4((1 - relCritical) * optimal, optimal, optimal, (1 + relCritical) * optimal);
+        return limits4((1 - relCritical) * optimal, optimal, optimal, (1 + relCritical) * optimal);
     }
 
     public static Limits4 limits4RORC(final double optimalCentre,
                                       final double relOptimal,
                                       final double relCritical) {
-        return new Limits4((1 - relCritical) * optimalCentre, (1 - relOptimal) * optimalCentre,
+        return limits4((1 - relCritical) * optimalCentre, (1 - relOptimal) * optimalCentre,
                 (1 + relOptimal) * optimalCentre, (1 + relCritical) * optimalCentre);
     }
 
     public static Limits4 limits4LOUORC(final double lowerOptimal,
                                         final double upperOptimal,
                                         final double relCritical) {
-        return new Limits4((1 - relCritical) * lowerOptimal, lowerOptimal, upperOptimal, (1 + relCritical) * upperOptimal);
+        return limits4((1 - relCritical) * lowerOptimal, lowerOptimal, upperOptimal, (1 + relCritical) * upperOptimal);
     }
 
     public static Limits4 limits4UC(final double upperCritical) {
-        return new Limits4(0, 0, 0, upperCritical);
+        return limits4(0, 0, 0, upperCritical);
+    }
+
+    public static Limits4 limits4LORLC(final double lowerOptimal, final double relLowerCritical) {
+        return limits4((1 - relLowerCritical) * lowerOptimal, lowerOptimal, Double.MAX_VALUE, Double.MAX_VALUE);
     }
 
     private Limits4(final double lowerCritical,

@@ -1,6 +1,5 @@
 package diet;
 
-import util.LazyValue;
 import util.Limits2;
 import util.Limits4;
 
@@ -20,279 +19,53 @@ public class Requirements {
     private final double days;
     private final int numberOfMeals;
 
-    private final EnumMap<Requirement, LazyValue<Optional<Limits4>>> requirements;
-
-    private final LazyValue<Optional<Double>> alphaLinolenicAcidAIPerDay; // g
-    private final LazyValue<Optional<Double>> carbohydratesLimitPerDay; // g
-    private final LazyValue<Optional<Double>> energyDemandPerDay; // kJ
-    private final LazyValue<Optional<Limits2>> ironLimitsPerDay; // mg
+    private final EnumMap<Requirement, Optional<Limits4>> requirements;
 
     public Requirements(final PersonalDetails personalDetails, final double days, final int numberOfMeals) {
         this.personalDetails = personalDetails;
         this.days = days;
         this.numberOfMeals = numberOfMeals;
 
-        requirements = new EnumMap<Requirement, LazyValue<Optional<Limits4>>>(Requirement.class);
-        requirements.put(Requirement.ALPHA_LINOLENIC_ACID, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return computeAlphaLinolenicAcidLimits();
-            }
-        });
-        requirements.put(Requirement.CALCIUM, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.CARBOHYDRATES, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return computeCarbohydratesLimits();
-            }
-        });
-        requirements.put(Requirement.CHOLESTEROL, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.COSTS, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return computeCostsLimits();
-            }
-        });
-        requirements.put(Requirement.DIETARY_FIBRE, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.ENERGY, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return computeEnergyLimits();
-            }
-        });
-        requirements.put(Requirement.FAT, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.FOLATES, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.IODINE, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.IRON, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return computeIronLimits();
-            }
-        });
-        requirements.put(Requirement.LINOLEIC_ACID, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.MAGNESIUM, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.NIACIN_DERIVED_EQUIVALENTS, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.OMEGA_3_FATTY_ACIDS, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.PHOSPHORUS, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.POTASSIUM, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.PROTEIN, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.RIBOFLAVIN, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.SELENIUM, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.SODIUM, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.SUGARS, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.THIAMIN, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.TRANS_FATTY_ACIDS, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.TRYPTOPHAN, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.VEGAN, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.VEGETARIAN, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.VITAMIN_A_RETINOL_EQUIVALENTS, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.VITAMIN_B12, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.VITAMIN_B6, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.VITAMIN_C, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.VITAMIN_E, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.ZINC, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.MEAL_ALCOHOL, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return computeMealAlcoholLimits();
-            }
-        });
-        requirements.put(Requirement.MEAL_CAFFEINE, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.MEAL_CARBOHYDRATES, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return computeMealCarbohydratesLimits();
-            }
-        });
-        requirements.put(Requirement.MEAL_ENERGY, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return computeMealEnergyLimits();
-            }
-        });
-        requirements.put(Requirement.MEAL_FAT, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-        requirements.put(Requirement.MEAL_PROTEIN, new LazyValue<Optional<Limits4>>() {
-            @Override
-            protected Optional<Limits4> compute() {
-                return noLimits();
-            }
-        });
-
-
-        alphaLinolenicAcidAIPerDay = new LazyValue<Optional<Double>>() {
-            @Override
-            protected Optional<Double> compute() {
-                return computeAlphaLinolenicAcidAIPerDay();
-            }
-        };
-        carbohydratesLimitPerDay = new LazyValue<Optional<Double>>() {
-            @Override
-            protected Optional<Double> compute() {
-                return computeCarbohydratesLimitPerDay();
-            }
-        };
-        energyDemandPerDay = new LazyValue<Optional<Double>>() {
-            @Override
-            protected Optional<Double> compute() {
-                return computeEnergyDemandPerDay();
-            }
-        };
-        ironLimitsPerDay = new LazyValue<Optional<Limits2>>() {
-            @Override
-            protected Optional<Limits2> compute() {
-                return computeIronLimitsPerDay();
-            }
-        };
+        requirements = new EnumMap<Requirement, Optional<Limits4>>(Requirement.class);
+        requirements.put(Requirement.ALPHA_LINOLENIC_ACID, getAlphaLinolenicAcidLimits());
+        requirements.put(Requirement.CALCIUM, getCalciumLimits());
+        requirements.put(Requirement.CARBOHYDRATES, getCarbohydratesLimits());
+        requirements.put(Requirement.CHOLESTEROL, getCholesterolLimits());
+        requirements.put(Requirement.COSTS, getCostsLimits());
+        requirements.put(Requirement.DIETARY_FIBRE, getDietaryFibreLimits());
+        requirements.put(Requirement.ENERGY, getEnergyLimits());
+        requirements.put(Requirement.FAT, getFatLimits());
+        requirements.put(Requirement.FOLATES, getFolatesLimits());
+        requirements.put(Requirement.IODINE, getIodineLimits());
+        requirements.put(Requirement.IRON, getIronLimits());
+        requirements.put(Requirement.LINOLEIC_ACID, getLinoleicAcidLimits());
+        requirements.put(Requirement.MAGNESIUM, getMagnesiumLimits());
+        requirements.put(Requirement.NIACIN_DERIVED_EQUIVALENTS, getNiacinDerivedEquivalentsLimits());
+        requirements.put(Requirement.OMEGA_3_FATTY_ACIDS, getOmega3FattyAcidsLimits());
+        requirements.put(Requirement.PHOSPHORUS, getPhosphorusLimits());
+        requirements.put(Requirement.POTASSIUM, getPotassiumLimits());
+        requirements.put(Requirement.PROTEIN, getProteinLimits());
+        requirements.put(Requirement.RIBOFLAVIN, getRiboflavinLimits());
+        requirements.put(Requirement.SELENIUM, getSeleniumLimits());
+        requirements.put(Requirement.SODIUM, getSodiumLimits());
+        requirements.put(Requirement.SUGARS, getSugarsLimits());
+        requirements.put(Requirement.THIAMIN, getThiaminLimits());
+        requirements.put(Requirement.TRANS_FATTY_ACIDS, getTransFattyAcidsLimits());
+        requirements.put(Requirement.TRYPTOPHAN, getTryptophanLimits());
+        requirements.put(Requirement.VEGAN, getVeganLimits());
+        requirements.put(Requirement.VEGETARIAN, getVegetarianLimits());
+        requirements.put(Requirement.VITAMIN_A_RETINOL_EQUIVALENTS, getVitaminARetinolEquivalentsLimits());
+        requirements.put(Requirement.VITAMIN_B12, getVitaminB12Limits());
+        requirements.put(Requirement.VITAMIN_B6, getVitaminB6Limits());
+        requirements.put(Requirement.VITAMIN_C, getVitaminCLimits());
+        requirements.put(Requirement.VITAMIN_E, getVitaminELimits());
+        requirements.put(Requirement.ZINC, getZincLimits());
+        requirements.put(Requirement.MEAL_ALCOHOL, getMealAlcoholLimits());
+        requirements.put(Requirement.MEAL_CAFFEINE, getMealCaffeineLimits());
+        requirements.put(Requirement.MEAL_CARBOHYDRATES, getMealCarbohydratesLimits());
+        requirements.put(Requirement.MEAL_ENERGY, getMealEnergyLimits());
+        requirements.put(Requirement.MEAL_FAT, getMealFatLimits());
+        requirements.put(Requirement.MEAL_PROTEIN, getMealProteinLimits());
     }
 
     public int getNumberOfMeals() {
@@ -300,36 +73,32 @@ public class Requirements {
     }
 
     public Optional<Limits4> getLimits(final Requirement requirement) {
-        return requirements.containsKey(requirement) ? requirements.get(requirement).get() : Optional.<Limits4>empty();
+        return requirements.containsKey(requirement) ? requirements.get(requirement) : Optional.<Limits4>empty();
     }
 
-    private static Optional<Limits4> noLimits() {
-        return Optional.empty();
-    }
-
-    private Optional<Limits4> limitsFromValuePerDay(final LazyValue<Optional<Double>> maybeValuePerDay,
-                                                    final Function<Double, Limits4> computeLimits) {
-        return maybeValuePerDay.get().map(new Function<Double, Double>() {
+    private Optional<Limits4> getLimitsFromValuePerDay(final Optional<Double> maybeValuePerDay,
+                                                       final Function<Double, Limits4> getLimits) {
+        return maybeValuePerDay.map(new Function<Double, Double>() {
             @Override
             public Double apply(final Double valuePerDay) {
                 return valuePerDay * days;
             }
-        }).map(computeLimits);
+        }).map(getLimits);
     }
 
-    private Optional<Limits4> limitsFromLimitsPerDay(final LazyValue<Optional<Limits2>> maybeLimitsPerDay,
-                                                     final Function<Limits2, Limits4> computeLimits) {
-        return maybeLimitsPerDay.get().map(new Function<Limits2, Limits2>() {
+    private Optional<Limits4> getLimitsFromLimitsPerDay(final Optional<Limits2> maybeLimitsPerDay,
+                                                        final Function<Limits2, Limits4> getLimits) {
+        return maybeLimitsPerDay.map(new Function<Limits2, Limits2>() {
             @Override
             public Limits2 apply(final Limits2 limitsPerDay) {
                 return limits2(limitsPerDay.getMin() * days, limitsPerDay.getMax() * days);
             }
-        }).map(computeLimits);
+        }).map(getLimits);
     }
 
-    private Optional<Limits4> computeAlphaLinolenicAcidLimits() {
+    private Optional<Limits4> getAlphaLinolenicAcidLimits() {
         // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
-        return limitsFromValuePerDay(alphaLinolenicAcidAIPerDay, new Function<Double, Limits4>() {
+        return getLimitsFromValuePerDay(getAlphaLinolenicAcidAIPerDay(), new Function<Double, Limits4>() {
             @Override
             public Limits4 apply(final Double total) {
                 return limits4(0.8 * total, 0.9 * total, Double.MAX_VALUE, Double.MAX_VALUE);
@@ -337,31 +106,9 @@ public class Requirements {
         });
     }
 
-    private Optional<Limits4> computeCarbohydratesLimits() {
-        return limitsFromValuePerDay(carbohydratesLimitPerDay, new Function<Double, Limits4>() {
-            @Override
-            public Limits4 apply(final Double total) {
-                return limits4(0, 0, 0.9 * total, total);
-            }
-        });
-    }
-
-    private Optional<Limits4> computeCostsLimits() {
-        return Optional.of(limits4UC(25 * days)); // AUD
-    }
-
-    private Optional<Limits4> computeEnergyLimits() {
-        // http://www.nrv.gov.au/dietary-energy
-        return limitsFromValuePerDay(energyDemandPerDay, new Function<Double, Limits4>() {
-            @Override
-            public Limits4 apply(final Double total) {
-                return limits4ORC(total, DEFAULT_TOLERANCE);
-            }
-        });
-    }
-
-    private Optional<Limits4> computeIronLimits() {
-        return limitsFromLimitsPerDay(ironLimitsPerDay, new Function<Limits2, Limits4>() {
+    private Optional<Limits4> getCalciumLimits() {
+        // http://www.nrv.gov.au/nutrients/calcium
+        return getLimitsFromLimitsPerDay(getCalciumRDIAndULPerDay(), new Function<Limits2, Limits4>() {
             @Override
             public Limits4 apply(final Limits2 totalLimits) {
                 return limits4LOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE);
@@ -369,12 +116,238 @@ public class Requirements {
         });
     }
 
-    private Optional<Limits4> computeMealAlcoholLimits() {
+    private Optional<Limits4> getCarbohydratesLimits() {
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        return getLimitsFromValuePerDay(getCarbohydratesLimitPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4(0, 0, 0.9 * total, total);
+            }
+        });
+    }
+
+    private Optional<Limits4> getCholesterolLimits() {
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        // http://www.health.gov/dietaryguidelines/2010.asp
+        return Optional.empty();
+    }
+
+    private Optional<Limits4> getCostsLimits() {
+        return Optional.of(limits4UC(25 * days)); // AUD
+    }
+
+    private Optional<Limits4> getDietaryFibreLimits() {
+        // http://www.nrv.gov.au/nutrients/dietary-fibre
+        return getLimitsFromValuePerDay(getDietaryFibreAIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4(0.8 * total, 0.9 * total, Double.MAX_VALUE, Double.MAX_VALUE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getEnergyLimits() {
+        // http://www.nrv.gov.au/dietary-energy
+        return getLimitsFromValuePerDay(getEnergyDemandPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4ORC(total, DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getFatLimits() {
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        // http://www.cdc.gov/nutrition/everyone/basics/fat/index.html?s_cid=tw_ob294
+        return Optional.empty();
+    }
+
+    private Optional<Limits4> getFolatesLimits() {
+        // http://www.nrv.gov.au/nutrients/folate
+        return getLimitsFromValuePerDay(getFolatesRDIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4LORLC(total, DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getIodineLimits() {
+        // http://www.nrv.gov.au/nutrients/iodine
+        return getLimitsFromValuePerDay(getIodineRDIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4LORLC(total, DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getIronLimits() {
+        // http://www.nrv.gov.au/nutrients/iron
+        return getLimitsFromLimitsPerDay(getIronRDIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4LOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getLinoleicAcidLimits() {
+        // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
+        return getLimitsFromValuePerDay(getLinoleicAcidAIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4(0.8 * total, 0.9 * total, Double.MAX_VALUE, Double.MAX_VALUE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getMagnesiumLimits() {
+        // http://www.nrv.gov.au/nutrients/magnesium
+        return getLimitsFromValuePerDay(getMagnesiumRDIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4LORLC(total, DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getNiacinDerivedEquivalentsLimits() {
+        // http://www.nrv.gov.au/nutrients/niacin
+        return getLimitsFromLimitsPerDay(getNiacinDerivedEquivalentsRDIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4LOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getOmega3FattyAcidsLimits() {
+        // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
+        return getLimitsFromLimitsPerDay(getCalciumAIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4(0.8 * totalLimits.getMin(), 0.9 * totalLimits.getMin(),
+                        totalLimits.getMax(), (1 + DEFAULT_TOLERANCE) * totalLimits.getMax());
+            }
+        });
+    }
+
+    private Optional<Limits4> getPhosphorusLimits() {
+        // http://www.nrv.gov.au/nutrients/phosphorus
+        return getLimitsFromLimitsPerDay(getPhosphorusRDIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4LOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getPotassiumLimits() {
+        // http://www.nrv.gov.au/nutrients/potassium
+        return getLimitsFromValuePerDay(getPotassiumAIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4(0.8 * total, 0.9 * total, Double.MAX_VALUE, Double.MAX_VALUE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getProteinLimits() {
+        // http://www.nrv.gov.au/nutrients/protein
+        // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        return getLimitsFromValuePerDay(getProteinTargetPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4ORC(total, DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getRiboflavinLimits() {
+        // http://www.nrv.gov.au/nutrients/riboflavin
+        return getLimitsFromValuePerDay(getRiboflavinRDIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4LORLC(total, DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getSeleniumLimits() {
+        // http://www.nrv.gov.au/nutrients/selenium
+        return getLimitsFromLimitsPerDay(getSeleniumRDIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4LOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE);
+            }
+        });
+    }
+
+    private Optional<Limits4> getSodiumLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getSugarsLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getThiaminLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getTransFattyAcidsLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getTryptophanLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getVeganLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getVegetarianLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getVitaminARetinolEquivalentsLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getVitaminB12Limits() {
+        return null;
+    }
+
+    private Optional<Limits4> getVitaminB6Limits() {
+        return null;
+    }
+
+    private Optional<Limits4> getVitaminCLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getVitaminELimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getZincLimits() {
+        return null;
+    }
+
+    private Optional<Limits4> getMealAlcoholLimits() {
         return Optional.of(limits4UC(0.5)); // g
     }
 
-    private Optional<Limits4> computeMealCarbohydratesLimits() {
-        return limitsFromValuePerDay(carbohydratesLimitPerDay, new Function<Double, Limits4>() {
+    private Optional<Limits4> getMealCaffeineLimits() {
+        return Optional.of(limits4UC(10)); // mg
+    }
+
+    private Optional<Limits4> getMealCarbohydratesLimits() {
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        return getLimitsFromValuePerDay(getCarbohydratesLimitPerDay(), new Function<Double, Limits4>() {
             @Override
             public Limits4 apply(final Double total) {
                 final double upperCritical = 1.2 * total / numberOfMeals;
@@ -383,8 +356,9 @@ public class Requirements {
         });
     }
 
-    private Optional<Limits4> computeMealEnergyLimits() {
-        return limitsFromValuePerDay(energyDemandPerDay, new Function<Double, Limits4>() {
+    private Optional<Limits4> getMealEnergyLimits() {
+        // http://www.nrv.gov.au/dietary-energy
+        return getLimitsFromValuePerDay(getEnergyDemandPerDay(), new Function<Double, Limits4>() {
             @Override
             public Limits4 apply(final Double total) {
                 return limits4RORC(total / numberOfMeals, 0.3, 0.6);
@@ -392,7 +366,25 @@ public class Requirements {
         });
     }
 
-    private Optional<Double> computeAlphaLinolenicAcidAIPerDay() {
+    private Optional<Limits4> getMealFatLimits() {
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        // http://www.cdc.gov/nutrition/everyone/basics/fat/index.html?s_cid=tw_ob294
+        return Optional.empty();
+    }
+
+    private Optional<Limits4> getMealProteinLimits() {
+        // http://www.nrv.gov.au/nutrients/protein
+        // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        return getLimitsFromValuePerDay(getProteinTargetPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4RORC(total / numberOfMeals, 0.3, 0.6);
+            }
+        });
+    }
+
+    private Optional<Double> getAlphaLinolenicAcidAIPerDay() {
         // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
         final double age = personalDetails.getAge();
         if (age >= 1) {
@@ -426,12 +418,12 @@ public class Requirements {
         return Optional.empty();
     }
 
-    private Optional<Double> computeCarbohydratesLimitPerDay() {
+    private Optional<Double> getCarbohydratesLimitPerDay() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         return Optional.of(personalDetails.getCarbohydratesLimit());
     }
 
-    private Optional<Double> computeEnergyDemandPerDay() {
+    private Optional<Double> getEnergyDemandPerDay() {
         // http://www.nrv.gov.au/dietary-energy
         // TODO: Infants, children, adolescents
         final double bmr = personalDetails.getBasalMetabolicRate();
@@ -439,7 +431,7 @@ public class Requirements {
         return Optional.of(bmr * pal); // kJ
     }
 
-    private Optional<Limits2> computeIronLimitsPerDay() {
+    private Optional<Limits2> getIronRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/iron
         // TODO: Infants, children, adolescents, pregnancy, lactation
         final PersonalDetails.Gender gender = personalDetails.getGender();
@@ -447,5 +439,18 @@ public class Requirements {
         final double lowerLimit = (gender == FEMALE && age >= 19 && age < 51) ? 18 : 8;
         final double upperLimit = 45;
         return Optional.of(limits2(lowerLimit, upperLimit));
+    }
+
+    private Optional<Double> getMagnesiumRDIPerDay() {
+        // http://www.nrv.gov.au/nutrients/magnesium
+        // TODO: Gender, age, pregnancy, lactation
+        return Optional.of(420.0); // mg
+    }
+
+    private Optional<Double> getProteinTargetPerDay() {
+        // http://www.nrv.gov.au/nutrients/protein
+        // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        return Optional.of(personalDetails.getProteinTarget());
     }
 }
