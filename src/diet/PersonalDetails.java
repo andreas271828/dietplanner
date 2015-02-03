@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public enum PersonalDetails {
-    ANDREAS(Gender.MALE, 81.0, 1.91, "14/08/1982", 2.0, 60.0, 1.0, false, false);
+    ANDREAS(Gender.MALE, 81.0, 1.91, "14/08/1982", 2.0, 60.0, 1.0, false, false, false, false);
 
     public enum Gender {
         MALE,
@@ -23,6 +23,8 @@ public enum PersonalDetails {
     private final double proteinTarget; // g per kg of ideal body weight per day
     private final boolean pregnancy;
     private final boolean lactation;
+    private final boolean vegetarian;
+    private final boolean vegan;
 
     PersonalDetails(final Gender gender,
                     final double bodyWeight,
@@ -32,7 +34,9 @@ public enum PersonalDetails {
                     final double carbohydratesLimit,
                     final double proteinTarget,
                     final boolean pregnancy,
-                    final boolean lactation) {
+                    final boolean lactation,
+                    final boolean vegetarian,
+                    final boolean vegan) {
         this.gender = gender;
         this.bodyWeight = bodyWeight;
         this.bodyHeight = bodyHeight;
@@ -42,6 +46,8 @@ public enum PersonalDetails {
         this.proteinTarget = proteinTarget;
         this.pregnancy = pregnancy;
         this.lactation = lactation;
+        this.vegetarian = vegetarian;
+        this.vegan = vegan;
     }
 
     private double convertDateOfBirthToAge(final String dateOfBirth) {
@@ -82,6 +88,14 @@ public enum PersonalDetails {
 
     public boolean getLactation() {
         return lactation;
+    }
+
+    public boolean getVegetarian() {
+        return vegetarian;
+    }
+
+    public boolean getVegan() {
+        return vegan;
     }
 
     /**

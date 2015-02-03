@@ -95,8 +95,6 @@ public class GenePoolTest {
                 addScore(scores, Requirement.THIAMIN, requirements, dietPlanProperties.get(FoodProperty.THIAMIN), noMeal);
                 addScore(scores, Requirement.TRANS_FATTY_ACIDS, requirements, dietPlanProperties.get(FoodProperty.TRANS_FATTY_ACIDS), noMeal);
                 addScore(scores, Requirement.TRYPTOPHAN, requirements, dietPlanProperties.get(FoodProperty.TRYPTOPHAN), noMeal);
-                addScore(scores, Requirement.VEGAN, requirements, dietPlanProperties.get(FoodProperty.VEGAN), noMeal);
-                addScore(scores, Requirement.VEGETARIAN, requirements, dietPlanProperties.get(FoodProperty.VEGETARIAN), noMeal);
                 addScore(scores, Requirement.VITAMIN_A_RETINOL_EQUIVALENTS, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_A_RETINOL_EQUIVALENTS), noMeal);
                 addScore(scores, Requirement.VITAMIN_B12, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B12), noMeal);
                 addScore(scores, Requirement.VITAMIN_B6, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B6), noMeal);

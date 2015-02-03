@@ -52,8 +52,6 @@ public class Requirements {
         requirements.put(Requirement.THIAMIN, getThiaminLimits());
         requirements.put(Requirement.TRANS_FATTY_ACIDS, getTransFattyAcidsLimits());
         requirements.put(Requirement.TRYPTOPHAN, getTryptophanLimits());
-        requirements.put(Requirement.VEGAN, getVeganLimits());
-        requirements.put(Requirement.VEGETARIAN, getVegetarianLimits());
         requirements.put(Requirement.VITAMIN_A_RETINOL_EQUIVALENTS, getVitaminARetinolEquivalentsLimits());
         requirements.put(Requirement.VITAMIN_B12, getVitaminB12Limits());
         requirements.put(Requirement.VITAMIN_B6, getVitaminB6Limits());
@@ -286,55 +284,111 @@ public class Requirements {
     }
 
     private Optional<Limits4> getSodiumLimits() {
-        return null;
+        // http://www.nrv.gov.au/nutrients/sodium
+        return getLimitsFromLimitsPerDay(getSodiumAIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4(0.8 * totalLimits.getMin(), 0.9 * totalLimits.getMin(),
+                        totalLimits.getMax(), (1 + DEFAULT_TOLERANCE) * totalLimits.getMax());
+            }
+        });
     }
 
     private Optional<Limits4> getSugarsLimits() {
-        return null;
+        // http://www.mydailyintake.net/nutrients/
+        return getLimitsFromValuePerDay(getSugarsLimitPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4(0, 0, 0.5 * total, total);
+            }
+        });
     }
 
     private Optional<Limits4> getThiaminLimits() {
-        return null;
+        // http://www.nrv.gov.au/nutrients/thiamin
+        return getLimitsFromValuePerDay(getThiaminRDIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4LORLC(total, DEFAULT_TOLERANCE);
+            }
+        });
     }
 
     private Optional<Limits4> getTransFattyAcidsLimits() {
-        return null;
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        // http://www.health.gov/dietaryguidelines/2010.asp
+        return Optional.empty();
     }
 
     private Optional<Limits4> getTryptophanLimits() {
-        return null;
-    }
-
-    private Optional<Limits4> getVeganLimits() {
-        return null;
-    }
-
-    private Optional<Limits4> getVegetarianLimits() {
-        return null;
+        // http://en.wikipedia.org/wiki/Essential_amino_acid
+        return getLimitsFromValuePerDay(getTryptophanRDIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4LORLC(total, DEFAULT_TOLERANCE);
+            }
+        });
     }
 
     private Optional<Limits4> getVitaminARetinolEquivalentsLimits() {
-        return null;
+        // http://www.nrv.gov.au/nutrients/vitamin-a
+        return getLimitsFromLimitsPerDay(getVitaminARetinolEquivalentsRDIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4LOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE);
+            }
+        });
     }
 
     private Optional<Limits4> getVitaminB12Limits() {
-        return null;
+        // http://www.nrv.gov.au/nutrients/vitamin-b12
+        return getLimitsFromValuePerDay(getVitaminB12RDIPerDay(), new Function<Double, Limits4>() {
+            @Override
+            public Limits4 apply(final Double total) {
+                return limits4LORLC(total, DEFAULT_TOLERANCE);
+            }
+        });
     }
 
     private Optional<Limits4> getVitaminB6Limits() {
-        return null;
+        // http://www.nrv.gov.au/nutrients/vitamin-b6
+        return getLimitsFromLimitsPerDay(getVitaminB6RDIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4LOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE);
+            }
+        });
     }
 
     private Optional<Limits4> getVitaminCLimits() {
-        return null;
+        // http://www.nrv.gov.au/nutrients/vitamin-c
+        return getLimitsFromLimitsPerDay(getVitaminCRDIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4LOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE);
+            }
+        });
     }
 
     private Optional<Limits4> getVitaminELimits() {
-        return null;
+        // http://www.nrv.gov.au/nutrients/vitamin-e
+        return getLimitsFromLimitsPerDay(getVitaminEAIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4(0.8 * totalLimits.getMin(), 0.9 * totalLimits.getMin(),
+                        totalLimits.getMax(), (1 + DEFAULT_TOLERANCE) * totalLimits.getMax());
+            }
+        });
     }
 
     private Optional<Limits4> getZincLimits() {
-        return null;
+        // http://www.nrv.gov.au/nutrients/zinc
+        return getLimitsFromLimitsPerDay(getZincRDIAndULPerDay(), new Function<Limits2, Limits4>() {
+            @Override
+            public Limits4 apply(final Limits2 totalLimits) {
+                return limits4LOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE);
+            }
+        });
     }
 
     private Optional<Limits4> getMealAlcoholLimits() {

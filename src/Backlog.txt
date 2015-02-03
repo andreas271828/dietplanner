@@ -1,8 +1,7 @@
 -   Calculate all requirements
-        1. Find "return null;" in Requirements.java and insert relevant code (find hyperlink in old project)
-        2. Implement all missing methods (follow hyperlinks)
-        3. Comment on units everywhere
-        4. TODOs (later?)
+        1. Implement all missing methods (follow hyperlinks)
+        2. Comment on units everywhere
+        3. TODOs (later?)
 -   Create meal templates; helper functions for specifying amounts easily (different units); allow recursive structure (e.g. chicken with sour cream sauce or fish with sour cream sauce)
 -   Evaluate and improve current evolutionary algorithm (getNextGeneration()); compare also with algorithm in old software
 -   Write tests (to test correctness but also execution time; avoid randomness)
