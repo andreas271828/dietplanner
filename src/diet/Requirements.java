@@ -116,7 +116,7 @@ public class Requirements {
 
     private Optional<Limits4> getCarbohydratesLimits() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return getLimitsFromValuePerDay(getCarbohydratesLimitPerDay(), new Function<Double, Limits4>() {
+        return getLimitsFromValuePerDay(getMaxCarbohydratesPerDay(), new Function<Double, Limits4>() {
             @Override
             public Limits4 apply(final Double total) {
                 return limits4(0, 0, 0.9 * total, total);
@@ -296,7 +296,7 @@ public class Requirements {
 
     private Optional<Limits4> getSugarsLimits() {
         // http://www.mydailyintake.net/nutrients/
-        return getLimitsFromValuePerDay(getSugarsLimitPerDay(), new Function<Double, Limits4>() {
+        return getLimitsFromValuePerDay(getMaxSugarsPerDay(), new Function<Double, Limits4>() {
             @Override
             public Limits4 apply(final Double total) {
                 return limits4(0, 0, 0.5 * total, total);
@@ -401,7 +401,7 @@ public class Requirements {
 
     private Optional<Limits4> getMealCarbohydratesLimits() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return getLimitsFromValuePerDay(getCarbohydratesLimitPerDay(), new Function<Double, Limits4>() {
+        return getLimitsFromValuePerDay(getMaxCarbohydratesPerDay(), new Function<Double, Limits4>() {
             @Override
             public Limits4 apply(final Double total) {
                 final double upperCritical = 1.2 * total / numberOfMeals;
@@ -478,9 +478,9 @@ public class Requirements {
         return Optional.of(limits2(1000, 2500)); // mg
     }
 
-    private Optional<Double> getCarbohydratesLimitPerDay() {
+    private Optional<Double> getMaxCarbohydratesPerDay() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return Optional.of(personalDetails.getCarbohydratesLimit());
+        return Optional.of(personalDetails.getMaxCarbohydrates());
     }
 
     private Optional<Double> getDietaryFibreAIPerDay() {
@@ -559,7 +559,7 @@ public class Requirements {
         // http://www.nrv.gov.au/nutrients/protein
         // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return Optional.of(personalDetails.getProteinTarget());
+        return Optional.of(personalDetails.getProteinTarget() * personalDetails.getIdealBodyWeight()); // g
     }
 
     private Optional<Double> getRiboflavinRDIPerDay() {
@@ -576,61 +576,63 @@ public class Requirements {
 
     private Optional<Limits2> getSodiumAIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/sodium
+        // http://ketodietapp.com/Blog/post/2013/04/16/Keto-flu-and-Sufficient-Intake-of-Electrolytes
         // TODO: Consider age, etc.
-        return Optional.of(limits2());
+        final Limits2 sodiumLimits = personalDetails.getSodiumLimits().orElse(limits2(460.0, 2300.0));
+        return Optional.of(sodiumLimits); // mg
     }
 
-    private Optional<Double> getSugarsLimitPerDay() {
+    private Optional<Double> getMaxSugarsPerDay() {
         // http://www.mydailyintake.net/nutrients/
         // TODO: Consider age, etc.
-        return Optional.of();
+        return Optional.of(90.0); // g
     }
 
     private Optional<Double> getThiaminRDIPerDay() {
         // http://www.nrv.gov.au/nutrients/thiamin
         // TODO: Consider age, etc.
-        return Optional.of();
+        return Optional.of(1.2); // mg
     }
 
     private Optional<Double> getTryptophanRDIPerDay() {
         // http://en.wikipedia.org/wiki/Essential_amino_acid
         // TODO: Consider age, etc.
-        return Optional.of();
+        return Optional.of(4.0 * personalDetails.getIdealBodyWeight()); // mg
     }
 
     private Optional<Limits2> getVitaminARetinolEquivalentsRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-a
         // TODO: Consider age, etc.
-        return Optional.of(limits2());
+        return Optional.of(limits2(900.0, 3000.0)); // µg
     }
 
     private Optional<Double> getVitaminB12RDIPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-b12
         // TODO: Consider age, etc.
-        return Optional.of();
+        return Optional.of(2.4); // µg
     }
 
     private Optional<Limits2> getVitaminB6RDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-b6
         // TODO: Consider age, etc.
-        return Optional.of(limits2());
+        return Optional.of(limits2(1.3, 50.0)); // mg
     }
 
     private Optional<Limits2> getVitaminCRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-c
         // TODO: Consider age, etc.
-        return Optional.of(limits2());
+        return Optional.of(limits2(45.0, 1000.0)); // mg
     }
 
     private Optional<Limits2> getVitaminEAIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-e
         // TODO: Consider age, etc.
-        return Optional.of(limits2());
+        return Optional.of(limits2(10.0, 300.0)); // mg
     }
 
     private Optional<Limits2> getZincRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/zinc
         // TODO: Consider age, etc.
-        return Optional.of(limits2());
+        return Optional.of(limits2(14.0, 40.0)); // mg
     }
 }
