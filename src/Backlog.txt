@@ -1,5 +1,5 @@
 -   Calculate all requirements
-        1. Implement all missing methods (follow hyperlinks)
+        1. Complete methods (follow hyperlinks)
         2. Comment on units everywhere
         3. TODOs (later?)
 -   Create meal templates; helper functions for specifying amounts easily (different units); allow recursive structure (e.g. chicken with sour cream sauce or fish with sour cream sauce)
