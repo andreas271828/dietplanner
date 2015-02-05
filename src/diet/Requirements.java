@@ -94,6 +94,9 @@ public class Requirements {
         }).map(getLimits);
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getAlphaLinolenicAcidLimits() {
         // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
         return getLimitsFromValuePerDay(getAlphaLinolenicAcidAIPerDay(), new Function<Double, Limits4>() {
@@ -104,6 +107,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getCalciumLimits() {
         // http://www.nrv.gov.au/nutrients/calcium
         return getLimitsFromLimitsPerDay(getCalciumRDIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -114,6 +120,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getCarbohydratesLimits() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         return getLimitsFromValuePerDay(getMaxCarbohydratesPerDay(), new Function<Double, Limits4>() {
@@ -124,16 +133,25 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getCholesterolLimits() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         // http://www.health.gov/dietaryguidelines/2010.asp
         return Optional.empty();
     }
 
+    /**
+     * @return AUD
+     */
     private Optional<Limits4> getCostsLimits() {
-        return Optional.of(limits4UC(25 * days)); // AUD
+        return Optional.of(limits4UC(25 * days));
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getDietaryFibreLimits() {
         // http://www.nrv.gov.au/nutrients/dietary-fibre
         return getLimitsFromValuePerDay(getDietaryFibreAIPerDay(), new Function<Double, Limits4>() {
@@ -144,6 +162,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return kJ
+     */
     private Optional<Limits4> getEnergyLimits() {
         // http://www.nrv.gov.au/dietary-energy
         return getLimitsFromValuePerDay(getEnergyDemandPerDay(), new Function<Double, Limits4>() {
@@ -154,12 +175,18 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getFatLimits() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         // http://www.cdc.gov/nutrition/everyone/basics/fat/index.html?s_cid=tw_ob294
         return Optional.empty();
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Limits4> getFolatesLimits() {
         // http://www.nrv.gov.au/nutrients/folate
         return getLimitsFromValuePerDay(getFolatesRDIPerDay(), new Function<Double, Limits4>() {
@@ -170,6 +197,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Limits4> getIodineLimits() {
         // http://www.nrv.gov.au/nutrients/iodine
         return getLimitsFromValuePerDay(getIodineRDIPerDay(), new Function<Double, Limits4>() {
@@ -180,6 +210,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getIronLimits() {
         // http://www.nrv.gov.au/nutrients/iron
         return getLimitsFromLimitsPerDay(getIronRDIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -190,6 +223,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getLinoleicAcidLimits() {
         // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
         return getLimitsFromValuePerDay(getLinoleicAcidAIPerDay(), new Function<Double, Limits4>() {
@@ -200,6 +236,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getMagnesiumLimits() {
         // http://www.nrv.gov.au/nutrients/magnesium
         return getLimitsFromValuePerDay(getMagnesiumRDIPerDay(), new Function<Double, Limits4>() {
@@ -210,6 +249,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getNiacinDerivedEquivalentsLimits() {
         // http://www.nrv.gov.au/nutrients/niacin
         return getLimitsFromLimitsPerDay(getNiacinDerivedEquivalentsRDIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -220,6 +262,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getOmega3FattyAcidsLimits() {
         // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
         return getLimitsFromLimitsPerDay(getOmega3FattyAcidsAIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -231,6 +276,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getPhosphorusLimits() {
         // http://www.nrv.gov.au/nutrients/phosphorus
         return getLimitsFromLimitsPerDay(getPhosphorusRDIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -241,6 +289,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getPotassiumLimits() {
         // http://www.nrv.gov.au/nutrients/potassium
         return getLimitsFromValuePerDay(getPotassiumAIPerDay(), new Function<Double, Limits4>() {
@@ -251,6 +302,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getProteinLimits() {
         // http://www.nrv.gov.au/nutrients/protein
         // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
@@ -263,6 +317,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getRiboflavinLimits() {
         // http://www.nrv.gov.au/nutrients/riboflavin
         return getLimitsFromValuePerDay(getRiboflavinRDIPerDay(), new Function<Double, Limits4>() {
@@ -273,6 +330,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Limits4> getSeleniumLimits() {
         // http://www.nrv.gov.au/nutrients/selenium
         return getLimitsFromLimitsPerDay(getSeleniumRDIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -283,6 +343,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getSodiumLimits() {
         // http://www.nrv.gov.au/nutrients/sodium
         return getLimitsFromLimitsPerDay(getSodiumAIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -294,6 +357,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getSugarsLimits() {
         // http://www.mydailyintake.net/nutrients/
         return getLimitsFromValuePerDay(getMaxSugarsPerDay(), new Function<Double, Limits4>() {
@@ -304,6 +370,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getThiaminLimits() {
         // http://www.nrv.gov.au/nutrients/thiamin
         return getLimitsFromValuePerDay(getThiaminRDIPerDay(), new Function<Double, Limits4>() {
@@ -314,12 +383,18 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getTransFattyAcidsLimits() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         // http://www.health.gov/dietaryguidelines/2010.asp
         return Optional.empty();
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getTryptophanLimits() {
         // http://en.wikipedia.org/wiki/Essential_amino_acid
         return getLimitsFromValuePerDay(getTryptophanRDIPerDay(), new Function<Double, Limits4>() {
@@ -330,6 +405,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Limits4> getVitaminARetinolEquivalentsLimits() {
         // http://www.nrv.gov.au/nutrients/vitamin-a
         return getLimitsFromLimitsPerDay(getVitaminARetinolEquivalentsRDIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -340,6 +418,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Limits4> getVitaminB12Limits() {
         // http://www.nrv.gov.au/nutrients/vitamin-b12
         return getLimitsFromValuePerDay(getVitaminB12RDIPerDay(), new Function<Double, Limits4>() {
@@ -350,6 +431,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getVitaminB6Limits() {
         // http://www.nrv.gov.au/nutrients/vitamin-b6
         return getLimitsFromLimitsPerDay(getVitaminB6RDIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -360,6 +444,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getVitaminCLimits() {
         // http://www.nrv.gov.au/nutrients/vitamin-c
         return getLimitsFromLimitsPerDay(getVitaminCRDIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -370,6 +457,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getVitaminELimits() {
         // http://www.nrv.gov.au/nutrients/vitamin-e
         return getLimitsFromLimitsPerDay(getVitaminEAIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -381,6 +471,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getZincLimits() {
         // http://www.nrv.gov.au/nutrients/zinc
         return getLimitsFromLimitsPerDay(getZincRDIAndULPerDay(), new Function<Limits2, Limits4>() {
@@ -391,14 +484,23 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getMealAlcoholLimits() {
-        return Optional.of(limits4UC(0.5)); // g
+        return Optional.of(limits4UC(0.5));
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits4> getMealCaffeineLimits() {
-        return Optional.of(limits4UC(10)); // mg
+        return Optional.of(limits4UC(10));
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getMealCarbohydratesLimits() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         return getLimitsFromValuePerDay(getMaxCarbohydratesPerDay(), new Function<Double, Limits4>() {
@@ -410,6 +512,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return kJ
+     */
     private Optional<Limits4> getMealEnergyLimits() {
         // http://www.nrv.gov.au/dietary-energy
         return getLimitsFromValuePerDay(getEnergyDemandPerDay(), new Function<Double, Limits4>() {
@@ -420,12 +525,18 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getMealFatLimits() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         // http://www.cdc.gov/nutrition/everyone/basics/fat/index.html?s_cid=tw_ob294
         return Optional.empty();
     }
 
+    /**
+     * @return g
+     */
     private Optional<Limits4> getMealProteinLimits() {
         // http://www.nrv.gov.au/nutrients/protein
         // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
@@ -438,6 +549,9 @@ public class Requirements {
         });
     }
 
+    /**
+     * @return g
+     */
     private Optional<Double> getAlphaLinolenicAcidAIPerDay() {
         // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
         final double age = personalDetails.getAge();
@@ -472,43 +586,64 @@ public class Requirements {
         return Optional.empty();
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getCalciumRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/calcium
         // TODO: Consider age, etc.
-        return Optional.of(limits2(1000, 2500)); // mg
+        return Optional.of(limits2(1000, 2500));
     }
 
+    /**
+     * @return g
+     */
     private Optional<Double> getMaxCarbohydratesPerDay() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         return Optional.of(personalDetails.getMaxCarbohydrates());
     }
 
+    /**
+     * @return g
+     */
     private Optional<Double> getDietaryFibreAIPerDay() {
         // http://www.nrv.gov.au/nutrients/dietary-fibre
         // TODO: Consider age, etc.
-        return Optional.of(30.0); // g
+        return Optional.of(30.0);
     }
 
+    /**
+     * @return kJ
+     */
     private Optional<Double> getEnergyDemandPerDay() {
         // http://www.nrv.gov.au/dietary-energy
         // TODO: Infants, children, adolescents
         final double bmr = personalDetails.getBasalMetabolicRate();
         final double pal = personalDetails.getPhysicalActivityLevel();
-        return Optional.of(bmr * pal); // kJ
+        return Optional.of(bmr * pal);
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Double> getFolatesRDIPerDay() {
         // http://www.nrv.gov.au/nutrients/folate
         // TODO: Consider age, etc.
-        return Optional.of(400.0); // µg
+        return Optional.of(400.0);
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Double> getIodineRDIPerDay() {
         // http://www.nrv.gov.au/nutrients/iodine
         // TODO: Consider age, etc.
-        return Optional.of(150.0); // µg
+        return Optional.of(150.0);
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getIronRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/iron
         // TODO: Infants, children, adolescents, pregnancy, lactation
@@ -519,120 +654,177 @@ public class Requirements {
         return Optional.of(limits2(lowerLimit, upperLimit));
     }
 
+    /**
+     * @return g
+     */
     private Optional<Double> getLinoleicAcidAIPerDay() {
         // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
         // TODO: Consider age, etc.
-        return Optional.of(13.0); // g
+        return Optional.of(13.0);
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Double> getMagnesiumRDIPerDay() {
         // http://www.nrv.gov.au/nutrients/magnesium
         // TODO: Gender, age, pregnancy, lactation
-        return Optional.of(420.0); // mg
+        return Optional.of(420.0);
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getNiacinDerivedEquivalentsRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/niacin
         // TODO: Consider age, etc.
-        return Optional.of(limits2(16.0, 900.0)); // mg
+        return Optional.of(limits2(16.0, 900.0));
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getOmega3FattyAcidsAIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/fats-total-fat-fatty-acids
         // TODO: Consider age, etc.
-        return Optional.of(limits2(160.0, 3000.0)); // mg
+        return Optional.of(limits2(160.0, 3000.0));
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getPhosphorusRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/phosphorus
         // TODO: Consider age, etc.
-        return Optional.of(limits2(1000.0, 4000.0)); // mg
+        return Optional.of(limits2(1000.0, 4000.0));
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Double> getPotassiumAIPerDay() {
         // http://www.nrv.gov.au/nutrients/potassium
         // TODO: Consider age, etc.
-        return Optional.of(3800.0); // mg
+        return Optional.of(3800.0);
     }
 
+    /**
+     * @return g
+     */
     private Optional<Double> getProteinTargetPerDay() {
         // http://www.nrv.gov.au/nutrients/protein
         // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return Optional.of(personalDetails.getProteinTarget() * personalDetails.getIdealBodyWeight()); // g
+        return Optional.of(personalDetails.getProteinTarget() * personalDetails.getIdealBodyWeight());
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Double> getRiboflavinRDIPerDay() {
         // http://www.nrv.gov.au/nutrients/riboflavin
         // TODO: Consider age, etc.
-        return Optional.of(1.3); // mg
+        return Optional.of(1.3);
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Limits2> getSeleniumRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/selenium
         // TODO: Consider age, etc.
-        return Optional.of(limits2(70.0, 400.0)); // µg
+        return Optional.of(limits2(70.0, 400.0));
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getSodiumAIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/sodium
         // http://ketodietapp.com/Blog/post/2013/04/16/Keto-flu-and-Sufficient-Intake-of-Electrolytes
         // TODO: Consider age, etc.
         final Limits2 sodiumLimits = personalDetails.getSodiumLimits().orElse(limits2(460.0, 2300.0));
-        return Optional.of(sodiumLimits); // mg
+        return Optional.of(sodiumLimits);
     }
 
+    /**
+     * @return g
+     */
     private Optional<Double> getMaxSugarsPerDay() {
         // http://www.mydailyintake.net/nutrients/
         // TODO: Consider age, etc.
-        return Optional.of(90.0); // g
+        return Optional.of(90.0);
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Double> getThiaminRDIPerDay() {
         // http://www.nrv.gov.au/nutrients/thiamin
         // TODO: Consider age, etc.
-        return Optional.of(1.2); // mg
+        return Optional.of(1.2);
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Double> getTryptophanRDIPerDay() {
         // http://en.wikipedia.org/wiki/Essential_amino_acid
         // TODO: Consider age, etc.
-        return Optional.of(4.0 * personalDetails.getIdealBodyWeight()); // mg
+        return Optional.of(4.0 * personalDetails.getIdealBodyWeight());
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Limits2> getVitaminARetinolEquivalentsRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-a
         // TODO: Consider age, etc.
-        return Optional.of(limits2(900.0, 3000.0)); // µg
+        return Optional.of(limits2(900.0, 3000.0));
     }
 
+    /**
+     * @return µg
+     */
     private Optional<Double> getVitaminB12RDIPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-b12
         // TODO: Consider age, etc.
-        return Optional.of(2.4); // µg
+        return Optional.of(2.4);
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getVitaminB6RDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-b6
         // TODO: Consider age, etc.
-        return Optional.of(limits2(1.3, 50.0)); // mg
+        return Optional.of(limits2(1.3, 50.0));
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getVitaminCRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-c
         // TODO: Consider age, etc.
-        return Optional.of(limits2(45.0, 1000.0)); // mg
+        return Optional.of(limits2(45.0, 1000.0));
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getVitaminEAIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/vitamin-e
         // TODO: Consider age, etc.
-        return Optional.of(limits2(10.0, 300.0)); // mg
+        return Optional.of(limits2(10.0, 300.0));
     }
 
+    /**
+     * @return mg
+     */
     private Optional<Limits2> getZincRDIAndULPerDay() {
         // http://www.nrv.gov.au/nutrients/zinc
         // TODO: Consider age, etc.
-        return Optional.of(limits2(14.0, 40.0)); // mg
+        return Optional.of(limits2(14.0, 40.0));
     }
 }

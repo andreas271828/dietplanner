@@ -16,7 +16,7 @@ public enum PersonalDetails {
     public enum Gender {
         MALE,
         FEMALE,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private final Gender gender;
@@ -32,8 +32,24 @@ public enum PersonalDetails {
     private final boolean vegetarian;
     private final boolean vegan;
 
+    /**
+     * @param gender                Gender
+     * @param dateOfBirth           "dd/mm/yyyy"
+     * @param bodyHeight            m
+     * @param idealBodyWeight       kg
+     * @param physicalActivityLevel http://www.nrv.gov.au/dietary-energy
+     * @param maxCarbohydrates      g per day
+     * @param proteinTarget         g per kg of ideal body weight per day
+     * @param sodiumLimits          mg per day
+     * @param pregnancy             boolean
+     * @param lactation             boolean
+     * @param vegetarian            boolean
+     * @param vegan                 boolean
+     */
     PersonalDetails(final Gender gender,
-                    final String dateOfBirth, final double bodyHeight, final double idealBodyWeight,
+                    final String dateOfBirth,
+                    final double bodyHeight,
+                    final double idealBodyWeight,
                     final double physicalActivityLevel,
                     final double maxCarbohydrates,
                     final double proteinTarget,
@@ -72,26 +88,44 @@ public enum PersonalDetails {
         return gender;
     }
 
+    /**
+     * @return years
+     */
     public double getAge() {
         return age;
     }
 
+    /**
+     * @return kg
+     */
     public double getIdealBodyWeight() {
         return idealBodyWeight;
     }
 
+    /**
+     * @return http://www.nrv.gov.au/dietary-energy
+     */
     public double getPhysicalActivityLevel() {
         return physicalActivityLevel;
     }
 
+    /**
+     * @return g per day
+     */
     public double getMaxCarbohydrates() {
         return maxCarbohydrates;
     }
 
+    /**
+     * @return g per kg of ideal body weight per day
+     */
     public double getProteinTarget() {
-        return proteinTarget; // g per kg of ideal body weight per day
+        return proteinTarget;
     }
 
+    /**
+     * @return mg per day
+     */
     public Optional<Limits2> getSodiumLimits() {
         return sodiumLimits;
     }
@@ -113,7 +147,7 @@ public enum PersonalDetails {
     }
 
     /**
-     * @return Basal metabolic rate in kJ per day
+     * @return kJ per day
      */
     public double getBasalMetabolicRate() {
         // Mifflin-St. Jeor equation
