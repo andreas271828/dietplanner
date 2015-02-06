@@ -4,6 +4,8 @@ import util.LazyValue;
 import util.Pair;
 import util.Scores;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -11,6 +13,7 @@ import java.util.function.Predicate;
 
 public class GenePool {
     private final static int SPECIES_SIZE = 10;
+    private final static double NEW_SPECIES_RATE = 0.1;
 
     private final Species[] species;
     private final Function<Genome, Scores> fitnessFunction;
@@ -66,10 +69,18 @@ public class GenePool {
     }
 
     public GenePool getNextGeneration() {
-        final Species[] nextGeneration = new Species[species.length];
-        int speciesCnt = 0;
+        // Sort current generation by fitness (species with higher fitness come first)
+        Arrays.sort(species, new Comparator<Species>() {
+            @Override
+            public int compare(final Species species1, final Species species2) {
+                final double fitnessDiff = species1.getFitness() - species2.getFitness();
+                return fitnessDiff > 0.0 ? -1 : (fitnessDiff < 0.0 ? 1 : 0);
+            }
+        });
 
+        final Species[] nextGeneration = new Species[species.length];
         // TODO: Keep best SPECIES_SIZE - 1 species and create 1 new one (or better, use NEW_SPECIES_RATE)
+        // TODO: Make sure that this (especially the sorting) is only called once! Sort where set?!
 
         return new GenePool(nextGeneration, fitnessFunction);
     }
