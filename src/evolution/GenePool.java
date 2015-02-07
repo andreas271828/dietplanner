@@ -67,10 +67,10 @@ public class GenePool {
         final Species[] nextGeneration = new Species[species.length];
         int speciesCnt = 0;
 
-        // Keep best species
+        // Keep best species (get next generation)
         final int keepCnt = (int) Math.round((1 - NEW_SPECIES_RATE) * species.length);
         while (speciesCnt < keepCnt) {
-            nextGeneration[speciesCnt] = species[speciesCnt];
+            nextGeneration[speciesCnt] = species[speciesCnt].getNextGeneration();
             ++speciesCnt;
         }
 
