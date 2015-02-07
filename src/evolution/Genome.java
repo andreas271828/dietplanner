@@ -82,9 +82,9 @@ public class Genome {
         return genesOffspring;
     }
 
-    private static int[] getOffspringGenes(final int[] genesParent1,
-                                           final int[] genesParent2,
-                                           final int crossOverPoint) {
+    public static int[] getOffspringGenes(final int[] genesParent1,
+                                          final int[] genesParent2,
+                                          final int crossOverPoint) {
         final int[] genesOffspring = new int[genesParent2.length];
         System.arraycopy(genesParent1, 0, genesOffspring, 0, crossOverPoint);
         System.arraycopy(genesParent2, crossOverPoint, genesOffspring, crossOverPoint, genesParent2.length - crossOverPoint);
@@ -101,7 +101,7 @@ public class Genome {
         return mutations;
     }
 
-    private static void applyMutations(final int[] genes, final ArrayList<Pair<Integer, Integer>> mutations) {
+    public static void applyMutations(final int[] genes, final ArrayList<Pair<Integer, Integer>> mutations) {
         for (final Pair<Integer, Integer> mutation : mutations) {
             genes[mutation.a()] = Math.min(Math.max(genes[mutation.a()] + mutation.b(), 0), GENE_STATES - 1);
         }

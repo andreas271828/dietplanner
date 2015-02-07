@@ -1,7 +1,6 @@
 package evolution;
 
 import util.LazyValue;
-import util.Pair;
 import util.Scores;
 
 import java.util.Arrays;
@@ -16,8 +15,9 @@ public class GenePool {
     private final static double NEW_SPECIES_RATE = 0.1;
 
     private final Species[] species;
+    private boolean sorted = false;
     private final Function<Genome, Scores> fitnessFunction;
-    private final LazyValue<Pair<Optional<Species>, Optional<Species>>> bestWorstSpecies;
+    private final LazyValue<Optional<Species>> bestSpecies;
 
     public GenePool(final int speciesCnt, final Function<Genome, Scores> fitnessFunction) {
         species = new Species[speciesCnt];
@@ -25,21 +25,20 @@ public class GenePool {
             species[i] = Species.species(SPECIES_SIZE, fitnessFunction);
         }
         this.fitnessFunction = fitnessFunction;
-        bestWorstSpecies = getLazyBestWorstSpecies();
+        bestSpecies = getLazyBestSpecies();
     }
 
     private GenePool(final Species[] species, final Function<Genome, Scores> fitnessFunction) {
         this.species = species;
         this.fitnessFunction = fitnessFunction;
-        bestWorstSpecies = getLazyBestWorstSpecies();
+        bestSpecies = getLazyBestSpecies();
     }
 
-    private LazyValue<Pair<Optional<Species>, Optional<Species>>> getLazyBestWorstSpecies() {
-        return new LazyValue<Pair<Optional<Species>, Optional<Species>>>() {
+    private LazyValue<Optional<Species>> getLazyBestSpecies() {
+        return new LazyValue<Optional<Species>>() {
             @Override
-            protected Pair<Optional<Species>, Optional<Species>> compute() {
+            protected Optional<Species> compute() {
                 Optional<Species> bestSpecies = Optional.empty();
-                Optional<Species> worstSpecies = Optional.empty();
                 for (final Species oneSpecies : species) {
                     bestSpecies = Optional.of(bestSpecies.filter(new Predicate<Species>() {
                         @Override
@@ -47,20 +46,14 @@ public class GenePool {
                             return bestSpecies.getFitness() >= oneSpecies.getFitness();
                         }
                     }).orElse(oneSpecies));
-                    worstSpecies = Optional.of(worstSpecies.filter(new Predicate<Species>() {
-                        @Override
-                        public boolean test(final Species worstSpecies) {
-                            return worstSpecies.getFitness() <= oneSpecies.getFitness();
-                        }
-                    }).orElse(oneSpecies));
                 }
-                return new Pair<Optional<Species>, Optional<Species>>(bestSpecies, worstSpecies);
+                return bestSpecies;
             }
         };
     }
 
     public Optional<EvaluatedGenome> getBestGenome() {
-        return bestWorstSpecies.get().a().flatMap(new Function<Species, Optional<EvaluatedGenome>>() {
+        return bestSpecies.get().flatMap(new Function<Species, Optional<EvaluatedGenome>>() {
             @Override
             public Optional<EvaluatedGenome> apply(final Species species) {
                 return species.getBestGenome();
@@ -69,20 +62,38 @@ public class GenePool {
     }
 
     public GenePool getNextGeneration() {
-        // Sort current generation by fitness (species with higher fitness come first)
-        Arrays.sort(species, new Comparator<Species>() {
-            @Override
-            public int compare(final Species species1, final Species species2) {
-                final double fitnessDiff = species1.getFitness() - species2.getFitness();
-                return fitnessDiff > 0.0 ? -1 : (fitnessDiff < 0.0 ? 1 : 0);
-            }
-        });
+        sortSpecies();
 
         final Species[] nextGeneration = new Species[species.length];
-        // TODO: Keep best SPECIES_SIZE - 1 species and create 1 new one (or better, use NEW_SPECIES_RATE)
-        // TODO: Make sure that this (especially the sorting) is only called once! Sort where set?!
+        int speciesCnt = 0;
+
+        // Keep best species
+        final int keepCnt = (int) Math.round((1 - NEW_SPECIES_RATE) * species.length);
+        while (speciesCnt < keepCnt) {
+            nextGeneration[speciesCnt] = species[speciesCnt];
+            ++speciesCnt;
+        }
+
+        // Create new species
+        while (speciesCnt < species.length) {
+            nextGeneration[speciesCnt++] = Species.species(SPECIES_SIZE, fitnessFunction);
+        }
 
         return new GenePool(nextGeneration, fitnessFunction);
+    }
+
+    private void sortSpecies() {
+        if (!sorted) {
+            // Sort by fitness (species with higher fitness come first)
+            Arrays.sort(species, new Comparator<Species>() {
+                @Override
+                public int compare(final Species species1, final Species species2) {
+                    final double fitnessDiff = species1.getFitness() - species2.getFitness();
+                    return fitnessDiff > 0.0 ? -1 : (fitnessDiff < 0.0 ? 1 : 0);
+                }
+            });
+            sorted = true;
+        }
     }
 
     public static Optional<EvaluatedGenome> findBestGenome(final int speciesCnt,

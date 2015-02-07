@@ -1,6 +1,4 @@
--   Evaluate and improve current evolutionary algorithm (getNextGeneration()); compare also with algorithm in old software
-        sort species and keep best %
-        no bestWorst, just best
+-   Evaluate and improve current evolutionary algorithm
 -   Create meal templates; helper functions for specifying amounts easily (different units); allow recursive structure (e.g. chicken with sour cream sauce or fish with sour cream sauce)
 -   See TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

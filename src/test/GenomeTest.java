@@ -14,15 +14,11 @@ public class GenomeTest {
     private static void runGetOffspringGenesTests() {
         final int[] genesParent1 = {0, 1, 2};
         final int[] genesParent2 = {5, 4, 3, 2, 1};
-        Test.testArray(genesParent2, Genome.getOffspringGenes(genesParent1, genesParent2, 0, 1, 0));
-        Test.testArray(genesParent1, Genome.getOffspringGenes(genesParent2, genesParent1, 0, 1, 0));
-        Test.testArray(new int[]{0, 4, 3, 2, 1}, Genome.getOffspringGenes(genesParent1, genesParent2, 1, 1, 0));
-        Test.testArray(new int[]{0, 1, 2, 2, 1}, Genome.getOffspringGenes(genesParent1, genesParent2, 3, 1, 0));
-        Test.testArray(new int[]{5, 4, 3}, Genome.getOffspringGenes(genesParent2, genesParent1, 3, 1, 0));
-        Test.testArray(new int[]{0, 1, 2, 2, 1, 0, 1, 2, 2, 1}, Genome.getOffspringGenes(genesParent1, genesParent2, 3, 2, 0));
-        Test.testArray(new int[]{0, 1, 2, 2, 1, 0, 1, 2, 2}, Genome.getOffspringGenes(genesParent1, genesParent2, 3, 2, -1));
-        Test.testArray(new int[]{0, 1, 2, 2, 1, 0, 1, 2}, Genome.getOffspringGenes(genesParent1, genesParent2, 3, 2, -2));
-        Test.testArray(new int[]{0, 1, 2, 2, 1, 0, 1, 2, 2, 1, 0, 1}, Genome.getOffspringGenes(genesParent1, genesParent2, 3, 2, 2));
+        Test.testArray(genesParent2, Genome.getOffspringGenes(genesParent1, genesParent2, 0));
+        Test.testArray(genesParent1, Genome.getOffspringGenes(genesParent2, genesParent1, 0));
+        Test.testArray(new int[]{0, 4, 3, 2, 1}, Genome.getOffspringGenes(genesParent1, genesParent2, 1));
+        Test.testArray(new int[]{0, 1, 2, 2, 1}, Genome.getOffspringGenes(genesParent1, genesParent2, 3));
+        Test.testArray(new int[]{5, 4, 3}, Genome.getOffspringGenes(genesParent2, genesParent1, 3));
     }
 
     private static void runApplyMutationsTests() {
