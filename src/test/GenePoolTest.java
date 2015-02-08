@@ -20,6 +20,7 @@ public class GenePoolTest {
         final int numberOfMeals = 3;
         final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 1, numberOfMeals);
         final Function<Genome, Scores> fitnessFunction = getFitnessFunction(mealTemplates, requirements);
+        final double maxTotalScore = getMaxTotalScore(requirements);
         final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(10, 1000, fitnessFunction);
         bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
             @Override
@@ -39,6 +40,7 @@ public class GenePoolTest {
                 System.out.println();
                 System.out.println("Scores:");
                 System.out.println(scores);
+                System.out.println("Total score: " + scores.getTotalScore() + " / " + maxTotalScore);
             }
         });
     }
@@ -61,7 +63,7 @@ public class GenePoolTest {
     private static Function<Genome, Scores> getFitnessFunction(final MealTemplates mealTemplates, final Requirements requirements) {
         return new Function<Genome, Scores>() {
             @Override
-            public Scores apply(Genome genome) {
+            public Scores apply(final Genome genome) {
                 final Scores scores = new Scores();
 
                 final int numberOfMeals = requirements.getNumberOfMeals();
@@ -141,5 +143,9 @@ public class GenePoolTest {
                 scores.addScore(sb.toString(), score);
             }
         });
+    }
+
+    private static double getMaxTotalScore(final Requirements requirements) {
+        return 31.0 + requirements.getNumberOfMeals() * 6.0; // TODO: Should be tied strictly to the fitness function
     }
 }

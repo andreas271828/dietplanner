@@ -1,4 +1,5 @@
 -   Evaluate and improve current evolutionary algorithm
+        Make sure that new species have a chance to develop (novelty bonus? measure speed of development?)
 -   Create meal templates; helper functions for specifying amounts easily (different units); allow recursive structure (e.g. chicken with sour cream sauce or fish with sour cream sauce)
 -   See TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
