@@ -12,9 +12,10 @@ import java.util.function.Predicate;
 import static evolution.Genome.genome;
 
 public class Species {
-    private final static int MAX_GENOME_LENGTH = 10000;
-    private final static Random RANDOM = new Random();
+    private static final int MAX_GENOME_LENGTH = 10000;
+    private static final Random RANDOM = new Random();
 
+    private final int age;
     private final EvaluatedGenome[] evaluatedGenomes;
     private final Function<Genome, Scores> fitnessFunction;
     private final LazyValue<Optional<EvaluatedGenome>> bestGenome;
@@ -25,6 +26,7 @@ public class Species {
     }
 
     private Species(final int size, final Function<Genome, Scores> fitnessFunction) {
+        age = 0;
         evaluatedGenomes = new EvaluatedGenome[size];
         final int genomeLength = getRandomGenomeLength();
         for (int i = 0; i < size; ++i) {
@@ -35,11 +37,16 @@ public class Species {
         fitnessAccumulation = getLazyFitnessAccumulation();
     }
 
-    private Species(final EvaluatedGenome[] evaluatedGenomes, final Function<Genome, Scores> fitnessFunction) {
+    private Species(final int age, final EvaluatedGenome[] evaluatedGenomes, final Function<Genome, Scores> fitnessFunction) {
+        this.age = age;
         this.evaluatedGenomes = evaluatedGenomes;
         this.fitnessFunction = fitnessFunction;
         bestGenome = getLazyBestGenome();
         fitnessAccumulation = getLazyFitnessAccumulation();
+    }
+
+    public int getAge() {
+        return age;
     }
 
     private int getRandomGenomeLength() {
@@ -115,7 +122,7 @@ public class Species {
             }
         }
 
-        return new Species(nextGeneration, fitnessFunction);
+        return new Species(age + 1, nextGeneration, fitnessFunction);
     }
 
     private static Optional<Genome> getGenome(final Optional<EvaluatedGenome> evaluatedGenome) {

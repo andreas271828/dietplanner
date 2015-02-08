@@ -8,9 +8,9 @@ import java.util.Random;
 import java.util.function.Function;
 
 public class Genome {
-    public final static int GENE_STATES = 16;
-    private final static double MUTATION_RATE = 0.1;
-    private final static Random RANDOM = new Random();
+    public static final int GENE_STATES = 16;
+    private static final double MUTATION_RATE = 0.1;
+    private static final Random RANDOM = new Random();
 
     private final int[] genes;
 

@@ -13,7 +13,7 @@ import static util.Limits2.limits2;
 import static util.Limits4.*;
 
 public class Requirements {
-    private final static double DEFAULT_TOLERANCE = 0.05;
+    private static final double DEFAULT_TOLERANCE = 0.05;
 
     private final PersonalDetails personalDetails;
     private final double days;

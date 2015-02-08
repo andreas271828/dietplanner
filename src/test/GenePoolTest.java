@@ -21,7 +21,7 @@ public class GenePoolTest {
         final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 1, numberOfMeals);
         final Function<Genome, Scores> fitnessFunction = getFitnessFunction(mealTemplates, requirements);
         final double maxTotalScore = getMaxTotalScore(requirements);
-        final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(10, 1000, fitnessFunction);
+        final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(20, 1000, fitnessFunction);
         bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
             @Override
             public void accept(final EvaluatedGenome bestGenome) {

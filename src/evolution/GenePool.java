@@ -3,23 +3,25 @@ package evolution;
 import util.LazyValue;
 import util.Scores;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class GenePool {
-    private final static int SPECIES_SIZE = 10;
-    private final static double NEW_SPECIES_RATE = 0.1;
+    private static final int SPECIES_SIZE = 100;
+    private static final Random RANDOM = new Random();
 
     private final Species[] species;
-    private boolean sorted = false;
     private final Function<Genome, Scores> fitnessFunction;
     private final LazyValue<Optional<Species>> bestSpecies;
 
     public GenePool(final int speciesCnt, final Function<Genome, Scores> fitnessFunction) {
+        if (speciesCnt < 1) {
+            throw new IllegalArgumentException("speciesCnt must be greater than 0.");
+        }
+
         species = new Species[speciesCnt];
         for (int i = 0; i < speciesCnt; ++i) {
             species[i] = Species.species(SPECIES_SIZE, fitnessFunction);
@@ -62,16 +64,44 @@ public class GenePool {
     }
 
     public GenePool getNextGeneration() {
-        sortSpecies();
-
         final Species[] nextGeneration = new Species[species.length];
         int speciesCnt = 0;
 
-        // Keep best species (get next generation)
-        final int keepCnt = (int) Math.round((1 - NEW_SPECIES_RATE) * species.length);
-        while (speciesCnt < keepCnt) {
-            nextGeneration[speciesCnt] = species[speciesCnt].getNextGeneration();
-            ++speciesCnt;
+        // Some species make it to the next generation, others die out.
+        // The probability to survive depends on fitness and age.
+        double bestFitness = 0.0;
+        double worstFitness = 0.0;
+        int youngestAge = 0;
+        int oldestAge = 0;
+        for (int i = 0; i < species.length; ++i) {
+            final double speciesFitness = species[i].getFitness();
+            final int speciesAge = species[i].getAge();
+            if (i == 0) {
+                bestFitness = speciesFitness;
+                worstFitness = speciesFitness;
+                youngestAge = speciesAge;
+                oldestAge = speciesAge;
+            } else {
+                if (speciesFitness > bestFitness) {
+                    bestFitness = speciesFitness;
+                } else if (speciesFitness < worstFitness) {
+                    worstFitness = speciesFitness;
+                }
+                if (speciesAge < youngestAge) {
+                    youngestAge = speciesAge;
+                } else if (speciesAge > oldestAge) {
+                    oldestAge = speciesAge;
+                }
+            }
+        }
+        final double fitnessRange = bestFitness - worstFitness;
+        final int ageRange = oldestAge - youngestAge;
+        for (final Species oneSpecies : species) {
+            final double fitnessBonus = fitnessRange > 0.0 ? (oneSpecies.getFitness() - worstFitness) / fitnessRange : 1.0;
+            final double ageBonus = ageRange > 0 ? (double) (oldestAge - oneSpecies.getAge()) / ageRange : 0.0;
+            if (RANDOM.nextDouble() < fitnessBonus + ageBonus) {
+                nextGeneration[speciesCnt++] = oneSpecies.getNextGeneration();
+            }
         }
 
         // Create new species
@@ -80,20 +110,6 @@ public class GenePool {
         }
 
         return new GenePool(nextGeneration, fitnessFunction);
-    }
-
-    private void sortSpecies() {
-        if (!sorted) {
-            // Sort by fitness (species with higher fitness come first)
-            Arrays.sort(species, new Comparator<Species>() {
-                @Override
-                public int compare(final Species species1, final Species species2) {
-                    final double fitnessDiff = species1.getFitness() - species2.getFitness();
-                    return fitnessDiff > 0.0 ? -1 : (fitnessDiff < 0.0 ? 1 : 0);
-                }
-            });
-            sorted = true;
-        }
     }
 
     public static Optional<EvaluatedGenome> findBestGenome(final int speciesCnt,
