@@ -4,24 +4,24 @@ import diet.*;
 import evolution.EvaluatedGenome;
 import evolution.GenePool;
 import evolution.Genome;
-import util.Limits4;
-import util.ScoreFunctions;
-import util.Scores;
+import util.*;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static diet.DietPlan.dietPlan;
+import static diet.FoodItem.*;
 
 public class GenePoolTest {
     public static void runTests() {
         final MealTemplates mealTemplates = getMealTemplates();
-        final int numberOfMeals = 3;
-        final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 1, numberOfMeals);
+        final int numberOfMeals = 21;
+        final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 7, numberOfMeals);
         final Function<Genome, Scores> fitnessFunction = getFitnessFunction(mealTemplates, requirements);
         final double maxTotalScore = getMaxTotalScore(requirements);
-        final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(20, 1000, fitnessFunction);
+        final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(10, 500, fitnessFunction);
         bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
             @Override
             public void accept(final EvaluatedGenome bestGenome) {
@@ -45,15 +45,42 @@ public class GenePoolTest {
         });
     }
 
-    private static MealTemplates getMealTemplates() {
+    private static MealTemplates getMealTemplatesAnything() {
         final MealTemplates mealTemplates = new MealTemplates();
 
         mealTemplates.add(new MealTemplate("Anything") {
             @Override
             protected void addIngredients() {
                 for (FoodItem foodItem : FoodItem.values()) {
-                    addIngredient(foodItem, 0, foodItem.getAmountFromPortions(10));
+                    addIngredient(foodItem, 0, foodItem.toAmount(100));
                 }
+            }
+        });
+
+        return mealTemplates;
+    }
+
+    private static MealTemplates getMealTemplates() {
+        final MealTemplates mealTemplates = new MealTemplates();
+
+        final ArrayList<Pair<FoodItem, Limits2>> basicSaladIngredients = new ArrayList<Pair<FoodItem, Limits2>>();
+        basicSaladIngredients.add(new Pair<FoodItem, Limits2>(COLES_APPLE_RED_DELICIOUS, Limits2.limits2(0.0, 2.0)));
+        basicSaladIngredients.add(new Pair<FoodItem, Limits2>(COLES_LEMON, Limits2.limits2(0.0, 0.5)));
+        basicSaladIngredients.add(new Pair<FoodItem, Limits2>(COLES_OIL_OLIVE, Limits2.limits2(COLES_OIL_OLIVE.toAmount(1), COLES_OIL_OLIVE.toAmount(100))));
+        basicSaladIngredients.add(new Pair<FoodItem, Limits2>(COLES_SPINACH, Limits2.limits2(COLES_SPINACH.toAmount(20), COLES_SPINACH.toAmount(200))));
+
+        mealTemplates.add(new MealTemplate("Salad with mayonnaise") {
+            @Override
+            protected void addIngredients() {
+                addIngredients(basicSaladIngredients);
+                addIngredient(COLES_MAYONNAISE, COLES_MAYONNAISE.toAmount(20), COLES_MAYONNAISE.toAmount(300));
+            }
+        });
+        mealTemplates.add(new MealTemplate("Salad with sour cream") {
+            @Override
+            protected void addIngredients() {
+                addIngredients(basicSaladIngredients);
+                addIngredient(COLES_CREAM_SOUR, COLES_CREAM_SOUR.toAmount(100), COLES_MAYONNAISE.toAmount(500));
             }
         });
 

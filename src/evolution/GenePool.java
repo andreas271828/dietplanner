@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class GenePool {
-    private static final int SPECIES_SIZE = 100;
+    private static final int SPECIES_SIZE = 50;
     private static final Random RANDOM = new Random();
 
     private final Species[] species;

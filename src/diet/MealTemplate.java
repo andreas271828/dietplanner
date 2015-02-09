@@ -25,6 +25,10 @@ public abstract class MealTemplate {
         ingredients.add(new Pair<FoodItem, Limits2>(foodItem, limits2(minAmount, maxAmount)));
     }
 
+    protected void addIngredients(final ArrayList<Pair<FoodItem, Limits2>> ingredients) {
+        this.ingredients.addAll(ingredients);
+    }
+
     public ArrayList<Pair<FoodItem, Limits2>> getIngredients() {
         if (ingredients == null) {
             ingredients = new ArrayList<Pair<FoodItem, Limits2>>();

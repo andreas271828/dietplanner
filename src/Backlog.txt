@@ -1,8 +1,10 @@
--   Evaluate and improve current evolutionary algorithm
-        Avoid species with same best genomes?
-        Weight requirements?
--   Create meal templates; helper functions for specifying amounts easily (different units); allow recursive structure (e.g. chicken with sour cream sauce or fish with sour cream sauce); review portions
+-   Refactor MealTemplates.getMealTemplates()
+-   Don't add items with amount = 0 to lists
+-   Weight requirements (e.g. first of all the amount of energy must be about right)
+-   Create more meal templates
+-   Review food item portions
 -   See TODOs
+-   Improve evolutionary algorithm (ensure genome diversity)
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
 -   Create user interface (run evolutionary algorithm in background)
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.

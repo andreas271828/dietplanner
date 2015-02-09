@@ -170,7 +170,7 @@ public enum FoodItem {
     COLES_ZUCCHINI_ORGANIC(Food.ZUCCHINI_GREEN_SKIN_FRESH_OR_FROZEN_PEELED_OR_UNPEELED_RAW, 500, 2, 5.00);
 
     private final Food food;
-    private final double weightFactor;
+    private final double itemWeight;
     private final double portions;
     private final double price;
     private final LazyValue<FoodProperties> properties;
@@ -183,7 +183,7 @@ public enum FoodItem {
      */
     FoodItem(final Food food, final double itemWeight, final double portions, double price) {
         this.food = food;
-        this.weightFactor = itemWeight / 100; // 100g to item weight
+        this.itemWeight = itemWeight;
         this.portions = portions;
         this.price = price;
 
@@ -192,6 +192,7 @@ public enum FoodItem {
             protected FoodProperties compute() {
                 final FoodProperties properties = new FoodProperties();
                 final FoodProperties foodProperties = food.getProperties();
+                final double weightFactor = itemWeight / 100.0; // 100g to item weight
                 foodProperties.forEach(new BiConsumer<FoodProperty, Double>() {
                     @Override
                     public void accept(FoodProperty foodProperty, Double amount) {
@@ -215,8 +216,20 @@ public enum FoodItem {
         return getProperties().get(foodProperty);
     }
 
-    public double getAmountFromPortions(double portions) {
-        return portions / this.portions;
+    /**
+     * @param weight Weight in g
+     * @return Amount
+     */
+    public double toAmount(final double weight) {
+        return weight / itemWeight;
+    }
+
+    /**
+     * @param amount Amount
+     * @return Weight in g
+     */
+    public double toWeight(final double amount) {
+        return amount * itemWeight;
     }
 
     public double roundToPortions(double amount) {
@@ -225,6 +238,6 @@ public enum FoodItem {
 
     @Override
     public String toString() {
-        return "<" + food.getName() + ", " + (100 * weightFactor) + "g>";
+        return "<" + food.getName() + ", " + itemWeight + "g>";
     }
 }
