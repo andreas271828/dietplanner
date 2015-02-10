@@ -4,9 +4,10 @@ import diet.*;
 import evolution.EvaluatedGenome;
 import evolution.GenePool;
 import evolution.Genome;
-import util.*;
+import util.Limits4;
+import util.ScoreFunctions;
+import util.Scores;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -63,24 +64,24 @@ public class GenePoolTest {
     private static MealTemplates getMealTemplates() {
         final MealTemplates mealTemplates = new MealTemplates();
 
-        final ArrayList<Pair<FoodItem, Limits2>> basicSaladIngredients = new ArrayList<Pair<FoodItem, Limits2>>();
-        basicSaladIngredients.add(new Pair<FoodItem, Limits2>(COLES_APPLE_RED_DELICIOUS, Limits2.limits2(0.0, 2.0)));
-        basicSaladIngredients.add(new Pair<FoodItem, Limits2>(COLES_LEMON, Limits2.limits2(0.0, 0.5)));
-        basicSaladIngredients.add(new Pair<FoodItem, Limits2>(COLES_OIL_OLIVE, Limits2.limits2(COLES_OIL_OLIVE.toAmount(1), COLES_OIL_OLIVE.toAmount(100))));
-        basicSaladIngredients.add(new Pair<FoodItem, Limits2>(COLES_SPINACH, Limits2.limits2(COLES_SPINACH.toAmount(20), COLES_SPINACH.toAmount(200))));
+        final Ingredients basicSaladIngredients = new Ingredients();
+        basicSaladIngredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 2.0);
+        basicSaladIngredients.add(COLES_LEMON, 0.0, 0.5);
+        basicSaladIngredients.addByWeight(COLES_OIL_OLIVE, 1.0, 100.0);
+        basicSaladIngredients.addByWeight(COLES_SPINACH, 20.0, 200.0);
 
         mealTemplates.add(new MealTemplate("Salad with mayonnaise") {
             @Override
             protected void addIngredients() {
                 addIngredients(basicSaladIngredients);
-                addIngredient(COLES_MAYONNAISE, COLES_MAYONNAISE.toAmount(20), COLES_MAYONNAISE.toAmount(300));
+                addIngredientByWeight(COLES_MAYONNAISE, 20.0, 300.0);
             }
         });
         mealTemplates.add(new MealTemplate("Salad with sour cream") {
             @Override
             protected void addIngredients() {
                 addIngredients(basicSaladIngredients);
-                addIngredient(COLES_CREAM_SOUR, COLES_CREAM_SOUR.toAmount(100), COLES_MAYONNAISE.toAmount(500));
+                addIngredientByWeight(COLES_CREAM_SOUR, 100.0, 500.0);
             }
         });
 

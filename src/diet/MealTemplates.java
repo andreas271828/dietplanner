@@ -2,9 +2,9 @@ package diet;
 
 import evolution.Genome;
 import util.Limits2;
-import util.Pair;
 
 import java.util.ArrayList;
+import java.util.function.BiConsumer;
 
 public class MealTemplates {
     private final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
@@ -15,22 +15,24 @@ public class MealTemplates {
 
     public ArrayList<Meal> computeMeals(final int numberOfMeals, final Genome genome) {
         final ArrayList<Meal> meals = new ArrayList<Meal>();
-        int geneIndex = 0;
+        final Genome.Iterator genomeIt = genome.getIterator();
         int templateIndex = 0;
         for (int i = 0; i < numberOfMeals; ++i) {
-            templateIndex = getNextIndex(templateIndex, genome.getGene(geneIndex++));
+            templateIndex = getNextIndex(templateIndex, genomeIt.getNextGene());
             final MealTemplate mealTemplate = mealTemplates.get(templateIndex);
             final FoodItems ingredients = new FoodItems();
-            for (final Pair<FoodItem, Limits2> ingredient : mealTemplate.getIngredients()) {
-                final FoodItem foodItem = ingredient.a();
-                final double minAmount = ingredient.b().getMin();
-                final double maxAmount = ingredient.b().getMax();
-                final double amount = minAmount + genome.getGene(geneIndex++) * (maxAmount - minAmount);
-                final double roundedAmount = foodItem.roundToPortions(amount);
-                if (amount > 1e-6) {
-                    ingredients.set(foodItem, roundedAmount);
+            mealTemplate.getIngredients().forEach(new BiConsumer<FoodItem, Limits2>() {
+                @Override
+                public void accept(final FoodItem foodItem, final Limits2 limits) {
+                    final double minAmount = limits.getMin();
+                    final double maxAmount = limits.getMax();
+                    final double amount = minAmount + genomeIt.getNextGene() * (maxAmount - minAmount);
+                    final double roundedAmount = foodItem.roundToPortions(amount);
+                    if (amount > 1e-6) {
+                        ingredients.set(foodItem, roundedAmount);
+                    }
                 }
-            }
+            });
             meals.add(new Meal(mealTemplate.getName(), ingredients));
         }
 

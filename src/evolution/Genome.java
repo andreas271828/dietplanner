@@ -29,11 +29,6 @@ public class Genome {
         this.genes = genes;
     }
 
-    public double getGene(int index) {
-        final int gene = genes[index % genes.length];
-        return (double) gene / (GENE_STATES - 1);
-    }
-
     public int getGenomeLength() {
         return genes.length;
     }
@@ -105,5 +100,28 @@ public class Genome {
         for (final Pair<Integer, Integer> mutation : mutations) {
             genes[mutation.a()] = Math.min(Math.max(genes[mutation.a()] + mutation.b(), 0), GENE_STATES - 1);
         }
+    }
+
+    public class Iterator {
+        final Genome genome;
+        private int index = 0;
+
+        public Iterator(final Genome genome) {
+            this.genome = genome;
+        }
+
+        public double getNextGene() {
+            final int gene = genome.genes[index];
+            if (index == genome.genes.length - 1) {
+                index = 0;
+            } else {
+                ++index;
+            }
+            return (double) gene / (GENE_STATES - 1);
+        }
+    }
+
+    public Iterator getIterator() {
+        return new Iterator(this);
     }
 }

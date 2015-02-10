@@ -1,15 +1,8 @@
 package diet;
 
-import util.Limits2;
-import util.Pair;
-
-import java.util.ArrayList;
-
-import static util.Limits2.limits2;
-
 public abstract class MealTemplate {
     private final String name;
-    private ArrayList<Pair<FoodItem, Limits2>> ingredients;
+    private Ingredients ingredients;
 
     public MealTemplate(final String name) {
         this.name = name;
@@ -22,19 +15,22 @@ public abstract class MealTemplate {
     protected abstract void addIngredients();
 
     protected void addIngredient(final FoodItem foodItem, final double minAmount, final double maxAmount) {
-        ingredients.add(new Pair<FoodItem, Limits2>(foodItem, limits2(minAmount, maxAmount)));
+        ingredients.add(foodItem, minAmount, maxAmount);
     }
 
-    protected void addIngredients(final ArrayList<Pair<FoodItem, Limits2>> ingredients) {
+    protected void addIngredientByWeight(final FoodItem foodItem, final double minWeight, final double maxWeight) {
+        ingredients.addByWeight(foodItem, minWeight, maxWeight);
+    }
+
+    protected void addIngredients(final Ingredients ingredients) {
         this.ingredients.addAll(ingredients);
     }
 
-    public ArrayList<Pair<FoodItem, Limits2>> getIngredients() {
+    public Ingredients getIngredients() {
         if (ingredients == null) {
-            ingredients = new ArrayList<Pair<FoodItem, Limits2>>();
+            ingredients = new Ingredients();
             addIngredients();
         }
-
         return ingredients;
     }
 
