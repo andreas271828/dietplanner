@@ -28,7 +28,7 @@ public class MealTemplates {
                     final double maxAmount = limits.getMax();
                     final double amount = minAmount + genomeIt.getNextGene() * (maxAmount - minAmount);
                     final double roundedAmount = foodItem.roundToPortions(amount);
-                    if (amount > 1e-6) {
+                    if (roundedAmount > 1e-6) {
                         ingredients.set(foodItem, roundedAmount);
                     }
                 }
