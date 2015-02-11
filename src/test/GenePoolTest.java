@@ -17,8 +17,8 @@ import static diet.FoodItem.*;
 
 public class GenePoolTest {
     public static void runTests() {
-        final MealTemplates mealTemplates = getMealTemplates();
-        final int numberOfMeals = 21;
+        final MealTemplates mealTemplates = getMealTemplatesDayMix();
+        final int numberOfMeals = 7;
         final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 7, numberOfMeals);
         final Function<Genome, Scores> fitnessFunction = getFitnessFunction(mealTemplates, requirements);
         final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(10, 500, fitnessFunction);
@@ -52,8 +52,183 @@ public class GenePoolTest {
             @Override
             protected void addIngredients() {
                 for (FoodItem foodItem : FoodItem.values()) {
-                    addIngredient(foodItem, 0, foodItem.toAmount(100));
+                    addIngredientByWeight(foodItem, 0.0, 100.0);
                 }
+            }
+        });
+
+        return mealTemplates;
+    }
+
+    private static MealTemplates getMealTemplatesDayMix() {
+        final MealTemplates mealTemplates = new MealTemplates();
+
+        mealTemplates.add(new MealTemplate("Day Mix") {
+            @Override
+            protected void addIngredients() {
+                addIngredient(COLES_APPLE_RED_DELICIOUS, 0.0, 1.0);
+                addIngredient(COLES_APPLE_RED_DELICIOUS_1KG, 0.0, 1.0);
+                addIngredient(COLES_ASPARAGUS_GREEN, 0.0, 1.0);
+                addIngredient(COLES_AVOCADO, 0.0, 1.0);
+                addIngredient(COLES_AVOCADO_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_BACON, 0.0, 1.0);
+                addIngredient(COLES_BANANA, 0.0, 1.0);
+                addIngredient(COLES_BANANA_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_BASIL_DRIED, 0.0, 1.0);
+                addIngredient(COLES_BASIL, 0.0, 1.0);
+                addIngredient(COLES_BEAN_GREEN, 0.0, 1.0);
+                addIngredient(COLES_BEEF_FILLET_STEAK, 0.0, 1.0);
+                addIngredient(COLES_BEEF_FILLET_STEAK_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_BEEF_HEART, 0.0, 1.0);
+                addIngredient(COLES_BEEF_KIDNEY, 0.0, 1.0);
+                addIngredient(COLES_BEEF_ROASTING_CUTS, 0.0, 1.0);
+                addIngredient(COLES_BEEF_RUMP_STEAK, 0.0, 1.0);
+                addIngredient(COLES_BEEF_RUMP_STEAK_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_BEEF_T_BONE_STEAK, 0.0, 1.0);
+                addIngredient(COLES_BEETROOT, 0.0, 1.0);
+                addIngredient(COLES_BEETROOT_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_BLUEBERRY_FROZEN, 0.0, 1.0);
+                addIngredient(COLES_BOK_CHOY, 0.0, 1.0);
+                addIngredient(COLES_BREAD_FROM_WHOLEMEAL_FLOUR, 0.0, 1.0);
+                addIngredient(COLES_BREAD_MIXED_GRAIN, 0.0, 1.0);
+                addIngredient(COLES_BROCCOLI, 0.0, 1.0);
+                addIngredient(COLES_BRUSSELS_SPROUT, 0.0, 1.0);
+                addIngredient(COLES_BUTTER, 0.0, 1.0);
+                addIngredient(COLES_CABBAGE_RED, 0.0, 1.0);
+                addIngredient(COLES_CABBAGE_WHITE, 0.0, 1.0);
+                addIngredient(COLES_CAPSICUM_GREEN, 0.0, 1.0);
+                addIngredient(COLES_CAPSICUM_RED, 0.0, 1.0);
+                addIngredient(COLES_CARROT, 0.0, 1.0);
+                addIngredient(COLES_CARROT_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_CAULIFLOWER, 0.0, 1.0);
+                addIngredient(COLES_CELERY, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_CHEDDAR, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_COLBY, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_COTTAGE_REDUCED_FAT, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_CREAM, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_FETTA, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_FETTA_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_GOAT, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_GOUDA, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_HALOUMI, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_HALOUMI_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_MOZZARELLA, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_PARMESAN, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_RICOTTA, 0.0, 1.0);
+                addIngredient(COLES_CHEESE_SWISS, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_BREAST, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_BREAST_FREE_RANGE, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_BREAST_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_DRUMSTICK, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_DRUMSTICK_FREE_RANGE, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_DRUMSTICK_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_LIVER, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_THIGH, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_THIGH_FREE_RANGE, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_THIGH_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_FREE_RANGE, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_CHICKEN_WING, 0.0, 1.0);
+                addIngredient(COLES_CHICKPEA, 0.0, 1.0);
+                addIngredient(COLES_CHOCOLATE_DARK_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_COCONUT_OIL_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_CREAM_PURE, 0.0, 1.0);
+                addIngredient(COLES_CREAM_DOUBLE, 0.0, 1.0);
+                addIngredient(COLES_CREAM_SOUR, 0.0, 1.0);
+                addIngredient(COLES_CUCUMBER, 0.0, 1.0);
+                addIngredient(COLES_DILL, 0.0, 1.0);
+                addIngredient(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 1.0);
+                addIngredient(COLES_EGG_CHICKEN_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_GARLIC, 0.0, 1.0);
+                addIngredient(COLES_GHEE, 0.0, 1.0);
+                addIngredient(COLES_GINGER, 0.0, 1.0);
+                addIngredient(COLES_HAM_LEG, 0.0, 1.0);
+                addIngredient(COLES_HONEY, 0.0, 1.0);
+                addIngredient(COLES_KALE, 0.0, 1.0);
+                addIngredient(COLES_KALE_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_KANGAROO, 0.0, 1.0);
+                addIngredient(COLES_KIWIFRUIT, 0.0, 1.0);
+                addIngredient(COLES_LEEK, 0.0, 1.0);
+                addIngredient(COLES_LEMON, 0.0, 1.0);
+                addIngredient(COLES_LENTIL, 0.0, 1.0);
+                addIngredient(COLES_LETTUCE, 0.0, 1.0);
+                addIngredient(COLES_LIME, 0.0, 1.0);
+                addIngredient(COLES_MACKEREL, 0.0, 1.0);
+                addIngredient(COLES_MANDARIN, 0.0, 1.0);
+                addIngredient(COLES_MANGO, 0.0, 1.0);
+                addIngredient(COLES_MAYONNAISE, 0.0, 1.0);
+                addIngredient(COLES_MILK_ALMOND, 0.0, 1.0);
+                addIngredient(COLES_MILK_COW, 0.0, 1.0);
+                addIngredient(COLES_MILK_GOAT, 0.0, 1.0);
+                addIngredient(COLES_MUESLI_FRUIT, 0.0, 1.0);
+                addIngredient(COLES_MUESLI_FRUIT_NUTS, 0.0, 1.0);
+                addIngredient(COLES_MUSHROOM, 0.0, 1.0);
+                addIngredient(COLES_MUSSEL_DRAINED, 0.0, 1.0);
+                addIngredient(COLES_NUT_ALMOND, 0.0, 1.0);
+                addIngredient(COLES_NUT_CASHEW, 0.0, 1.0);
+                addIngredient(COLES_NUT_MACADAMIA, 0.0, 1.0);
+                addIngredient(COLES_NUT_PECAN, 0.0, 1.0);
+                addIngredient(COLES_NUT_WALNUT, 0.0, 1.0);
+                addIngredient(COLES_OIL_OLIVE, 0.0, 1.0);
+                addIngredient(COLES_OKRA, 0.0, 1.0);
+                addIngredient(COLES_OLIVE_GREEN, 0.0, 1.0);
+                addIngredient(COLES_ONION, 0.0, 1.0);
+                addIngredient(COLES_ORANGE, 0.0, 1.0);
+                addIngredient(COLES_OREGANO, 0.0, 1.0);
+                addIngredient(COLES_PAPRIKA, 0.0, 1.0);
+                addIngredient(COLES_PARSLEY, 0.0, 1.0);
+                addIngredient(COLES_PASTA, 0.0, 1.0);
+                addIngredient(COLES_PASTA_WHOLEMEAL, 0.0, 1.0);
+                addIngredient(COLES_PEA_FROZEN, 0.0, 1.0);
+                addIngredient(COLES_PEPPER, 0.0, 1.0);
+                addIngredient(COLES_PORK_SPARE_RIBS, 0.0, 1.0);
+                addIngredient(COLES_POTATO, 0.0, 1.0);
+                addIngredient(COLES_PRAWN_KING, 0.0, 1.0);
+                addIngredient(COLES_PUMPKIN, 0.0, 1.0);
+                addIngredient(COLES_TAMARI, 0.0, 1.0);
+                addIngredient(COLES_QUINOA_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_RADISH, 0.0, 1.0);
+                addIngredient(COLES_RASPBERRY_FROZEN, 0.0, 1.0);
+                addIngredient(COLES_RHUBARB, 0.0, 1.0);
+                addIngredient(COLES_RICE_BROWN, 0.0, 1.0);
+                addIngredient(COLES_ROCKET, 0.0, 1.0);
+                addIngredient(COLES_SALAMI_HUNGARIAN, 0.0, 1.0);
+                addIngredient(COLES_SALMON, 0.0, 1.0);
+                addIngredient(COLES_SALMON_SMOKED, 0.0, 1.0);
+                addIngredient(COLES_SALT_SEA, 0.0, 1.0);
+                addIngredient(COLES_SARDINE_IN_OIL_UNDRAINED, 0.0, 1.0);
+                addIngredient(COLES_SAUSAGE_BEEF, 0.0, 1.0);
+                addIngredient(COLES_SAUSAGE_BEEF_ORGANIC, 0.0, 1.0);
+                addIngredient(COLES_SAUSAGE_CHORIZO, 0.0, 1.0);
+                addIngredient(COLES_SAUSAGE_PORK, 0.0, 1.0);
+                addIngredient(COLES_SEED_CHIA, 0.0, 1.0);
+                addIngredient(COLES_SEED_LINSEED, 0.0, 1.0);
+                addIngredient(COLES_SEED_SUNFLOWER, 0.0, 1.0);
+                addIngredient(COLES_SHALLOT, 0.0, 1.0);
+                addIngredient(COLES_SNOW_PEA, 0.0, 1.0);
+                addIngredient(COLES_SPINACH, 0.0, 1.0);
+                addIngredient(COLES_SQUASH, 0.0, 1.0);
+                addIngredient(COLES_SQUID, 0.0, 1.0);
+                addIngredient(COLES_STRAWBERRY_FROZEN, 0.0, 1.0);
+                addIngredient(COLES_STRAWBERRY, 0.0, 1.0);
+                addIngredient(COLES_SWEET_POTATO, 0.0, 1.0);
+                addIngredient(COLES_SWEETCORN_FROZEN, 0.0, 1.0);
+                addIngredient(COLES_TEA_CHAI, 0.0, 1.0);
+                addIngredient(COLES_TEA_GREEN, 0.0, 1.0);
+                addIngredient(COLES_TEA_CHAMOMILE, 0.0, 1.0);
+                addIngredient(COLES_TEA_MINT, 0.0, 1.0);
+                addIngredient(COLES_TEA_BLACK, 0.0, 1.0);
+                addIngredient(COLES_TOMATO_CHERRY, 0.0, 1.0);
+                addIngredient(COLES_TOMATO, 0.0, 1.0);
+                addIngredient(COLES_TROUT, 0.0, 1.0);
+                addIngredient(COLES_TUNA_IN_OIL_DRAINED, 0.0, 1.0);
+                addIngredient(COLES_TUNA_IN_WATER_DRAINED, 0.0, 1.0);
+                addIngredient(COLES_VEAL, 0.0, 1.0);
+                addIngredient(COLES_WATERCRESS, 0.0, 1.0);
+                addIngredient(COLES_YOGHURT_GREEK_STYLE_NATURAL, 0.0, 1.0);
+                addIngredient(COLES_ZUCCHINI, 0.0, 1.0);
+                addIngredient(COLES_ZUCCHINI_ORGANIC, 0.0, 1.0);
             }
         });
 
@@ -68,6 +243,8 @@ public class GenePoolTest {
         basicSaladIngredients.add(COLES_LEMON, 0.0, 0.5);
         basicSaladIngredients.addByWeight(COLES_OIL_OLIVE, 1.0, 100.0);
         basicSaladIngredients.addByWeight(COLES_SPINACH, 20.0, 200.0);
+        basicSaladIngredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
+        basicSaladIngredients.add(COLES_CARROT, 0.0, 1.0);
 
         mealTemplates.add(new MealTemplate("Salad with mayonnaise") {
             @Override
@@ -81,6 +258,33 @@ public class GenePoolTest {
             protected void addIngredients() {
                 addIngredients(basicSaladIngredients);
                 addIngredientByWeight(COLES_CREAM_SOUR, 100.0, 500.0);
+            }
+        });
+        mealTemplates.add(new MealTemplate("Avocado Plus") {
+            @Override
+            protected void addIngredients() {
+                addIngredient(COLES_AVOCADO, 0.5, 2.0);
+                addIngredient(COLES_LEMON, 0.1, 0.5);
+                addIngredientByWeight(COLES_SALT_SEA, 0.1, 5.0);
+                addIngredientByWeight(COLES_PEPPER, 0.1, 3);
+                addIngredientByWeight(COLES_OIL_OLIVE, 0.0, 20.0);
+            }
+        });
+        mealTemplates.add(new MealTemplate("Stir-fry") {
+            @Override
+            protected void addIngredients() {
+                addIngredient(COLES_BROCCOLI, 0.0, 1.0);
+                addIngredient(COLES_CARROT, 0.0, 1.0);
+                addIngredientByWeight(COLES_SALT_SEA, 0.0, 10.0);
+                addIngredientByWeight(COLES_COCONUT_OIL_ORGANIC, 0.0, 50.0);
+            }
+        });
+        mealTemplates.add(new MealTemplate("Salami Plus") {
+            @Override
+            protected void addIngredients() {
+                addIngredientByWeight(COLES_SALAMI_HUNGARIAN, 50.0, 500.0);
+                addIngredientByWeight(COLES_CHEESE_COLBY, 0.0, 200.0);
+                addIngredientByWeight(COLES_SPINACH, 0.0, 200.0);
             }
         });
 

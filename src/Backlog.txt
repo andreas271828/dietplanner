@@ -1,4 +1,4 @@
--   Create more meal templates
+-   Adjust items and limits in GenePoolTest.getMealTemplatesDayMix()
 -   Review food item portions
 -   See TODOs
 -   Improve evolutionary algorithm (ensure genome diversity)
