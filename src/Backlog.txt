@@ -1,5 +1,4 @@
--   Adjust upper limits in GenePoolTest.getMealTemplatesDayMix()
--   Review food item portions
+-   Review food item portions (see TODO)
 -   See TODOs
 -   Improve evolutionary algorithm (ensure genome diversity)
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
