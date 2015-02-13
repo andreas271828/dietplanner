@@ -38,6 +38,10 @@ public class Limits4 {
         return limits4((1 - relLowerCritical) * lowerOptimal, lowerOptimal, Double.MAX_VALUE, Double.MAX_VALUE);
     }
 
+    public static Limits4 limits4UORUC(final double upperOptimal, final double relUpperCritical) {
+        return limits4(0.0, 0.0, upperOptimal, (1.0 + relUpperCritical) * upperOptimal);
+    }
+
     private Limits4(final double lowerCritical,
                     final double lowerOptimal,
                     final double upperOptimal,

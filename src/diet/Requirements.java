@@ -503,11 +503,12 @@ public class Requirements {
      */
     private Optional<Limits4> getMealCarbohydratesLimits() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return getLimitsFromValuePerDay(getMaxCarbohydratesPerDay(), new Function<Double, Limits4>() {
+        // Limit carbohydrates per meal to maximum carbohydrates per day.
+        final Optional<Double> maybeUpperOptimal = getMaxCarbohydratesPerDay();
+        return maybeUpperOptimal.map(new Function<Double, Limits4>() {
             @Override
-            public Limits4 apply(final Double total) {
-                final double upperCritical = 1.2 * total / numberOfMeals;
-                return limits4(0, 0, 0.8 * upperCritical, upperCritical);
+            public Limits4 apply(final Double upperOptimal) {
+                return limits4UORUC(upperOptimal, DEFAULT_TOLERANCE);
             }
         });
     }
@@ -517,10 +518,12 @@ public class Requirements {
      */
     private Optional<Limits4> getMealEnergyLimits() {
         // http://www.nrv.gov.au/dietary-energy
-        return getLimitsFromValuePerDay(getEnergyDemandPerDay(), new Function<Double, Limits4>() {
+        // Limit energy intake per meal to energy demand per day.
+        final Optional<Double> maybeUpperOptimal = getEnergyDemandPerDay();
+        return maybeUpperOptimal.map(new Function<Double, Limits4>() {
             @Override
-            public Limits4 apply(final Double total) {
-                return limits4RORC(total / numberOfMeals, 0.3, 0.6);
+            public Limits4 apply(final Double upperOptimal) {
+                return limits4UORUC(upperOptimal, DEFAULT_TOLERANCE);
             }
         });
     }
@@ -541,10 +544,12 @@ public class Requirements {
         // http://www.nrv.gov.au/nutrients/protein
         // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return getLimitsFromValuePerDay(getProteinTargetPerDay(), new Function<Double, Limits4>() {
+        // Limit protein per meal to protein target per day.
+        final Optional<Double> maybeUpperOptimal = getProteinTargetPerDay();
+        return maybeUpperOptimal.map(new Function<Double, Limits4>() {
             @Override
-            public Limits4 apply(final Double total) {
-                return limits4RORC(total / numberOfMeals, 0.3, 0.6);
+            public Limits4 apply(final Double upperOptimal) {
+                return limits4UORUC(upperOptimal, DEFAULT_TOLERANCE);
             }
         });
     }
