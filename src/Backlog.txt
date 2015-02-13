@@ -1,5 +1,5 @@
--   See TODOs
 -   Improve evolutionary algorithm (ensure genome diversity)
+-   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
 -   Create user interface (run evolutionary algorithm in background)
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.

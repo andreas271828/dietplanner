@@ -1,16 +1,17 @@
 package evolution;
 
 import util.LazyValue;
+import util.Pair;
 import util.Scores;
 
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class GenePool {
     private static final int SPECIES_SIZE = 50;
+    private static final int CALLBACK_ITERATION = 100;
     private static final Random RANDOM = new Random();
 
     private final Species[] species;
@@ -113,32 +114,17 @@ public class GenePool {
     }
 
     public static Optional<EvaluatedGenome> findBestGenome(final int speciesCnt,
-                                                           final int generations,
-                                                           final Function<Genome, Scores> fitnessFunction) {
+                                                           final Function<Genome, Scores> fitnessFunction,
+                                                           final Function<Pair<Integer, GenePool>, Boolean> callback) {
         GenePool genePool = new GenePool(speciesCnt, fitnessFunction);
-        for (int i = 2; i <= generations; ++i) {
+        int i = 1;
+        boolean continueEvolution = true;
+        while (continueEvolution) {
             genePool = genePool.getNextGeneration();
-
-            // TODO: No printing; call callback instead
-            if (i % 100 == 0) {
-                final Optional<EvaluatedGenome> bestGenome = genePool.getBestGenome();
-                final int generation = i;
-                bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
-                    @Override
-                    public void accept(EvaluatedGenome bestGenome) {
-                        final StringBuilder sb = new StringBuilder();
-                        sb.append("Best genome in generation ");
-                        sb.append(generation);
-                        sb.append(" (genome length = ");
-                        sb.append(bestGenome.getGenome().getGenomeLength());
-                        sb.append("): ");
-                        sb.append(bestGenome.getFitness());
-                        System.out.println(sb);
-                    }
-                });
+            if (++i % CALLBACK_ITERATION == 0) {
+                continueEvolution = callback.apply(new Pair<Integer, GenePool>(i, genePool));
             }
         }
-
         return genePool.getBestGenome();
     }
 }

@@ -2,8 +2,6 @@ package diet;
 
 import util.ItemList;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class FoodItems extends ItemList<FoodItem> {
@@ -15,7 +13,7 @@ public class FoodItems extends ItemList<FoodItem> {
         final FoodProperties properties = new FoodProperties();
         forEach(new BiConsumer<FoodItem, Double>() {
             @Override
-            public void accept(FoodItem foodItem, Double amount) {
+            public void accept(final FoodItem foodItem, final Double amount) {
                 properties.addScaled(foodItem.getProperties(), amount);
             }
         });
@@ -23,12 +21,25 @@ public class FoodItems extends ItemList<FoodItem> {
     }
 
     public double getCosts() {
-        double costs = 0;
-        final Iterator<Map.Entry<FoodItem, Double>> iterator = getIterator();
-        while (iterator.hasNext()) {
-            final Map.Entry<FoodItem, Double> entry = iterator.next();
-            costs += entry.getKey().getPrice() * entry.getValue();
+        final Costs costs = new Costs();
+        forEach(new BiConsumer<FoodItem, Double>() {
+            @Override
+            public void accept(final FoodItem foodItem, final Double amount) {
+                costs.add(foodItem.getPrice() * amount);
+            }
+        });
+        return costs.get();
+    }
+
+    private class Costs {
+        private double costs = 0;
+
+        public void add(final double costs) {
+            this.costs += costs;
         }
-        return costs;
+
+        public double get() {
+            return costs;
+        }
     }
 }
