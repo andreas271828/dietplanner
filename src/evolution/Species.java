@@ -78,7 +78,8 @@ public class Species {
             protected double[] compute() {
                 final double[] fitnessAccumulation = new double[evaluatedGenomes.length];
                 for (int i = 0; i < evaluatedGenomes.length; ++i) {
-                    fitnessAccumulation[i] = evaluatedGenomes[i].getFitness() + (i > 0 ? fitnessAccumulation[i - 1] : 0);
+                    final double fitness = evaluatedGenomes[i].getFitness();
+                    fitnessAccumulation[i] = fitness + (i > 0 ? fitnessAccumulation[i - 1] : 0);
                 }
                 return fitnessAccumulation;
             }

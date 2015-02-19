@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public class Genome {
     public static final int GENE_STATES = 16;
-    private static final double MUTATION_RATE = 0.1;
+    private static final double MUTATION_RATE = 0.01;
     private static final Random RANDOM = new Random();
 
     private final int[] genes;
@@ -31,6 +31,10 @@ public class Genome {
 
     public int getGenomeLength() {
         return genes.length;
+    }
+
+    public double getGene(final int index) {
+        return (double) genes[index] / (GENE_STATES - 1);
     }
 
     public static Genome[] recombine(final Optional<Genome> parent1, final Optional<Genome> parent2, final int offspringCnt) {
@@ -111,13 +115,13 @@ public class Genome {
         }
 
         public double getNextGene() {
-            final int gene = genome.genes[index];
-            if (index == genome.genes.length - 1) {
+            final int curGene = index;
+            if (index == genome.getGenomeLength() - 1) {
                 index = 0;
             } else {
                 ++index;
             }
-            return (double) gene / (GENE_STATES - 1);
+            return genome.getGene(curGene);
         }
     }
 
