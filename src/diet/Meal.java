@@ -27,6 +27,10 @@ public class Meal {
         };
     }
 
+    public String getName() {
+        return name;
+    }
+
     public FoodItems getIngredients() {
         return ingredients;
     }

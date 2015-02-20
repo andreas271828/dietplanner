@@ -1,14 +1,11 @@
 package test;
 
 import diet.*;
-import evolution.EvaluatedGenome;
-import evolution.GenePool;
-import evolution.Genome;
 import util.Limits4;
-import util.Pair;
 import util.ScoreFunctions;
 import util.Scores;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -16,69 +13,36 @@ import java.util.function.Function;
 import static diet.DietPlan.dietPlan;
 import static diet.FoodItem.*;
 
-public class GenePoolTest {
+public class OptimizationTest {
     public static void runTests() {
-        final MealTemplates mealTemplates = getMealTemplatesDayMix();
-        final int numberOfMeals = 7;
-        final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 7, numberOfMeals);
-        final Function<Genome, Scores> fitnessFunction = getFitnessFunction(mealTemplates, requirements);
-        final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(10, fitnessFunction,
-                new Function<Pair<Integer, GenePool>, Boolean>() {
-                    @Override
-                    public Boolean apply(final Pair<Integer, GenePool> generationInfo) {
-                        final int generation = generationInfo.a();
-                        final Optional<EvaluatedGenome> bestGenome = generationInfo.b().getBestGenome();
-                        bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
-                            @Override
-                            public void accept(EvaluatedGenome bestGenome) {
-                                final StringBuilder sb = new StringBuilder();
-                                sb.append("Best genome in generation ");
-                                sb.append(generation);
-                                sb.append(" (genome length = ");
-                                sb.append(bestGenome.getGenome().getGenomeLength());
-                                sb.append("): ");
-                                sb.append(bestGenome.getFitness());
-                                System.out.println(sb);
-                            }
-                        });
-                        return generation < 500;
-                    }
-                });
-        bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
-            @Override
-            public void accept(final EvaluatedGenome bestGenome) {
-                final DietPlan dietPlan = dietPlan(mealTemplates.computeMeals(numberOfMeals, bestGenome.getGenome()));
-                final Scores scores = bestGenome.getScores();
+        final MealTemplate dayMixTemplate = getDayMixTemplate();
+        final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 7, 7);
+        final DietPlan dietPlan1 = dietPlan(dayMixTemplate.getRandomMeals(requirements.getNumberOfMeals()));
+        final ArrayList<FoodItems> changes = dayMixTemplate.getRandomChanges(requirements.getNumberOfMeals());
+        final DietPlan dietPlan2 = dietPlan(dayMixTemplate.applyChanges(dietPlan1.getMeals(), changes));
+        final DietPlan dietPlan3 = dietPlan(dayMixTemplate.applyReverseChanges(dietPlan1.getMeals(), changes));
+        final Scores scores1 = getFitnessFunction(requirements).apply(dietPlan1);
+        final Scores scores2 = getFitnessFunction(requirements).apply(dietPlan2);
+        final Scores scores3 = getFitnessFunction(requirements).apply(dietPlan3);
+        System.out.println(dietPlan1);
+        System.out.println("Scores:");
+        System.out.println(scores1);
+        System.out.println("Total score: " + scores1.getTotalScore() + " / " + scores1.getWeightSum());
+        System.out.println();
+        System.out.println(dietPlan2);
+        System.out.println("Scores:");
+        System.out.println(scores2);
+        System.out.println("Total score: " + scores2.getTotalScore() + " / " + scores2.getWeightSum());
+        System.out.println();
+        System.out.println(dietPlan3);
+        System.out.println("Scores:");
+        System.out.println(scores3);
+        System.out.println("Total score: " + scores3.getTotalScore() + " / " + scores3.getWeightSum());
 
-                System.out.println();
-                System.out.println(dietPlan);
-                System.out.println();
-                System.out.println("Scores:");
-                System.out.println(scores);
-                System.out.println("Total score: " + scores.getTotalScore() + " / " + scores.getWeightSum());
-            }
-        });
     }
 
-    private static MealTemplates getMealTemplatesAnything() {
-        final MealTemplates mealTemplates = new MealTemplates();
-
-        mealTemplates.add(new MealTemplate("Anything") {
-            @Override
-            protected void addIngredients() {
-                for (FoodItem foodItem : FoodItem.values()) {
-                    addIngredientByWeight(foodItem, 0.0, 100.0);
-                }
-            }
-        });
-
-        return mealTemplates;
-    }
-
-    private static MealTemplates getMealTemplatesDayMix() {
-        final MealTemplates mealTemplates = new MealTemplates();
-
-        mealTemplates.add(new MealTemplate("Day Mix") {
+    private static MealTemplate getDayMixTemplate() {
+        return new MealTemplate("Day Mix") {
             @Override
             protected void addIngredients() {
                 addIngredient(COLES_APPLE_RED_DELICIOUS, 0.0, 3.0);
@@ -221,86 +185,25 @@ public class GenePoolTest {
                 addIngredientByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL, 0.0, 400.0);
                 addIngredient(COLES_ZUCCHINI, 0.0, 1.0);
             }
-        });
-
-        return mealTemplates;
+        };
     }
 
-    private static MealTemplates getMealTemplates() {
-        final MealTemplates mealTemplates = new MealTemplates();
-
-        final Ingredients basicSaladIngredients = new Ingredients();
-        basicSaladIngredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 2.0);
-        basicSaladIngredients.add(COLES_LEMON, 0.0, 0.5);
-        basicSaladIngredients.addByWeight(COLES_OIL_OLIVE, 1.0, 100.0);
-        basicSaladIngredients.addByWeight(COLES_SPINACH, 20.0, 200.0);
-        basicSaladIngredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
-        basicSaladIngredients.add(COLES_CARROT, 0.0, 1.0);
-
-        mealTemplates.add(new MealTemplate("Salad with mayonnaise") {
+    private static Function<DietPlan, Scores> getFitnessFunction(final Requirements requirements) {
+        return new Function<DietPlan, Scores>() {
             @Override
-            protected void addIngredients() {
-                addIngredients(basicSaladIngredients);
-                addIngredientByWeight(COLES_MAYONNAISE, 20.0, 300.0);
-            }
-        });
-        mealTemplates.add(new MealTemplate("Salad with sour cream") {
-            @Override
-            protected void addIngredients() {
-                addIngredients(basicSaladIngredients);
-                addIngredientByWeight(COLES_CREAM_SOUR, 100.0, 500.0);
-            }
-        });
-        mealTemplates.add(new MealTemplate("Avocado Plus") {
-            @Override
-            protected void addIngredients() {
-                addIngredient(COLES_AVOCADO, 0.5, 2.0);
-                addIngredient(COLES_LEMON, 0.1, 0.5);
-                addIngredientByWeight(COLES_SALT_SEA, 0.1, 5.0);
-                addIngredientByWeight(COLES_PEPPER, 0.1, 3);
-                addIngredientByWeight(COLES_OIL_OLIVE, 0.0, 20.0);
-            }
-        });
-        mealTemplates.add(new MealTemplate("Stir-fry") {
-            @Override
-            protected void addIngredients() {
-                addIngredient(COLES_BROCCOLI, 0.0, 1.0);
-                addIngredient(COLES_CARROT, 0.0, 1.0);
-                addIngredientByWeight(COLES_SALT_SEA, 0.0, 10.0);
-                addIngredientByWeight(COLES_COCONUT_OIL_ORGANIC, 0.0, 50.0);
-            }
-        });
-        mealTemplates.add(new MealTemplate("Salami Plus") {
-            @Override
-            protected void addIngredients() {
-                addIngredientByWeight(COLES_SALAMI_HUNGARIAN, 50.0, 500.0);
-                addIngredientByWeight(COLES_CHEESE_COLBY, 0.0, 200.0);
-                addIngredientByWeight(COLES_SPINACH, 0.0, 200.0);
-            }
-        });
-
-        return mealTemplates;
-    }
-
-    private static Function<Genome, Scores> getFitnessFunction(final MealTemplates mealTemplates, final Requirements requirements) {
-        return new Function<Genome, Scores>() {
-            @Override
-            public Scores apply(final Genome genome) {
+            public Scores apply(final DietPlan dietPlan) {
                 final Scores scores = new Scores();
 
-                final int numberOfMeals = requirements.getNumberOfMeals();
-
                 // Criteria for complete diet plan
-                final DietPlan dietPlan = dietPlan(mealTemplates.computeMeals(numberOfMeals, genome));
                 final FoodProperties dietPlanProperties = dietPlan.getProperties();
                 final Optional<Integer> noMeal = Optional.empty();
                 addScore(scores, Requirement.ALPHA_LINOLENIC_ACID, 1.0, requirements, dietPlanProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), noMeal);
                 addScore(scores, Requirement.CALCIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.CALCIUM), noMeal);
-                addScore(scores, Requirement.CARBOHYDRATES, 100.0, requirements, dietPlanProperties.get(FoodProperty.CARBOHYDRATES), noMeal);
+                addScore(scores, Requirement.CARBOHYDRATES, 10.0, requirements, dietPlanProperties.get(FoodProperty.CARBOHYDRATES), noMeal);
                 addScore(scores, Requirement.CHOLESTEROL, 1.0, requirements, dietPlanProperties.get(FoodProperty.CHOLESTEROL), noMeal);
                 addScore(scores, Requirement.COSTS, 1.0, requirements, dietPlan.getCosts(), noMeal);
                 addScore(scores, Requirement.DIETARY_FIBRE, 1.0, requirements, dietPlanProperties.get(FoodProperty.DIETARY_FIBRE), noMeal);
-                addScore(scores, Requirement.ENERGY, 100.0, requirements, dietPlanProperties.get(FoodProperty.ENERGY), noMeal);
+                addScore(scores, Requirement.ENERGY, 10.0, requirements, dietPlanProperties.get(FoodProperty.ENERGY), noMeal);
                 addScore(scores, Requirement.FAT, 1.0, requirements, dietPlanProperties.get(FoodProperty.FAT), noMeal);
                 addScore(scores, Requirement.FOLATES, 1.0, requirements, dietPlanProperties.get(FoodProperty.TOTAL_FOLATES), noMeal);
                 addScore(scores, Requirement.IODINE, 1.0, requirements, dietPlanProperties.get(FoodProperty.IODINE), noMeal);
@@ -311,7 +214,7 @@ public class GenePoolTest {
                 addScore(scores, Requirement.OMEGA_3_FATTY_ACIDS, 1.0, requirements, dietPlanProperties.get(FoodProperty.OMEGA_3_FATTY_ACIDS), noMeal);
                 addScore(scores, Requirement.PHOSPHORUS, 1.0, requirements, dietPlanProperties.get(FoodProperty.PHOSPHORUS), noMeal);
                 addScore(scores, Requirement.POTASSIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.POTASSIUM), noMeal);
-                addScore(scores, Requirement.PROTEIN, 100.0, requirements, dietPlanProperties.get(FoodProperty.PROTEIN), noMeal);
+                addScore(scores, Requirement.PROTEIN, 10.0, requirements, dietPlanProperties.get(FoodProperty.PROTEIN), noMeal);
                 addScore(scores, Requirement.RIBOFLAVIN, 1.0, requirements, dietPlanProperties.get(FoodProperty.RIBOFLAVIN), noMeal);
                 addScore(scores, Requirement.SELENIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.SELENIUM), noMeal);
                 addScore(scores, Requirement.SODIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.SODIUM), noMeal);
@@ -327,6 +230,7 @@ public class GenePoolTest {
                 addScore(scores, Requirement.ZINC, 1.0, requirements, dietPlanProperties.get(FoodProperty.ZINC), noMeal);
 
                 // Criteria for individual meals
+                final int numberOfMeals = requirements.getNumberOfMeals();
                 for (int i = 0; i < numberOfMeals; ++i) {
                     final Meal meal = dietPlan.getMeal(i);
                     final FoodProperties mealProperties = meal.getProperties();

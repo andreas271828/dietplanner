@@ -12,7 +12,7 @@ public class ItemList<K extends Enum<K>> {
     }
 
     public double get(final K item) {
-        return items.containsKey(item) ? items.get(item) : 0;
+        return items.containsKey(item) ? items.get(item) : 0.0;
     }
 
     public void set(final K item, final double amount) {

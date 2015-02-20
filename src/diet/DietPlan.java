@@ -73,4 +73,25 @@ public class DietPlan {
     public double getCosts() {
         return costs.get();
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Meals:");
+        stringBuilder.append('\n');
+        stringBuilder.append(getMeals());
+        stringBuilder.append('\n');
+        stringBuilder.append("Food items:");
+        stringBuilder.append('\n');
+        stringBuilder.append(getFoodItems());
+        stringBuilder.append('\n');
+        stringBuilder.append("Properties:");
+        stringBuilder.append('\n');
+        stringBuilder.append(getProperties());
+        stringBuilder.append('\n');
+        stringBuilder.append("Costs:");
+        stringBuilder.append('\n');
+        stringBuilder.append(String.format("AUD %1$,.2f", getCosts()));
+        return stringBuilder.toString();
+    }
 }
