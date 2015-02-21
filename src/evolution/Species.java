@@ -1,13 +1,14 @@
 package evolution;
 
-import util.BinarySearch;
-import util.LazyValue;
+import util.Evaluation;
+import util.Evaluations;
 import util.Scores;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static evolution.Genome.genome;
 
@@ -16,10 +17,8 @@ public class Species {
     private static final Random RANDOM = new Random();
 
     private final int age;
-    private final EvaluatedGenome[] evaluatedGenomes;
+    private final Evaluations<Genome> evaluations;
     private final Function<Genome, Scores> fitnessFunction;
-    private final LazyValue<Optional<EvaluatedGenome>> bestGenome;
-    private final LazyValue<double[]> fitnessAccumulation;
 
     public static Species species(final int size, final Function<Genome, Scores> fitnessFunction) {
         return new Species(size, fitnessFunction);
@@ -27,22 +26,23 @@ public class Species {
 
     private Species(final int size, final Function<Genome, Scores> fitnessFunction) {
         age = 0;
-        evaluatedGenomes = new EvaluatedGenome[size];
+
+        final ArrayList<Evaluation<Genome>> evaluatedGenomes = new ArrayList<Evaluation<Genome>>(size);
         final int genomeLength = getRandomGenomeLength();
         for (int i = 0; i < size; ++i) {
-            evaluatedGenomes[i] = new EvaluatedGenome(genome(genomeLength), fitnessFunction);
+            evaluatedGenomes.add(new Evaluation<Genome>(genome(genomeLength), fitnessFunction));
         }
+        evaluations = new Evaluations<Genome>(evaluatedGenomes);
+
         this.fitnessFunction = fitnessFunction;
-        bestGenome = getLazyBestGenome();
-        fitnessAccumulation = getLazyFitnessAccumulation();
     }
 
-    private Species(final int age, final EvaluatedGenome[] evaluatedGenomes, final Function<Genome, Scores> fitnessFunction) {
+    private Species(final int age,
+                    final ArrayList<Evaluation<Genome>> evaluatedGenomes,
+                    final Function<Genome, Scores> fitnessFunction) {
         this.age = age;
-        this.evaluatedGenomes = evaluatedGenomes;
+        evaluations = new Evaluations<Genome>(evaluatedGenomes);
         this.fitnessFunction = fitnessFunction;
-        bestGenome = getLazyBestGenome();
-        fitnessAccumulation = getLazyFitnessAccumulation();
     }
 
     public int getAge() {
@@ -54,99 +54,42 @@ public class Species {
         return (int) (random * random * MAX_GENOME_LENGTH) + 1;
     }
 
-    private LazyValue<Optional<EvaluatedGenome>> getLazyBestGenome() {
-        return new LazyValue<Optional<EvaluatedGenome>>() {
-            @Override
-            protected Optional<EvaluatedGenome> compute() {
-                Optional<EvaluatedGenome> bestGenome = Optional.empty();
-                for (final EvaluatedGenome evaluatedGenome : evaluatedGenomes) {
-                    bestGenome = Optional.of(bestGenome.filter(new Predicate<EvaluatedGenome>() {
-                        @Override
-                        public boolean test(final EvaluatedGenome bestGenome) {
-                            return bestGenome.getFitness() >= evaluatedGenome.getFitness();
-                        }
-                    }).orElse(evaluatedGenome));
-                }
-                return bestGenome;
-            }
-        };
-    }
-
-    private LazyValue<double[]> getLazyFitnessAccumulation() {
-        return new LazyValue<double[]>() {
-            @Override
-            protected double[] compute() {
-                final double[] fitnessAccumulation = new double[evaluatedGenomes.length];
-                for (int i = 0; i < evaluatedGenomes.length; ++i) {
-                    final double fitness = evaluatedGenomes[i].getFitness();
-                    fitnessAccumulation[i] = fitness + (i > 0 ? fitnessAccumulation[i - 1] : 0);
-                }
-                return fitnessAccumulation;
-            }
-        };
-    }
-
-    public Optional<EvaluatedGenome> getBestGenome() {
-        return bestGenome.get();
+    public Optional<Evaluation<Genome>> getBestGenome() {
+        return evaluations.getBest();
     }
 
     public double getFitness() {
-        return getBestGenome().map(new Function<EvaluatedGenome, Double>() {
+        return getBestGenome().map(new Function<Evaluation<Genome>, Double>() {
             @Override
-            public Double apply(final EvaluatedGenome bestGenome) {
-                return bestGenome.getFitness();
+            public Double apply(final Evaluation<Genome> bestGenome) {
+                return bestGenome.getTotalScore();
             }
         }).orElse(0.0);
     }
 
     public Species getNextGeneration() {
-        final EvaluatedGenome[] nextGeneration = new EvaluatedGenome[evaluatedGenomes.length];
-        int genomeCnt = 0;
+        final int nextGenerationSize = evaluations.getEvaluationsCount();
+        final ArrayList<Evaluation<Genome>> nextGeneration = new ArrayList<Evaluation<Genome>>(nextGenerationSize);
 
         // Keep best genome
-        genomeCnt += getBestGenome().map(new Function<EvaluatedGenome, Integer>() {
+        getBestGenome().ifPresent(new Consumer<Evaluation<Genome>>() {
             @Override
-            public Integer apply(final EvaluatedGenome bestGenome) {
-                nextGeneration[0] = new EvaluatedGenome(bestGenome.getGenome(), fitnessFunction);
-                return 1;
+            public void accept(final Evaluation<Genome> evaluatedGenome) {
+                nextGeneration.add(evaluatedGenome);
             }
-        }).orElse(0);
+        });
 
         // Recombine genomes
-        while (genomeCnt < nextGeneration.length) {
-            final Optional<EvaluatedGenome> parent1 = selectRandomGenome();
-            final Optional<EvaluatedGenome> parent2 = selectRandomGenome();
-            final int offspringCnt = genomeCnt + 1 < nextGeneration.length ? 2 : 1;
-            final Genome[] offspring = Genome.recombine(getGenome(parent1), getGenome(parent2), offspringCnt);
-            for (int i = 0; i < offspringCnt; ++i) {
-                nextGeneration[genomeCnt++] = new EvaluatedGenome(offspring[i], fitnessFunction);
+        while (nextGeneration.size() < nextGenerationSize) {
+            final Optional<Genome> parent1 = evaluations.selectProbabilistically();
+            final Optional<Genome> parent2 = evaluations.selectProbabilistically();
+            final int offspringCnt = nextGeneration.size() + 1 < nextGenerationSize ? 2 : 1;
+            final Genome[] offspring = Genome.recombine(parent1, parent2, offspringCnt);
+            for (final Genome genome : offspring) {
+                nextGeneration.add(new Evaluation<Genome>(genome, fitnessFunction));
             }
         }
 
         return new Species(age + 1, nextGeneration, fitnessFunction);
-    }
-
-    private static Optional<Genome> getGenome(final Optional<EvaluatedGenome> evaluatedGenome) {
-        return evaluatedGenome.map(new Function<EvaluatedGenome, Optional<Genome>>() {
-            @Override
-            public Optional<Genome> apply(final EvaluatedGenome evaluatedGenome) {
-                return Optional.of(evaluatedGenome.getGenome());
-            }
-        }).orElse(Optional.<Genome>empty());
-    }
-
-    private Optional<EvaluatedGenome> selectRandomGenome() {
-        if (evaluatedGenomes.length > 0) {
-            final double[] fAcc = fitnessAccumulation.get();
-            final double selector = RANDOM.nextDouble() * fAcc[evaluatedGenomes.length - 1];
-            return BinarySearch.findInRange(selector, fAcc).map(new Function<Integer, EvaluatedGenome>() {
-                @Override
-                public EvaluatedGenome apply(final Integer index) {
-                    return evaluatedGenomes[index];
-                }
-            });
-        }
-
-        return Optional.empty();
     }
 }

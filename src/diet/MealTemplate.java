@@ -85,9 +85,10 @@ public abstract class MealTemplate {
         return meals;
     }
 
-    public ArrayList<Meal> applyChanges(final ArrayList<Meal> origMeals, final ArrayList<FoodItems> changes, final boolean reverse) {
-        final ArrayList<Meal> meals = new ArrayList<Meal>(origMeals.size());
-        for (int i = 0; i < origMeals.size(); ++i) {
+    public ArrayList<Meal> applyChanges(final ArrayList<Meal> origMeals, final ArrayList<FoodItems> changes) {
+        final int origMealsSize = origMeals.size();
+        final ArrayList<Meal> meals = new ArrayList<Meal>(origMealsSize);
+        for (int i = 0; i < origMealsSize; ++i) {
             final Meal origMeal = origMeals.get(i);
             final FoodItems mealChanges = changes.get(i);
             final FoodItems ingredients = new FoodItems();
@@ -95,7 +96,7 @@ public abstract class MealTemplate {
                 @Override
                 public void accept(final FoodItem foodItem, final Limits2 limits) {
                     final double origAmount = origMeal.getIngredients().get(foodItem);
-                    final double change = reverse ? -mealChanges.get(foodItem) : mealChanges.get(foodItem);
+                    final double change = mealChanges.get(foodItem);
                     final double amount = min(max(origAmount + change, limits.getMin()), limits.getMax());
                     final double roundedAmount = foodItem.roundToPortions(amount);
                     if (roundedAmount > 1e-6) {
@@ -125,6 +126,15 @@ public abstract class MealTemplate {
             changes.add(mealChanges);
         }
         return changes;
+    }
+
+    public ArrayList<Meal> getRandomMix(final ArrayList<Meal> meals1, final ArrayList<Meal> meals2) {
+        final int numberOfMeals = meals1.size();
+        final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
+        for (int i = 0; i < numberOfMeals; ++i) {
+            meals.add(RANDOM.nextBoolean() ? meals1.get(i) : meals2.get(i));
+        }
+        return meals;
     }
 
     @Override

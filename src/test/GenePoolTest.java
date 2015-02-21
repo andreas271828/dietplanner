@@ -1,13 +1,9 @@
 package test;
 
 import diet.*;
-import evolution.EvaluatedGenome;
 import evolution.GenePool;
 import evolution.Genome;
-import util.Limits4;
-import util.Pair;
-import util.ScoreFunctions;
-import util.Scores;
+import util.*;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -22,32 +18,32 @@ public class GenePoolTest {
         final int numberOfMeals = 7;
         final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 7, numberOfMeals);
         final Function<Genome, Scores> fitnessFunction = getFitnessFunction(mealTemplates, requirements);
-        final Optional<EvaluatedGenome> bestGenome = GenePool.findBestGenome(10, fitnessFunction,
+        final Optional<Evaluation<Genome>> bestGenome = GenePool.findBestGenome(10, fitnessFunction,
                 new Function<Pair<Integer, GenePool>, Boolean>() {
                     @Override
                     public Boolean apply(final Pair<Integer, GenePool> generationInfo) {
                         final int generation = generationInfo.a();
-                        final Optional<EvaluatedGenome> bestGenome = generationInfo.b().getBestGenome();
-                        bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
+                        final Optional<Evaluation<Genome>> bestGenome = generationInfo.b().getBestGenome();
+                        bestGenome.ifPresent(new Consumer<Evaluation<Genome>>() {
                             @Override
-                            public void accept(EvaluatedGenome bestGenome) {
+                            public void accept(Evaluation<Genome> bestGenome) {
                                 final StringBuilder sb = new StringBuilder();
                                 sb.append("Best genome in generation ");
                                 sb.append(generation);
                                 sb.append(" (genome length = ");
-                                sb.append(bestGenome.getGenome().getGenomeLength());
+                                sb.append(bestGenome.getObject().getGenomeLength());
                                 sb.append("): ");
-                                sb.append(bestGenome.getFitness());
+                                sb.append(bestGenome.getTotalScore());
                                 System.out.println(sb);
                             }
                         });
                         return generation < 500;
                     }
                 });
-        bestGenome.ifPresent(new Consumer<EvaluatedGenome>() {
+        bestGenome.ifPresent(new Consumer<Evaluation<Genome>>() {
             @Override
-            public void accept(final EvaluatedGenome bestGenome) {
-                final DietPlan dietPlan = dietPlan(mealTemplates.computeMeals(numberOfMeals, bestGenome.getGenome()));
+            public void accept(final Evaluation<Genome> bestGenome) {
+                final DietPlan dietPlan = dietPlan(mealTemplates.computeMeals(numberOfMeals, bestGenome.getObject()));
                 final Scores scores = bestGenome.getScores();
 
                 System.out.println();

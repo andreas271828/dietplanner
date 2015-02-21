@@ -1,5 +1,6 @@
 package evolution;
 
+import util.Evaluation;
 import util.LazyValue;
 import util.Pair;
 import util.Scores;
@@ -55,10 +56,10 @@ public class GenePool {
         };
     }
 
-    public Optional<EvaluatedGenome> getBestGenome() {
-        return bestSpecies.get().flatMap(new Function<Species, Optional<EvaluatedGenome>>() {
+    public Optional<Evaluation<Genome>> getBestGenome() {
+        return bestSpecies.get().flatMap(new Function<Species, Optional<Evaluation<Genome>>>() {
             @Override
-            public Optional<EvaluatedGenome> apply(final Species species) {
+            public Optional<Evaluation<Genome>> apply(final Species species) {
                 return species.getBestGenome();
             }
         });
@@ -113,9 +114,9 @@ public class GenePool {
         return new GenePool(nextGeneration, fitnessFunction);
     }
 
-    public static Optional<EvaluatedGenome> findBestGenome(final int speciesCnt,
-                                                           final Function<Genome, Scores> fitnessFunction,
-                                                           final Function<Pair<Integer, GenePool>, Boolean> callback) {
+    public static Optional<Evaluation<Genome>> findBestGenome(final int speciesCnt,
+                                                              final Function<Genome, Scores> fitnessFunction,
+                                                              final Function<Pair<Integer, GenePool>, Boolean> callback) {
         GenePool genePool = new GenePool(speciesCnt, fitnessFunction);
         int i = 1;
         boolean continueEvolution = true;
