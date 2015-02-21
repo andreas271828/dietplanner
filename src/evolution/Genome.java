@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 public class Genome {
     public static final int GENE_STATES = 16;
     private static final double MUTATION_RATE = 0.01;
@@ -43,7 +46,7 @@ public class Genome {
 
         final int[] genesParent1 = getGenes(parent1);
         final int[] genesParent2 = getGenes(parent2);
-        final int shorterLength = Math.min(genesParent1.length, genesParent2.length);
+        final int shorterLength = min(genesParent1.length, genesParent2.length);
         final int crossOverPoint = RANDOM.nextInt(shorterLength + 1);
         while (curOffspringCnt < offspringCnt) {
             final int[] genesOffspring1 = getMutatedOffspringGenes(genesParent1, genesParent2, crossOverPoint);
@@ -102,7 +105,7 @@ public class Genome {
 
     public static void applyMutations(final int[] genes, final ArrayList<Pair<Integer, Integer>> mutations) {
         for (final Pair<Integer, Integer> mutation : mutations) {
-            genes[mutation.a()] = Math.min(Math.max(genes[mutation.a()] + mutation.b(), 0), GENE_STATES - 1);
+            genes[mutation.a()] = min(max(genes[mutation.a()] + mutation.b(), 0), GENE_STATES - 1);
         }
     }
 

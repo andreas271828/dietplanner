@@ -7,6 +7,7 @@ import util.Scores;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -14,30 +15,60 @@ import static diet.DietPlan.dietPlan;
 import static diet.FoodItem.*;
 
 public class OptimizationTest {
+    private static final Random RANDOM = new Random();
+
     public static void runTests() {
         final MealTemplate dayMixTemplate = getDayMixTemplate();
         final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 7, 7);
-        final DietPlan dietPlan1 = dietPlan(dayMixTemplate.getRandomMeals(requirements.getNumberOfMeals()));
-        final ArrayList<FoodItems> changes = dayMixTemplate.getRandomChanges(requirements.getNumberOfMeals());
-        final DietPlan dietPlan2 = dietPlan(dayMixTemplate.applyChanges(dietPlan1.getMeals(), changes));
-        final DietPlan dietPlan3 = dietPlan(dayMixTemplate.applyReverseChanges(dietPlan1.getMeals(), changes));
-        final Scores scores1 = getFitnessFunction(requirements).apply(dietPlan1);
-        final Scores scores2 = getFitnessFunction(requirements).apply(dietPlan2);
-        final Scores scores3 = getFitnessFunction(requirements).apply(dietPlan3);
-        System.out.println(dietPlan1);
+        final int numberOfMeals = requirements.getNumberOfMeals();
+        DietPlan bestDietPlan = dietPlan(dayMixTemplate.getRandomMeals(numberOfMeals));
+        Scores bestScores = getFitnessFunction(requirements).apply(bestDietPlan);
+        double changeRate = RANDOM.nextDouble();
+        for (int i = 2; i <= 10000; ++i) {
+            final ArrayList<FoodItems> changes = dayMixTemplate.getRandomChanges(changeRate, numberOfMeals);
+            DietPlan dietPlan = dietPlan(dayMixTemplate.applyChanges(bestDietPlan.getMeals(), changes, false));
+            Scores scores = getFitnessFunction(requirements).apply(dietPlan);
+            int numberOfChanges = 0;
+            if (scores.getTotalScore() > bestScores.getTotalScore()) {
+                do {
+                    bestDietPlan = dietPlan;
+                    bestScores = scores;
+                    ++numberOfChanges;
+                    dietPlan = dietPlan(dayMixTemplate.applyChanges(bestDietPlan.getMeals(), changes, false));
+                    scores = getFitnessFunction(requirements).apply(dietPlan);
+                } while (false/*scores.getTotalScore() > bestScores.getTotalScore()*/);
+            } else {
+                dietPlan = dietPlan(dayMixTemplate.applyChanges(bestDietPlan.getMeals(), changes, true));
+                scores = getFitnessFunction(requirements).apply(dietPlan);
+                if (scores.getTotalScore() > bestScores.getTotalScore()) {
+                    do {
+                        bestDietPlan = dietPlan;
+                        bestScores = scores;
+                        ++numberOfChanges;
+                        dietPlan = dietPlan(dayMixTemplate.applyChanges(bestDietPlan.getMeals(), changes, true));
+                        scores = getFitnessFunction(requirements).apply(dietPlan);
+                    } while (false/*scores.getTotalScore() > bestScores.getTotalScore()*/);
+                }
+            }
+            changeRate = RANDOM.nextDouble();
+
+            if (i % 1000 == 0) {
+                final StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("Score of generation ");
+                stringBuilder.append(i);
+                stringBuilder.append(": ");
+                stringBuilder.append(bestScores.getTotalScore());
+                stringBuilder.append(" / ");
+                stringBuilder.append(bestScores.getWeightSum());
+                stringBuilder.append("; ");
+                stringBuilder.append("changes: ");
+                stringBuilder.append(numberOfChanges);
+                System.out.println(stringBuilder);
+            }
+        }
+        System.out.println(bestDietPlan);
         System.out.println("Scores:");
-        System.out.println(scores1);
-        System.out.println("Total score: " + scores1.getTotalScore() + " / " + scores1.getWeightSum());
-        System.out.println();
-        System.out.println(dietPlan2);
-        System.out.println("Scores:");
-        System.out.println(scores2);
-        System.out.println("Total score: " + scores2.getTotalScore() + " / " + scores2.getWeightSum());
-        System.out.println();
-        System.out.println(dietPlan3);
-        System.out.println("Scores:");
-        System.out.println(scores3);
-        System.out.println("Total score: " + scores3.getTotalScore() + " / " + scores3.getWeightSum());
+        System.out.println(bestScores);
 
     }
 
@@ -129,7 +160,7 @@ public class OptimizationTest {
                 addIngredientByWeight(COLES_NUT_MACADAMIA, 0.0, 200.0);
                 addIngredientByWeight(COLES_NUT_PECAN, 0.0, 200.0);
                 addIngredientByWeight(COLES_NUT_WALNUT, 0.0, 200.0);
-                addIngredientByWeight(COLES_OIL_OLIVE, 0.0, 200.0);
+                addIngredientByWeight(COLES_OIL_OLIVE, 0.0, 300.0);
                 addIngredientByWeight(COLES_OKRA, 0.0, 300.0);
                 addIngredientByWeight(COLES_OLIVE_GREEN, 0.0, 200.0);
                 addIngredient(COLES_ONION, 0.0, 2.0);
@@ -214,7 +245,7 @@ public class OptimizationTest {
                 addScore(scores, Requirement.OMEGA_3_FATTY_ACIDS, 1.0, requirements, dietPlanProperties.get(FoodProperty.OMEGA_3_FATTY_ACIDS), noMeal);
                 addScore(scores, Requirement.PHOSPHORUS, 1.0, requirements, dietPlanProperties.get(FoodProperty.PHOSPHORUS), noMeal);
                 addScore(scores, Requirement.POTASSIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.POTASSIUM), noMeal);
-                addScore(scores, Requirement.PROTEIN, 10.0, requirements, dietPlanProperties.get(FoodProperty.PROTEIN), noMeal);
+                addScore(scores, Requirement.PROTEIN, 100.0, requirements, dietPlanProperties.get(FoodProperty.PROTEIN), noMeal);
                 addScore(scores, Requirement.RIBOFLAVIN, 1.0, requirements, dietPlanProperties.get(FoodProperty.RIBOFLAVIN), noMeal);
                 addScore(scores, Requirement.SELENIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.SELENIUM), noMeal);
                 addScore(scores, Requirement.SODIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.SODIUM), noMeal);
