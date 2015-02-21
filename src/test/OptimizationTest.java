@@ -23,7 +23,7 @@ public class OptimizationTest {
         final int numberOfMeals = requirements.getNumberOfMeals();
         DietPlan bestDietPlan = dietPlan(dayMixTemplate.getRandomMeals(numberOfMeals));
         Scores bestScores = getFitnessFunction(requirements).apply(bestDietPlan);
-        double changeRate = RANDOM.nextDouble();
+        double changeRate = 0.5;
         for (int i = 2; i <= 10000; ++i) {
             final ArrayList<FoodItems> changes = dayMixTemplate.getRandomChanges(changeRate, numberOfMeals);
             DietPlan dietPlan = dietPlan(dayMixTemplate.applyChanges(bestDietPlan.getMeals(), changes, false));
@@ -36,7 +36,7 @@ public class OptimizationTest {
                     ++numberOfChanges;
                     dietPlan = dietPlan(dayMixTemplate.applyChanges(bestDietPlan.getMeals(), changes, false));
                     scores = getFitnessFunction(requirements).apply(dietPlan);
-                } while (false/*scores.getTotalScore() > bestScores.getTotalScore()*/);
+                } while (scores.getTotalScore() > bestScores.getTotalScore());
             } else {
                 dietPlan = dietPlan(dayMixTemplate.applyChanges(bestDietPlan.getMeals(), changes, true));
                 scores = getFitnessFunction(requirements).apply(dietPlan);
@@ -47,24 +47,22 @@ public class OptimizationTest {
                         ++numberOfChanges;
                         dietPlan = dietPlan(dayMixTemplate.applyChanges(bestDietPlan.getMeals(), changes, true));
                         scores = getFitnessFunction(requirements).apply(dietPlan);
-                    } while (false/*scores.getTotalScore() > bestScores.getTotalScore()*/);
+                    } while (scores.getTotalScore() > bestScores.getTotalScore());
                 }
             }
-            changeRate = RANDOM.nextDouble();
+            changeRate *= 0.9;
 
-            if (i % 1000 == 0) {
-                final StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("Score of generation ");
-                stringBuilder.append(i);
-                stringBuilder.append(": ");
-                stringBuilder.append(bestScores.getTotalScore());
-                stringBuilder.append(" / ");
-                stringBuilder.append(bestScores.getWeightSum());
-                stringBuilder.append("; ");
-                stringBuilder.append("changes: ");
-                stringBuilder.append(numberOfChanges);
-                System.out.println(stringBuilder);
-            }
+            final StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Score of generation ");
+            stringBuilder.append(i);
+            stringBuilder.append(": ");
+            stringBuilder.append(bestScores.getTotalScore());
+            stringBuilder.append(" / ");
+            stringBuilder.append(bestScores.getWeightSum());
+            stringBuilder.append("; ");
+            stringBuilder.append("changes: ");
+            stringBuilder.append(numberOfChanges);
+            System.out.println(stringBuilder);
         }
         System.out.println(bestDietPlan);
         System.out.println("Scores:");
