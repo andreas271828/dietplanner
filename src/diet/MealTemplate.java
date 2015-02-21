@@ -3,15 +3,14 @@ package diet;
 import util.Limits2;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.function.BiConsumer;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static util.Global.RANDOM;
+import static util.Global.nextRandomDoubleInclOne;
 
 public abstract class MealTemplate {
-    private static final Random RANDOM = new Random();
-
     private final String name;
     private Ingredients ingredients;
 
@@ -54,7 +53,7 @@ public abstract class MealTemplate {
                 public void accept(final FoodItem foodItem, final Limits2 limits) {
                     final double minAmount = limits.getMin();
                     final double maxAmount = limits.getMax();
-                    final double relAmount = RANDOM.nextInt(1000001) / 1000000.0;
+                    final double relAmount = nextRandomDoubleInclOne();
                     final double amount = minAmount + relAmount * (maxAmount - minAmount);
                     final double roundedAmount = foodItem.roundToPortions(amount);
                     if (roundedAmount > 1e-6) {
@@ -109,15 +108,20 @@ public abstract class MealTemplate {
         return meals;
     }
 
-    public ArrayList<FoodItems> getRandomChanges(final double rate, final int numberOfMeals) {
+    /**
+     * @param magnitude     Maximum change, where 1.0 means 100% of possible range
+     * @param numberOfMeals Number of meals
+     * @return Food item changes (values can be negative)
+     */
+    public ArrayList<FoodItems> getRandomChanges(final double magnitude, final int numberOfMeals) {
         final ArrayList<FoodItems> changes = new ArrayList<FoodItems>(numberOfMeals);
         for (int i = 0; i < numberOfMeals; ++i) {
             final FoodItems mealChanges = new FoodItems();
             getIngredients().forEach(new BiConsumer<FoodItem, Limits2>() {
                 @Override
                 public void accept(final FoodItem foodItem, final Limits2 limits) {
-                    final double direction = RANDOM.nextBoolean() ? 1.0 : -1.0;
-                    final double change = direction * rate * (limits.getMax() - limits.getMin());
+                    final double randVal = 2.0 * nextRandomDoubleInclOne() - 1.0;
+                    final double change = randVal * magnitude * (limits.getMax() - limits.getMin());
                     if (change > 1e-6) {
                         mealChanges.set(foodItem, change);
                     }
