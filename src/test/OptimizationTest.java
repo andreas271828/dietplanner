@@ -4,7 +4,6 @@ import diet.*;
 import util.*;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -21,47 +20,56 @@ public class OptimizationTest {
         final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 7, 7);
         final int numberOfMeals = requirements.getNumberOfMeals();
 
-        /* TODO: Fix the code below using the following code:
-        final ArrayList<Evaluation<DietPlan>> aaa = new ArrayList<Evaluation<DietPlan>>();
-        for (int i =0;i<100;++i){
-            final DietPlan dietPlan = dietPlan(dayMixTemplate.getRandomMeals(numberOfMeals));
-            aaa.add(new Evaluation<DietPlan>(dietPlan, getFitnessFunction(requirements)));
-        }
-        final Evaluations<DietPlan> bbb = new Evaluations<DietPlan>(aaa);
-        */
-
-        final ArrayList<Pair<DietPlan, Scores>> generation0 = new ArrayList<Pair<DietPlan, Scores>>();
+        final ArrayList<Evaluation<DietPlan>> generation0 = new ArrayList<Evaluation<DietPlan>>();
         for (int i = 0; i < 100; ++i) {
             final DietPlan dietPlan = dietPlan(dayMixTemplate.getRandomMeals(numberOfMeals));
-            final Scores scores = getFitnessFunction(requirements).apply(dietPlan);
-            generation0.add(new Pair<DietPlan, Scores>(dietPlan, scores));
+            generation0.add(new Evaluation<DietPlan>(dietPlan, getFitnessFunction(requirements)));
         }
-        sortDietPlans(generation0);
+        final Evaluations<DietPlan> evaluatedGeneration0 = new Evaluations<DietPlan>(generation0);
 
         // TODO: If mutated last time, repeat mutation and keep better one (don't repeat same check)
-        final ArrayList<Pair<DietPlan, Scores>> generation1 = new ArrayList<Pair<DietPlan, Scores>>(generation0);
+        final ArrayList<Evaluation<DietPlan>> generation1 = new ArrayList<Evaluation<DietPlan>>(generation0);
         final int generation0Size = generation0.size();
         for (int i = 0; i < generation0Size; ++i) {
-            // TODO: Select diet plans with better scores more frequently
-            final DietPlan dietPlan1 = generation0.get(RANDOM.nextInt(generation0Size)).a();
-            final DietPlan dietPlan2 = generation0.get(RANDOM.nextInt(generation0Size)).a();
-            final DietPlan dietPlan = dietPlan(dayMixTemplate.getRandomMix(dietPlan1.getMeals(), dietPlan2.getMeals()));
-            final Scores scores = getFitnessFunction(requirements).apply(dietPlan);
-            generation1.add(new Pair<DietPlan, Scores>(dietPlan, scores));
+            final Optional<DietPlan> maybeDietPlan1 = evaluatedGeneration0.selectProbabilistically();
+            final Optional<DietPlan> maybeDietPlan2 = evaluatedGeneration0.selectProbabilistically();
+            if (maybeDietPlan1.isPresent() && maybeDietPlan2.isPresent()) {
+                final ArrayList<Meal> meals1 = maybeDietPlan1.get().getMeals();
+                final ArrayList<Meal> meals2 = maybeDietPlan2.get().getMeals();
+                final DietPlan dietPlan = dietPlan(dayMixTemplate.getRandomMix(meals1, meals2));
+                generation1.add(new Evaluation<DietPlan>(dietPlan, getFitnessFunction(requirements)));
+            }
         }
-        for (final Pair<DietPlan, Scores> evaluatedDietPlan : generation0) {
+        for (final Evaluation<DietPlan> evaluatedDietPlan : generation0) {
+            final ArrayList<Meal> meals = evaluatedDietPlan.getObject().getMeals();
             final ArrayList<FoodItems> changes = dayMixTemplate.getRandomChanges(RANDOM.nextDouble(), numberOfMeals);
-            DietPlan dietPlan = dietPlan(dayMixTemplate.applyChanges(evaluatedDietPlan.a().getMeals(), changes));
-            Scores scores = getFitnessFunction(requirements).apply(dietPlan);
-            generation1.add(new Pair<DietPlan, Scores>(dietPlan, scores));
+            final DietPlan dietPlan = dietPlan(dayMixTemplate.applyChanges(meals, changes));
+            generation1.add(new Evaluation<DietPlan>(dietPlan, getFitnessFunction(requirements)));
         }
-        sortDietPlans(generation1);
+        final Evaluations<DietPlan> evaluatedGeneration1 = new Evaluations<DietPlan>(generation1);
 
-        System.out.println(generation1.get(0).a());
-        System.out.println("Scores:");
-        System.out.println(generation1.get(0).b());
-        System.out.println("Total score: " + generation1.get(0).b().getTotalScore());
+        // TODO: Keep best diet plans and loop
+        // sortDietPlans(generation1);
+        // private static void sortDietPlans(final ArrayList<Pair<DietPlan, Scores>> dietPlans) {
+        //     dietPlans.sort(new Comparator<Pair<DietPlan, Scores>>() {
+        //         @Override
+        //         public int compare(final Pair<DietPlan, Scores> dietPlan1, final Pair<DietPlan, Scores> dietPlan2) {
+        //             final double score1 = dietPlan1.b().getTotalScore();
+        //             final double score2 = dietPlan2.b().getTotalScore();
+        //             return Double.compare(score2, score1); // Descending order
+        //         }
+        //     });
+        // }
 
+        evaluatedGeneration1.getBest().ifPresent(new Consumer<Evaluation<DietPlan>>() {
+            @Override
+            public void accept(final Evaluation<DietPlan> evaluatedDietPlan) {
+                System.out.println(evaluatedDietPlan.getObject());
+                System.out.println("Scores:");
+                System.out.println(evaluatedDietPlan.getScores());
+                System.out.println("Total score: " + evaluatedDietPlan.getTotalScore());
+            }
+        });
     }
 
     private static MealTemplate getDayMixTemplate() {
@@ -291,17 +299,6 @@ public class OptimizationTest {
                     }
                 });
                 scores.addScore(score, weight, sb.toString());
-            }
-        });
-    }
-
-    private static void sortDietPlans(final ArrayList<Pair<DietPlan, Scores>> dietPlans) {
-        dietPlans.sort(new Comparator<Pair<DietPlan, Scores>>() {
-            @Override
-            public int compare(final Pair<DietPlan, Scores> dietPlan1, final Pair<DietPlan, Scores> dietPlan2) {
-                final double score1 = dietPlan1.b().getTotalScore();
-                final double score2 = dietPlan2.b().getTotalScore();
-                return Double.compare(score2, score1); // Descending order
             }
         });
     }
