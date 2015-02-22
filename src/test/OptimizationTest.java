@@ -10,60 +10,28 @@ import java.util.function.Function;
 
 import static diet.DietPlan.dietPlan;
 import static diet.FoodItem.*;
+import static util.Evaluations.evaluations;
 import static util.Global.nextRandomDoubleInclOne;
 
 public class OptimizationTest {
-    public static void runTests() {
-        final MealTemplate dayMixTemplate = getDayMixTemplate();
-        final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 7, 7);
-        final int numberOfMeals = requirements.getNumberOfMeals();
-        final Optional<ArrayList<FoodItems>> noChange = Optional.empty();
+    private static final MealTemplate DAY_MIX_TEMPLATE = getDayMixTemplate();
+    private static final Optional<ArrayList<FoodItems>> NO_CHANGE = Optional.empty();
+    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 7);
+    private static final int NUMBER_OF_MEALS = REQUIREMENTS.getNumberOfMeals();
 
+    public static void runTests() {
         final ArrayList<Evaluation<DietPlanChange>> generation0 = new ArrayList<Evaluation<DietPlanChange>>();
         for (int i = 0; i < 50; ++i) {
-            final DietPlan dietPlan = dietPlan(dayMixTemplate.getRandomMeals(numberOfMeals));
-            final DietPlanChange dietPlanChange = DietPlanChange.dietPlanChange(dietPlan, noChange);
-            generation0.add(new Evaluation<DietPlanChange>(dietPlanChange, getFitnessFunction(requirements)));
+            final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.getRandomMeals(NUMBER_OF_MEALS));
+            final DietPlanChange dietPlanChange = DietPlanChange.dietPlanChange(dietPlan, NO_CHANGE);
+            generation0.add(new Evaluation<DietPlanChange>(dietPlanChange, getFitnessFunction(REQUIREMENTS)));
         }
-        final Evaluations<DietPlanChange> evaluatedGeneration0 = new Evaluations<DietPlanChange>(generation0);
-
-        // TODO: If mutated last time, repeat mutation and keep better one (don't repeat same check)
-        final ArrayList<Evaluation<DietPlanChange>> generation1 = new ArrayList<Evaluation<DietPlanChange>>(generation0);
-        final int generation0Size = generation0.size();
-        for (int i = 0; i < generation0Size; ++i) {
-            final Optional<DietPlanChange> maybeDietPlanChange1 = evaluatedGeneration0.selectProbabilistically();
-            final Optional<DietPlanChange> maybeDietPlanChange2 = evaluatedGeneration0.selectProbabilistically();
-            if (maybeDietPlanChange1.isPresent() && maybeDietPlanChange2.isPresent()) {
-                final ArrayList<Meal> meals1 = maybeDietPlanChange1.get().getDietPlan().getMeals();
-                final ArrayList<Meal> meals2 = maybeDietPlanChange2.get().getDietPlan().getMeals();
-                final DietPlan dietPlan = dietPlan(dayMixTemplate.getRandomMix(meals1, meals2));
-                final DietPlanChange dietPlanChange = DietPlanChange.dietPlanChange(dietPlan, noChange);
-                generation1.add(new Evaluation<DietPlanChange>(dietPlanChange, getFitnessFunction(requirements)));
-            }
+        Evaluations<DietPlanChange> curGeneration = evaluations(generation0);
+        for (int i = 2; i <= 100; ++i) {
+            curGeneration = getNextGeneration(curGeneration);
         }
-        for (final Evaluation<DietPlanChange> evaluatedDietPlanChange : generation0) {
-            final ArrayList<Meal> meals = evaluatedDietPlanChange.getObject().getDietPlan().getMeals();
-            final ArrayList<FoodItems> changes = dayMixTemplate.getRandomChanges(nextRandomDoubleInclOne(), numberOfMeals);
-            final DietPlan dietPlan = dietPlan(dayMixTemplate.applyChanges(meals, changes));
-            final DietPlanChange dietPlanChange = DietPlanChange.dietPlanChange(dietPlan, Optional.of(changes));
-            generation1.add(new Evaluation<DietPlanChange>(dietPlanChange, getFitnessFunction(requirements)));
-        }
-        final Evaluations<DietPlanChange> evaluatedGeneration1 = new Evaluations<DietPlanChange>(generation1);
 
-        // TODO: Keep best diet plans and loop
-        // sortDietPlans(generation1);
-        // private static void sortDietPlans(final ArrayList<Pair<DietPlan, Scores>> dietPlans) {
-        //     dietPlans.sort(new Comparator<Pair<DietPlan, Scores>>() {
-        //         @Override
-        //         public int compare(final Pair<DietPlan, Scores> dietPlan1, final Pair<DietPlan, Scores> dietPlan2) {
-        //             final double score1 = dietPlan1.b().getTotalScore();
-        //             final double score2 = dietPlan2.b().getTotalScore();
-        //             return Double.compare(score2, score1); // Descending order
-        //         }
-        //     });
-        // }
-
-        evaluatedGeneration1.getBest().ifPresent(new Consumer<Evaluation<DietPlanChange>>() {
+        curGeneration.getBest().ifPresent(new Consumer<Evaluation<DietPlanChange>>() {
             @Override
             public void accept(final Evaluation<DietPlanChange> evaluatedDietPlanChange) {
                 System.out.println(evaluatedDietPlanChange.getObject().getDietPlan());
@@ -220,6 +188,38 @@ public class OptimizationTest {
                 addIngredient(COLES_ZUCCHINI, 0.0, 1.0);
             }
         };
+    }
+
+    private static Evaluations<DietPlanChange> getNextGeneration(final Evaluations<DietPlanChange> evaluatedGeneration) {
+        final ArrayList<Evaluation<DietPlanChange>> prevGeneration = evaluatedGeneration.getEvaluations();
+        final ArrayList<Evaluation<DietPlanChange>> nextGeneration = new ArrayList<Evaluation<DietPlanChange>>(prevGeneration);
+        final int generationSize = prevGeneration.size();
+
+        // TODO: If mutated last time, repeat mutation and keep better one (don't repeat same check)
+
+        // Create mixed diet plans
+        for (int i = 0; i < generationSize; ++i) {
+            final Optional<DietPlanChange> maybeDietPlanChange1 = evaluatedGeneration.selectProbabilistically();
+            final Optional<DietPlanChange> maybeDietPlanChange2 = evaluatedGeneration.selectProbabilistically();
+            if (maybeDietPlanChange1.isPresent() && maybeDietPlanChange2.isPresent()) {
+                final ArrayList<Meal> meals1 = maybeDietPlanChange1.get().getDietPlan().getMeals();
+                final ArrayList<Meal> meals2 = maybeDietPlanChange2.get().getDietPlan().getMeals();
+                final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.getRandomMix(meals1, meals2));
+                final DietPlanChange dietPlanChange = DietPlanChange.dietPlanChange(dietPlan, NO_CHANGE);
+                nextGeneration.add(new Evaluation<DietPlanChange>(dietPlanChange, getFitnessFunction(REQUIREMENTS)));
+            }
+        }
+
+        // Create mutated diet plans
+        for (final Evaluation<DietPlanChange> evaluatedDietPlanChange : prevGeneration) {
+            final ArrayList<Meal> meals = evaluatedDietPlanChange.getObject().getDietPlan().getMeals();
+            final ArrayList<FoodItems> changes = DAY_MIX_TEMPLATE.getRandomChanges(nextRandomDoubleInclOne(), NUMBER_OF_MEALS);
+            final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.applyChanges(meals, changes));
+            final DietPlanChange dietPlanChange = DietPlanChange.dietPlanChange(dietPlan, Optional.of(changes));
+            nextGeneration.add(new Evaluation<DietPlanChange>(dietPlanChange, getFitnessFunction(REQUIREMENTS)));
+        }
+
+        return evaluations(nextGeneration, generationSize);
     }
 
     private static Function<DietPlanChange, Scores> getFitnessFunction(final Requirements requirements) {

@@ -32,7 +32,7 @@ public class Species {
         for (int i = 0; i < size; ++i) {
             evaluatedGenomes.add(new Evaluation<Genome>(genome(genomeLength), fitnessFunction));
         }
-        evaluations = new Evaluations<Genome>(evaluatedGenomes);
+        evaluations = Evaluations.evaluations(evaluatedGenomes);
 
         this.fitnessFunction = fitnessFunction;
     }
@@ -41,7 +41,7 @@ public class Species {
                     final ArrayList<Evaluation<Genome>> evaluatedGenomes,
                     final Function<Genome, Scores> fitnessFunction) {
         this.age = age;
-        evaluations = new Evaluations<Genome>(evaluatedGenomes);
+        evaluations = Evaluations.evaluations(evaluatedGenomes);
         this.fitnessFunction = fitnessFunction;
     }
 

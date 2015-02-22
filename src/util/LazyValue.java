@@ -13,5 +13,9 @@ public abstract class LazyValue<A> {
         return value;
     }
 
+    public void invalidate() {
+        computed = false;
+    }
+
     abstract protected A compute();
 }
