@@ -1,4 +1,4 @@
--   Improve optimisation algorithm (see TODO in OptimizationTest.getNextGeneration())
+-   Improve optimisation algorithm
 -   Refactor code
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

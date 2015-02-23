@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static evolution.Genome.genome;
+import static util.Evaluation.evaluation;
 
 public class Species {
     private static final int MAX_GENOME_LENGTH = 10000;
@@ -30,7 +31,7 @@ public class Species {
         final ArrayList<Evaluation<Genome>> evaluatedGenomes = new ArrayList<Evaluation<Genome>>(size);
         final int genomeLength = getRandomGenomeLength();
         for (int i = 0; i < size; ++i) {
-            evaluatedGenomes.add(new Evaluation<Genome>(genome(genomeLength), fitnessFunction));
+            evaluatedGenomes.add(evaluation(genome(genomeLength), fitnessFunction));
         }
         evaluations = Evaluations.evaluations(evaluatedGenomes);
 
@@ -86,7 +87,7 @@ public class Species {
             final int offspringCnt = nextGeneration.size() + 1 < nextGenerationSize ? 2 : 1;
             final Genome[] offspring = Genome.recombine(parent1, parent2, offspringCnt);
             for (final Genome genome : offspring) {
-                nextGeneration.add(new Evaluation<Genome>(genome, fitnessFunction));
+                nextGeneration.add(evaluation(genome, fitnessFunction));
             }
         }
 

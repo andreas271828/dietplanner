@@ -19,4 +19,8 @@ public class DietPlanChange {
     public DietPlan getDietPlan() {
         return dietPlan;
     }
+
+    public Optional<ArrayList<FoodItems>> getChanges() {
+        return changes;
+    }
 }
