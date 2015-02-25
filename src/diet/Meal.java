@@ -1,15 +1,42 @@
 package diet;
 
 import util.LazyValue;
+import util.Limits2;
+
+import java.util.function.BiConsumer;
+
+import static util.Global.nextRandomDoubleInclOne;
 
 public class Meal {
-    private String name;
+    private MealTemplate template;
     private FoodItems ingredients;
     private final LazyValue<FoodProperties> properties;
     private final LazyValue<Double> costs;
 
-    public Meal(final String name, final FoodItems ingredients) {
-        this.name = name;
+    public static Meal meal(final MealTemplate template, final FoodItems ingredients) {
+        return new Meal(template, ingredients);
+    }
+
+    public static Meal randomMeal(final MealTemplate template) {
+        final FoodItems ingredients = new FoodItems();
+        template.getIngredients().forEach(new BiConsumer<FoodItem, Limits2>() {
+            @Override
+            public void accept(final FoodItem foodItem, final Limits2 limits) {
+                final double minAmount = limits.getMin();
+                final double maxAmount = limits.getMax();
+                final double relAmount = nextRandomDoubleInclOne();
+                final double amount = minAmount + relAmount * (maxAmount - minAmount);
+                final double roundedAmount = foodItem.roundToPortions(amount);
+                if (roundedAmount > 1e-6) {
+                    ingredients.set(foodItem, roundedAmount);
+                }
+            }
+        });
+        return new Meal(template, ingredients);
+    }
+
+    private Meal(final MealTemplate template, final FoodItems ingredients) {
+        this.template = template;
         this.ingredients = ingredients;
 
         properties = new LazyValue<FoodProperties>() {
@@ -27,12 +54,20 @@ public class Meal {
         };
     }
 
+    public MealTemplate getTemplate() {
+        return template;
+    }
+
     public String getName() {
-        return name;
+        return template.getName();
     }
 
     public FoodItems getIngredients() {
         return ingredients;
+    }
+
+    public double getAmount(final FoodItem foodItem) {
+        return ingredients.get(foodItem);
     }
 
     public FoodProperties getProperties() {
@@ -45,6 +80,6 @@ public class Meal {
 
     @Override
     public String toString() {
-        return name + ": " + ingredients.toString();
+        return getName() + ": " + getIngredients().toString();
     }
 }

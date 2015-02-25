@@ -13,6 +13,7 @@ import static diet.DietPlanChange.dietPlanChange;
 import static diet.FoodItem.*;
 import static util.Evaluation.evaluation;
 import static util.Evaluations.evaluations;
+import static util.Global.RANDOM;
 import static util.Global.nextRandomDoubleInclOne;
 
 public class OptimizationTest {
@@ -20,30 +21,12 @@ public class OptimizationTest {
     private static final Optional<ArrayList<FoodItems>> NO_CHANGE = Optional.empty();
     private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 7);
     private static final int NUMBER_OF_MEALS = REQUIREMENTS.getNumberOfMeals();
-    private static final Function<DietPlanChange, Scores> FITNESS_FUNCTION = getFitnessFunction(REQUIREMENTS);
+    private static final Function<DietPlanChange, Scores> FITNESS_FUNCTION_1 = getFitnessFunction1(REQUIREMENTS);
+    private static final Function<DietPlan, Scores> FITNESS_FUNCTION_2 = getFitnessFunction2(REQUIREMENTS);
 
     public static void runTests() {
-        final ArrayList<Evaluation<DietPlanChange>> generation0 = new ArrayList<Evaluation<DietPlanChange>>();
-        for (int i = 0; i < 50; ++i) {
-            final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.getRandomMeals(NUMBER_OF_MEALS));
-            final DietPlanChange dietPlanChange = dietPlanChange(dietPlan, NO_CHANGE);
-            generation0.add(evaluation(dietPlanChange, FITNESS_FUNCTION));
-        }
-        Evaluations<DietPlanChange> curGeneration = evaluations(generation0);
-        for (int i = 2; i <= 10000; ++i) {
-            curGeneration = getNextGeneration(curGeneration);
-        }
-
-        curGeneration.getBest().ifPresent(new Consumer<Evaluation<DietPlanChange>>() {
-            @Override
-            public void accept(final Evaluation<DietPlanChange> evaluatedDietPlanChange) {
-                System.out.println(evaluatedDietPlanChange.getObject().getDietPlan());
-                System.out.println("Scores:");
-                System.out.println(evaluatedDietPlanChange.getScores());
-                final Scores scores = evaluatedDietPlanChange.getScores();
-                System.out.println("Total score: " + scores.getTotalScore() + " of " + scores.getWeightSum());
-            }
-        });
+        // test1();
+        test2();
     }
 
     private static MealTemplate getDayMixTemplate() {
@@ -193,114 +176,59 @@ public class OptimizationTest {
         };
     }
 
-    private static Evaluations<DietPlanChange> getNextGeneration(final Evaluations<DietPlanChange> evaluatedGeneration) {
-        final ArrayList<Evaluation<DietPlanChange>> nextGeneration = new ArrayList<Evaluation<DietPlanChange>>();
+    private static Scores getScores(final DietPlan dietPlan, final Requirements requirements) {
+        final Scores scores = new Scores();
 
-        // Repeat successful mutations
-        final ArrayList<Evaluation<DietPlanChange>> prevGeneration = evaluatedGeneration.getEvaluations();
-        for (Evaluation<DietPlanChange> evaluation : prevGeneration) {
-            final Optional<ArrayList<FoodItems>> changes = evaluation.getObject().getChanges();
-            if (changes.isPresent()) {
-                final DietPlan dietPlan = evaluation.getObject().getDietPlan();
-                final ArrayList<Meal> meals = dietPlan.getMeals();
-                final DietPlan newDietPlan = dietPlan(DAY_MIX_TEMPLATE.applyChanges(meals, changes.get()));
-                final DietPlanChange newDietPlanChange = dietPlanChange(newDietPlan, changes);
-                final Evaluation<DietPlanChange> newEvaluation = evaluation(newDietPlanChange, FITNESS_FUNCTION);
-                if (newEvaluation.getTotalScore() > evaluation.getTotalScore()) {
-                    nextGeneration.add(newEvaluation);
-                } else {
-                    // Don't try the same change again
-                    final DietPlanChange dietPlanWithoutChange = dietPlanChange(dietPlan, NO_CHANGE);
-                    nextGeneration.add(evaluation(dietPlanWithoutChange, evaluation.getScores()));
-                }
-            }
+        // Criteria for complete diet plan
+        final FoodProperties dietPlanProperties = dietPlan.getProperties();
+        final Optional<Integer> noMealIndex = Optional.empty();
+        addScore(scores, Requirement.ALPHA_LINOLENIC_ACID, 1.0, requirements, dietPlanProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), noMealIndex);
+        addScore(scores, Requirement.CALCIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.CALCIUM), noMealIndex);
+        addScore(scores, Requirement.CARBOHYDRATES, 10.0, requirements, dietPlanProperties.get(FoodProperty.CARBOHYDRATES), noMealIndex);
+        addScore(scores, Requirement.CHOLESTEROL, 1.0, requirements, dietPlanProperties.get(FoodProperty.CHOLESTEROL), noMealIndex);
+        addScore(scores, Requirement.COSTS, 1.0, requirements, dietPlan.getCosts(), noMealIndex);
+        addScore(scores, Requirement.DIETARY_FIBRE, 1.0, requirements, dietPlanProperties.get(FoodProperty.DIETARY_FIBRE), noMealIndex);
+        addScore(scores, Requirement.ENERGY, 10.0, requirements, dietPlanProperties.get(FoodProperty.ENERGY), noMealIndex);
+        addScore(scores, Requirement.FAT, 1.0, requirements, dietPlanProperties.get(FoodProperty.FAT), noMealIndex);
+        addScore(scores, Requirement.FOLATES, 1.0, requirements, dietPlanProperties.get(FoodProperty.TOTAL_FOLATES), noMealIndex);
+        addScore(scores, Requirement.IODINE, 1.0, requirements, dietPlanProperties.get(FoodProperty.IODINE), noMealIndex);
+        addScore(scores, Requirement.IRON, 1.0, requirements, dietPlanProperties.get(FoodProperty.IRON), noMealIndex);
+        addScore(scores, Requirement.LINOLEIC_ACID, 1.0, requirements, dietPlanProperties.get(FoodProperty.LINOLEIC_ACID), noMealIndex);
+        addScore(scores, Requirement.MAGNESIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.MAGNESIUM), noMealIndex);
+        addScore(scores, Requirement.NIACIN_DERIVED_EQUIVALENTS, 1.0, requirements, dietPlanProperties.get(FoodProperty.NIACIN_DERIVED_EQUIVALENTS), noMealIndex);
+        addScore(scores, Requirement.OMEGA_3_FATTY_ACIDS, 1.0, requirements, dietPlanProperties.get(FoodProperty.OMEGA_3_FATTY_ACIDS), noMealIndex);
+        addScore(scores, Requirement.PHOSPHORUS, 1.0, requirements, dietPlanProperties.get(FoodProperty.PHOSPHORUS), noMealIndex);
+        addScore(scores, Requirement.POTASSIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.POTASSIUM), noMealIndex);
+        addScore(scores, Requirement.PROTEIN, 100.0, requirements, dietPlanProperties.get(FoodProperty.PROTEIN), noMealIndex);
+        addScore(scores, Requirement.RIBOFLAVIN, 1.0, requirements, dietPlanProperties.get(FoodProperty.RIBOFLAVIN), noMealIndex);
+        addScore(scores, Requirement.SELENIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.SELENIUM), noMealIndex);
+        addScore(scores, Requirement.SODIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.SODIUM), noMealIndex);
+        addScore(scores, Requirement.SUGARS, 1.0, requirements, dietPlanProperties.get(FoodProperty.SUGARS), noMealIndex);
+        addScore(scores, Requirement.THIAMIN, 1.0, requirements, dietPlanProperties.get(FoodProperty.THIAMIN), noMealIndex);
+        addScore(scores, Requirement.TRANS_FATTY_ACIDS, 1.0, requirements, dietPlanProperties.get(FoodProperty.TRANS_FATTY_ACIDS), noMealIndex);
+        addScore(scores, Requirement.TRYPTOPHAN, 1.0, requirements, dietPlanProperties.get(FoodProperty.TRYPTOPHAN), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_A_RETINOL_EQUIVALENTS, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_A_RETINOL_EQUIVALENTS), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_B12, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B12), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_B6, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B6), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_C, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_C), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_E, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_E), noMealIndex);
+        addScore(scores, Requirement.ZINC, 1.0, requirements, dietPlanProperties.get(FoodProperty.ZINC), noMealIndex);
+
+        // Criteria for individual meals
+        final int numberOfMeals = requirements.getNumberOfMeals();
+        for (int i = 0; i < numberOfMeals; ++i) {
+            final Meal meal = dietPlan.getMeal(i);
+            final FoodProperties mealProperties = meal.getProperties();
+            final Optional<Integer> mealIndex = Optional.of(i);
+            addScore(scores, Requirement.MEAL_ALCOHOL, 1.0, requirements, mealProperties.get(FoodProperty.ALCOHOL), mealIndex);
+            addScore(scores, Requirement.MEAL_CAFFEINE, 1.0, requirements, mealProperties.get(FoodProperty.CAFFEINE), mealIndex);
+            addScore(scores, Requirement.MEAL_CARBOHYDRATES, 1.0, requirements, mealProperties.get(FoodProperty.CARBOHYDRATES), mealIndex);
+            addScore(scores, Requirement.MEAL_ENERGY, 1.0, requirements, mealProperties.get(FoodProperty.ENERGY), mealIndex);
+            addScore(scores, Requirement.MEAL_FAT, 1.0, requirements, mealProperties.get(FoodProperty.FAT), mealIndex);
+            addScore(scores, Requirement.MEAL_PROTEIN, 1.0, requirements, mealProperties.get(FoodProperty.PROTEIN), mealIndex);
         }
 
-        // Create mixed diet plans
-        final int generationSize = prevGeneration.size();
-        for (int i = 0; i < generationSize; ++i) {
-            final Optional<DietPlanChange> maybeDietPlanChange1 = evaluatedGeneration.selectProbabilistically();
-            final Optional<DietPlanChange> maybeDietPlanChange2 = evaluatedGeneration.selectProbabilistically();
-            if (maybeDietPlanChange1.isPresent() && maybeDietPlanChange2.isPresent()) {
-                final ArrayList<Meal> meals1 = maybeDietPlanChange1.get().getDietPlan().getMeals();
-                final ArrayList<Meal> meals2 = maybeDietPlanChange2.get().getDietPlan().getMeals();
-                final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.getRandomMix(meals1, meals2));
-                final DietPlanChange dietPlanChange = dietPlanChange(dietPlan, NO_CHANGE);
-                nextGeneration.add(evaluation(dietPlanChange, FITNESS_FUNCTION));
-            }
-        }
-
-        // Create mutated diet plans
-        for (final Evaluation<DietPlanChange> evaluatedDietPlanChange : prevGeneration) {
-            final ArrayList<Meal> meals = evaluatedDietPlanChange.getObject().getDietPlan().getMeals();
-            final ArrayList<FoodItems> changes = DAY_MIX_TEMPLATE.getRandomChanges(nextRandomDoubleInclOne(), NUMBER_OF_MEALS);
-            final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.applyChanges(meals, changes));
-            final DietPlanChange dietPlanChange = dietPlanChange(dietPlan, Optional.of(changes));
-            nextGeneration.add(evaluation(dietPlanChange, FITNESS_FUNCTION));
-        }
-
-        return evaluations(nextGeneration, generationSize);
-    }
-
-    private static Function<DietPlanChange, Scores> getFitnessFunction(final Requirements requirements) {
-        return new Function<DietPlanChange, Scores>() {
-            @Override
-            public Scores apply(final DietPlanChange dietPlanChange) {
-                final Scores scores = new Scores();
-
-                // Criteria for complete diet plan
-                final DietPlan dietPlan = dietPlanChange.getDietPlan();
-                final FoodProperties dietPlanProperties = dietPlan.getProperties();
-                final Optional<Integer> noMealIndex = Optional.empty();
-                addScore(scores, Requirement.ALPHA_LINOLENIC_ACID, 1.0, requirements, dietPlanProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), noMealIndex);
-                addScore(scores, Requirement.CALCIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.CALCIUM), noMealIndex);
-                addScore(scores, Requirement.CARBOHYDRATES, 10.0, requirements, dietPlanProperties.get(FoodProperty.CARBOHYDRATES), noMealIndex);
-                addScore(scores, Requirement.CHOLESTEROL, 1.0, requirements, dietPlanProperties.get(FoodProperty.CHOLESTEROL), noMealIndex);
-                addScore(scores, Requirement.COSTS, 1.0, requirements, dietPlan.getCosts(), noMealIndex);
-                addScore(scores, Requirement.DIETARY_FIBRE, 1.0, requirements, dietPlanProperties.get(FoodProperty.DIETARY_FIBRE), noMealIndex);
-                addScore(scores, Requirement.ENERGY, 10.0, requirements, dietPlanProperties.get(FoodProperty.ENERGY), noMealIndex);
-                addScore(scores, Requirement.FAT, 1.0, requirements, dietPlanProperties.get(FoodProperty.FAT), noMealIndex);
-                addScore(scores, Requirement.FOLATES, 1.0, requirements, dietPlanProperties.get(FoodProperty.TOTAL_FOLATES), noMealIndex);
-                addScore(scores, Requirement.IODINE, 1.0, requirements, dietPlanProperties.get(FoodProperty.IODINE), noMealIndex);
-                addScore(scores, Requirement.IRON, 1.0, requirements, dietPlanProperties.get(FoodProperty.IRON), noMealIndex);
-                addScore(scores, Requirement.LINOLEIC_ACID, 1.0, requirements, dietPlanProperties.get(FoodProperty.LINOLEIC_ACID), noMealIndex);
-                addScore(scores, Requirement.MAGNESIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.MAGNESIUM), noMealIndex);
-                addScore(scores, Requirement.NIACIN_DERIVED_EQUIVALENTS, 1.0, requirements, dietPlanProperties.get(FoodProperty.NIACIN_DERIVED_EQUIVALENTS), noMealIndex);
-                addScore(scores, Requirement.OMEGA_3_FATTY_ACIDS, 1.0, requirements, dietPlanProperties.get(FoodProperty.OMEGA_3_FATTY_ACIDS), noMealIndex);
-                addScore(scores, Requirement.PHOSPHORUS, 1.0, requirements, dietPlanProperties.get(FoodProperty.PHOSPHORUS), noMealIndex);
-                addScore(scores, Requirement.POTASSIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.POTASSIUM), noMealIndex);
-                addScore(scores, Requirement.PROTEIN, 100.0, requirements, dietPlanProperties.get(FoodProperty.PROTEIN), noMealIndex);
-                addScore(scores, Requirement.RIBOFLAVIN, 1.0, requirements, dietPlanProperties.get(FoodProperty.RIBOFLAVIN), noMealIndex);
-                addScore(scores, Requirement.SELENIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.SELENIUM), noMealIndex);
-                addScore(scores, Requirement.SODIUM, 1.0, requirements, dietPlanProperties.get(FoodProperty.SODIUM), noMealIndex);
-                addScore(scores, Requirement.SUGARS, 1.0, requirements, dietPlanProperties.get(FoodProperty.SUGARS), noMealIndex);
-                addScore(scores, Requirement.THIAMIN, 1.0, requirements, dietPlanProperties.get(FoodProperty.THIAMIN), noMealIndex);
-                addScore(scores, Requirement.TRANS_FATTY_ACIDS, 1.0, requirements, dietPlanProperties.get(FoodProperty.TRANS_FATTY_ACIDS), noMealIndex);
-                addScore(scores, Requirement.TRYPTOPHAN, 1.0, requirements, dietPlanProperties.get(FoodProperty.TRYPTOPHAN), noMealIndex);
-                addScore(scores, Requirement.VITAMIN_A_RETINOL_EQUIVALENTS, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_A_RETINOL_EQUIVALENTS), noMealIndex);
-                addScore(scores, Requirement.VITAMIN_B12, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B12), noMealIndex);
-                addScore(scores, Requirement.VITAMIN_B6, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B6), noMealIndex);
-                addScore(scores, Requirement.VITAMIN_C, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_C), noMealIndex);
-                addScore(scores, Requirement.VITAMIN_E, 1.0, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_E), noMealIndex);
-                addScore(scores, Requirement.ZINC, 1.0, requirements, dietPlanProperties.get(FoodProperty.ZINC), noMealIndex);
-
-                // Criteria for individual meals
-                final int numberOfMeals = requirements.getNumberOfMeals();
-                for (int i = 0; i < numberOfMeals; ++i) {
-                    final Meal meal = dietPlan.getMeal(i);
-                    final FoodProperties mealProperties = meal.getProperties();
-                    final Optional<Integer> mealIndex = Optional.of(i);
-                    addScore(scores, Requirement.MEAL_ALCOHOL, 1.0, requirements, mealProperties.get(FoodProperty.ALCOHOL), mealIndex);
-                    addScore(scores, Requirement.MEAL_CAFFEINE, 1.0, requirements, mealProperties.get(FoodProperty.CAFFEINE), mealIndex);
-                    addScore(scores, Requirement.MEAL_CARBOHYDRATES, 1.0, requirements, mealProperties.get(FoodProperty.CARBOHYDRATES), mealIndex);
-                    addScore(scores, Requirement.MEAL_ENERGY, 1.0, requirements, mealProperties.get(FoodProperty.ENERGY), mealIndex);
-                    addScore(scores, Requirement.MEAL_FAT, 1.0, requirements, mealProperties.get(FoodProperty.FAT), mealIndex);
-                    addScore(scores, Requirement.MEAL_PROTEIN, 1.0, requirements, mealProperties.get(FoodProperty.PROTEIN), mealIndex);
-                }
-
-                return scores;
-            }
-        };
+        return scores;
     }
 
     private static void addScore(final Scores scores,
@@ -323,6 +251,135 @@ public class OptimizationTest {
                     }
                 });
                 scores.addScore(score, weight, sb.toString());
+            }
+        });
+    }
+
+    private static Function<DietPlanChange, Scores> getFitnessFunction1(final Requirements requirements) {
+        return new Function<DietPlanChange, Scores>() {
+            @Override
+            public Scores apply(final DietPlanChange dietPlanChange) {
+                return getScores(dietPlanChange.getDietPlan(), requirements);
+            }
+        };
+    }
+
+    private static Function<DietPlan, Scores> getFitnessFunction2(final Requirements requirements) {
+        return new Function<DietPlan, Scores>() {
+            @Override
+            public Scores apply(final DietPlan dietPlan) {
+                return getScores(dietPlan, requirements);
+            }
+        };
+    }
+
+    private static void test1() {
+        final ArrayList<Evaluation<DietPlanChange>> generation0 = new ArrayList<Evaluation<DietPlanChange>>();
+        for (int i = 0; i < 50; ++i) {
+            final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.getRandomMeals(NUMBER_OF_MEALS));
+            final DietPlanChange dietPlanChange = dietPlanChange(dietPlan, NO_CHANGE);
+            generation0.add(evaluation(dietPlanChange, FITNESS_FUNCTION_1));
+        }
+        Evaluations<DietPlanChange> curGeneration = evaluations(generation0);
+        for (int i = 2; i <= 1000; ++i) {
+            curGeneration = getNextGeneration(curGeneration);
+        }
+
+        curGeneration.getBest().ifPresent(new Consumer<Evaluation<DietPlanChange>>() {
+            @Override
+            public void accept(final Evaluation<DietPlanChange> evaluatedDietPlanChange) {
+                System.out.println(evaluatedDietPlanChange.getObject().getDietPlan());
+                System.out.println("Scores:");
+                System.out.println(evaluatedDietPlanChange.getScores());
+                final Scores scores = evaluatedDietPlanChange.getScores();
+                System.out.println("Total score: " + scores.getTotalScore() + " of " + scores.getWeightSum());
+            }
+        });
+    }
+
+    private static Evaluations<DietPlanChange> getNextGeneration(final Evaluations<DietPlanChange> evaluatedGeneration) {
+        final ArrayList<Evaluation<DietPlanChange>> nextGeneration = new ArrayList<Evaluation<DietPlanChange>>();
+
+        // Repeat successful mutations
+        final ArrayList<Evaluation<DietPlanChange>> prevGeneration = evaluatedGeneration.getEvaluations();
+        for (Evaluation<DietPlanChange> evaluation : prevGeneration) {
+            final Optional<ArrayList<FoodItems>> changes = evaluation.getObject().getChanges();
+            if (changes.isPresent()) {
+                final DietPlan dietPlan = evaluation.getObject().getDietPlan();
+                final ArrayList<Meal> meals = dietPlan.getMeals();
+                final DietPlan newDietPlan = dietPlan(DAY_MIX_TEMPLATE.applyChanges(meals, changes.get()));
+                final DietPlanChange newDietPlanChange = dietPlanChange(newDietPlan, changes);
+                final Evaluation<DietPlanChange> newEvaluation = evaluation(newDietPlanChange, FITNESS_FUNCTION_1);
+                if (newEvaluation.getTotalScore() > evaluation.getTotalScore()) {
+                    nextGeneration.add(newEvaluation);
+                } else {
+                    // Don't try the same change again
+                    final DietPlanChange dietPlanWithoutChange = dietPlanChange(dietPlan, NO_CHANGE);
+                    nextGeneration.add(evaluation(dietPlanWithoutChange, evaluation.getScores()));
+                }
+            }
+        }
+
+        // Create mixed diet plans
+        final int generationSize = prevGeneration.size();
+        for (int i = 0; i < generationSize; ++i) {
+            final Optional<DietPlanChange> maybeDietPlanChange1 = evaluatedGeneration.selectProbabilistically();
+            final Optional<DietPlanChange> maybeDietPlanChange2 = evaluatedGeneration.selectProbabilistically();
+            if (maybeDietPlanChange1.isPresent() && maybeDietPlanChange2.isPresent()) {
+                final ArrayList<Meal> meals1 = maybeDietPlanChange1.get().getDietPlan().getMeals();
+                final ArrayList<Meal> meals2 = maybeDietPlanChange2.get().getDietPlan().getMeals();
+                final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.getRandomMix(meals1, meals2));
+                final DietPlanChange dietPlanChange = dietPlanChange(dietPlan, NO_CHANGE);
+                nextGeneration.add(evaluation(dietPlanChange, FITNESS_FUNCTION_1));
+            }
+        }
+
+        // Create mutated diet plans
+        for (final Evaluation<DietPlanChange> evaluatedDietPlanChange : prevGeneration) {
+            final ArrayList<Meal> meals = evaluatedDietPlanChange.getObject().getDietPlan().getMeals();
+            final ArrayList<FoodItems> changes = DAY_MIX_TEMPLATE.getRandomChanges(nextRandomDoubleInclOne(), NUMBER_OF_MEALS);
+            final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.applyChanges(meals, changes));
+            final DietPlanChange dietPlanChange = dietPlanChange(dietPlan, Optional.of(changes));
+            nextGeneration.add(evaluation(dietPlanChange, FITNESS_FUNCTION_1));
+        }
+
+        return evaluations(nextGeneration, generationSize);
+    }
+
+    private static void test2() {
+        final int populationSize = 50;
+        final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>();
+        for (int i = 0; i < populationSize; ++i) {
+            final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.getRandomMeals(NUMBER_OF_MEALS));
+            population.add(evaluation(dietPlan, FITNESS_FUNCTION_2));
+        }
+
+        final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
+        mealTemplates.add(DAY_MIX_TEMPLATE);
+
+        for (int i = 0; i < 1000; ++i) {
+            // TODO: We could just iterate over the whole population and begin again from the beginning when we have
+            // reached the end, if we can be sure that the iterator is updated properly when an item is removed.
+            final Evaluation<DietPlan> parent1 = population.get(RANDOM.nextInt(population.size()));
+            final Evaluation<DietPlan> parent2 = population.get(RANDOM.nextInt(population.size()));
+
+            // Probability of mating increases with relative fitness of second parent
+            // TODO: Calculate compatibility first - higher compatibility = higher chance of mating
+            final double relParent2Fitness = parent2.getTotalScore() / parent1.getTotalScore();
+            if (RANDOM.nextDouble() < relParent2Fitness) {
+                final DietPlan dietPlan = parent1.getObject().mate(parent2.getObject(), 0.002, mealTemplates, 0.01);
+                population.add(evaluation(dietPlan, FITNESS_FUNCTION_2));
+            }
+        }
+
+        evaluations(population).getBest().ifPresent(new Consumer<Evaluation<DietPlan>>() {
+            @Override
+            public void accept(final Evaluation<DietPlan> evaluatedDietPlan) {
+                System.out.println(evaluatedDietPlan.getObject());
+                System.out.println("Scores:");
+                System.out.println(evaluatedDietPlan.getScores());
+                final Scores scores = evaluatedDietPlan.getScores();
+                System.out.println("Total score: " + scores.getTotalScore() + " of " + scores.getWeightSum());
             }
         });
     }

@@ -6,6 +6,8 @@ import util.Limits2;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
+import static diet.Meal.meal;
+
 public class MealTemplates {
     private final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
 
@@ -33,7 +35,7 @@ public class MealTemplates {
                     }
                 }
             });
-            meals.add(new Meal(mealTemplate.getName(), ingredients));
+            meals.add(meal(mealTemplate, ingredients));
         }
 
         return meals;

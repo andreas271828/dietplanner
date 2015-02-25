@@ -16,20 +16,24 @@ public class ItemList<K extends Enum<K>> {
     }
 
     public void set(final K item, final double amount) {
-        items.put(item, amount);
+        if (amount == 0.0) {
+            items.remove(item);
+        } else {
+            items.put(item, amount);
+        }
     }
 
     public void add(final ItemList<K> toAdd) {
         for (final Map.Entry<K, Double> entry : toAdd.items.entrySet()) {
             final K item = entry.getKey();
-            items.put(item, get(item) + entry.getValue());
+            set(item, get(item) + entry.getValue());
         }
     }
 
     public void addScaled(final ItemList<K> toAdd, final double factor) {
         for (final Map.Entry<K, Double> entry : toAdd.items.entrySet()) {
             final K item = entry.getKey();
-            items.put(item, get(item) + entry.getValue() * factor);
+            set(item, get(item) + entry.getValue() * factor);
         }
     }
 

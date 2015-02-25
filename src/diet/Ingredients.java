@@ -33,4 +33,8 @@ public class Ingredients {
             action.accept(ingredient.a(), ingredient.b());
         }
     }
+
+    public ArrayList<Pair<FoodItem, Limits2>> getList() {
+        return ingredients;
+    }
 }

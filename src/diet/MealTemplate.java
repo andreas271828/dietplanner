@@ -5,6 +5,8 @@ import util.Limits2;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
+import static diet.Meal.meal;
+import static diet.Meal.randomMeal;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static util.Global.RANDOM;
@@ -47,21 +49,7 @@ public abstract class MealTemplate {
     public ArrayList<Meal> getRandomMeals(final int numberOfMeals) {
         final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
         for (int i = 0; i < numberOfMeals; ++i) {
-            final FoodItems ingredients = new FoodItems();
-            getIngredients().forEach(new BiConsumer<FoodItem, Limits2>() {
-                @Override
-                public void accept(final FoodItem foodItem, final Limits2 limits) {
-                    final double minAmount = limits.getMin();
-                    final double maxAmount = limits.getMax();
-                    final double relAmount = nextRandomDoubleInclOne();
-                    final double amount = minAmount + relAmount * (maxAmount - minAmount);
-                    final double roundedAmount = foodItem.roundToPortions(amount);
-                    if (roundedAmount > 1e-6) {
-                        ingredients.set(foodItem, roundedAmount);
-                    }
-                }
-            });
-            meals.add(new Meal(getName(), ingredients));
+            meals.add(randomMeal(this));
         }
         return meals;
     }
@@ -79,7 +67,7 @@ public abstract class MealTemplate {
                     }
                 }
             });
-            meals.add(new Meal(getName(), ingredients));
+            meals.add(meal(this, ingredients));
         }
         return meals;
     }
@@ -103,7 +91,7 @@ public abstract class MealTemplate {
                     }
                 }
             });
-            meals.add(new Meal(origMeal.getName(), ingredients));
+            meals.add(meal(this, ingredients));
         }
         return meals;
     }
