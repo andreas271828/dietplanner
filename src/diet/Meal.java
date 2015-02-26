@@ -2,10 +2,13 @@ package diet;
 
 import util.LazyValue;
 import util.Limits2;
+import util.Pair;
 
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import static util.Global.nextRandomDoubleInclOne;
+import static util.Global.RANDOM;
 
 public class Meal {
     private MealTemplate template;
@@ -22,17 +25,27 @@ public class Meal {
         template.getIngredients().forEach(new BiConsumer<FoodItem, Limits2>() {
             @Override
             public void accept(final FoodItem foodItem, final Limits2 limits) {
-                final double minAmount = limits.getMin();
-                final double maxAmount = limits.getMax();
-                final double relAmount = nextRandomDoubleInclOne();
-                final double amount = minAmount + relAmount * (maxAmount - minAmount);
-                final double roundedAmount = foodItem.roundToPortions(amount);
-                if (roundedAmount > 1e-6) {
-                    ingredients.set(foodItem, roundedAmount);
-                }
+                ingredients.set(foodItem, foodItem.getRandomAmount(limits));
             }
         });
         return new Meal(template, ingredients);
+    }
+
+    public static Optional<Meal> mutatedMeal(final Meal meal, final double mutationRate) {
+        final FoodItems ingredients = new FoodItems();
+        final MealTemplate mealTemplate = meal.getTemplate();
+        final ArrayList<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().getList();
+        boolean mutatedMeal = false;
+        for (final Pair<FoodItem, Limits2> food : foodList) {
+            final FoodItem foodItem = food.a();
+            if (RANDOM.nextDouble() < mutationRate) {
+                ingredients.set(foodItem, foodItem.getRandomAmount(food.b()));
+                mutatedMeal = true;
+            } else {
+                ingredients.set(foodItem, meal.getAmount(foodItem));
+            }
+        }
+        return mutatedMeal ? Optional.of(meal(mealTemplate, ingredients)) : Optional.<Meal>empty();
     }
 
     private Meal(final MealTemplate template, final FoodItems ingredients) {

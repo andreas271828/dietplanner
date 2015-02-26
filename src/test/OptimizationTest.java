@@ -357,7 +357,7 @@ public class OptimizationTest {
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
         mealTemplates.add(DAY_MIX_TEMPLATE);
 
-        for (int i = 0; i < 1000; ++i) {
+        for (int i = 0; i < 10000; ++i) {
             // TODO: We could just iterate over the whole population and begin again from the beginning when we have
             // reached the end, if we can be sure that the iterator is updated properly when an item is removed.
             final Evaluation<DietPlan> parent1 = population.get(RANDOM.nextInt(population.size()));
@@ -370,6 +370,9 @@ public class OptimizationTest {
                 final DietPlan dietPlan = parent1.getObject().mate(parent2.getObject(), 0.002, mealTemplates, 0.01);
                 population.add(evaluation(dietPlan, FITNESS_FUNCTION_2));
             }
+
+            // TODO: Kill individuals (probability increases with age and decreases with fitness)
+            // TODO: Always remember best individual, even if it's killed
         }
 
         evaluations(population).getBest().ifPresent(new Consumer<Evaluation<DietPlan>>() {

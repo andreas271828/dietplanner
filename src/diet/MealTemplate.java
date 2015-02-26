@@ -62,9 +62,7 @@ public abstract class MealTemplate {
                 @Override
                 public void accept(final FoodItem foodItem, final Limits2 limits) {
                     final double roundedAmount = foodItem.roundToPortions(limits.getMin());
-                    if (roundedAmount > 1e-6) {
-                        ingredients.set(foodItem, roundedAmount);
-                    }
+                    ingredients.set(foodItem, roundedAmount);
                 }
             });
             meals.add(meal(this, ingredients));
@@ -86,9 +84,7 @@ public abstract class MealTemplate {
                     final double change = mealChanges.get(foodItem);
                     final double amount = min(max(origAmount + change, limits.getMin()), limits.getMax());
                     final double roundedAmount = foodItem.roundToPortions(amount);
-                    if (roundedAmount > 1e-6) {
-                        ingredients.set(foodItem, roundedAmount);
-                    }
+                    ingredients.set(foodItem, roundedAmount);
                 }
             });
             meals.add(meal(this, ingredients));
@@ -110,9 +106,7 @@ public abstract class MealTemplate {
                 public void accept(final FoodItem foodItem, final Limits2 limits) {
                     final double randVal = 2.0 * nextRandomDoubleInclOne() - 1.0;
                     final double change = randVal * magnitude * (limits.getMax() - limits.getMin());
-                    if (change > 1e-6) {
-                        mealChanges.set(foodItem, change);
-                    }
+                    mealChanges.set(foodItem, change);
                 }
             });
             changes.add(mealChanges);

@@ -1,8 +1,11 @@
 package diet;
 
 import util.LazyValue;
+import util.Limits2;
 
 import java.util.function.BiConsumer;
+
+import static util.Global.nextRandomDoubleInclOne;
 
 public enum FoodItem {
     COLES_APPLE_RED_DELICIOUS(Food.APPLE_RED_DELICIOUS_UNPEELED_RAW, 180, 2, 0.99),
@@ -232,7 +235,15 @@ public enum FoodItem {
         return amount * itemWeight;
     }
 
-    public double roundToPortions(double amount) {
+    public double getRandomAmount(final Limits2 limits) {
+        final double minAmount = limits.getMin();
+        final double maxAmount = limits.getMax();
+        final double relAmount = nextRandomDoubleInclOne();
+        final double amount = minAmount + relAmount * (maxAmount - minAmount);
+        return roundToPortions(amount);
+    }
+
+    public double roundToPortions(final double amount) {
         return Math.round(amount * portions) / portions;
     }
 

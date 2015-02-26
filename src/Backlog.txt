@@ -1,5 +1,7 @@
 -   Improve optimisation algorithm
-        TODOs in DietPlan.java; TODOs in OptimizationTest.java; handwritten notes
+        Transfer handwritten notes as TODOs
+        See TODOs in OptimizationTest.java
+        Compare to genetic algorithm; test different evolution parameters (mutation rates, etc.)
 -   Refactor code
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
