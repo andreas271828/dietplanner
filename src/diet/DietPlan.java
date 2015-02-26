@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import static diet.Meal.meal;
 import static diet.Meal.randomMeal;
 import static util.Global.RANDOM;
+import static util.Global.nextRandomDoubleInclOne;
 
 public class DietPlan {
     private final ArrayList<Meal> meals;
@@ -64,6 +65,10 @@ public class DietPlan {
         return meals;
     }
 
+    public int getNumberOfMeals() {
+        return meals.size();
+    }
+
     public Meal getMeal(int mealIndex) {
         return getMeals().get(mealIndex);
     }
@@ -84,48 +89,87 @@ public class DietPlan {
                          final double mealMutationRate,
                          final ArrayList<MealTemplate> mealTemplates,
                          final double ingredientMutationRate) {
-        // Crossover
+        // TODO: Refactor - this code has some reoccurring patterns
         final ArrayList<Meal> meals1 = getMeals();
         final ArrayList<Meal> meals2 = partner.getMeals();
-        final int minNumberOfMeals = Math.min(meals1.size(), meals2.size());
+        final int numberOfMeals1 = meals1.size();
+        final int numberOfMeals2 = meals2.size();
+        final int minNumberOfMeals = Math.min(numberOfMeals1, numberOfMeals2);
         final int crossoverMeal = RANDOM.nextInt(minNumberOfMeals + 1);
-        final ArrayList<Meal> meals3 = new ArrayList<Meal>(meals1.subList(0, crossoverMeal));
-        if (crossoverMeal < meals2.size()) {
-            final Meal meal1 = meals1.get(crossoverMeal);
-            final Meal meal2 = meals2.get(crossoverMeal);
-            final MealTemplate mealTemplate = meal1.getTemplate();
-            if (mealTemplate == meal2.getTemplate()) {
-                final FoodItems ingredients = new FoodItems();
-                final ArrayList<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().getList();
-                final int numberOfFoods = foodList.size();
-                final int crossoverFood = RANDOM.nextInt(numberOfFoods + 1);
-                for (int i = 0; i < numberOfFoods; ++i) {
-                    final FoodItem foodItem = foodList.get(i).a();
-                    if (i < crossoverFood) {
-                        ingredients.set(foodItem, meal1.getAmount(foodItem));
-                    } else {
-                        ingredients.set(foodItem, meal2.getAmount(foodItem));
-                    }
-                }
-                meals3.add(meal(mealTemplate, ingredients));
-                meals3.addAll(meals2.subList(crossoverMeal + 1, meals2.size()));
-            } else {
-                meals3.addAll(meals2.subList(crossoverMeal, meals2.size()));
-            }
-        }
-
-        // Mutations
-        // TODO: Mutate already during crossover (at least ingredients)
-        final ArrayList<Meal> meals4 = new ArrayList<Meal>();
-        for (final Meal meal : meals3) {
+        final ArrayList<Meal> meals3 = new ArrayList<Meal>();
+        for (int i = 0; i < crossoverMeal; ++i) {
             if (RANDOM.nextDouble() < mealMutationRate) {
                 meals3.add(randomMeal(mealTemplates.get(RANDOM.nextInt(mealTemplates.size()))));
             } else {
-                // TODO: ingredient mutations
+                final Meal meal = meals1.get(i);
+                final MealTemplate mealTemplate = meal.getTemplate();
+                final FoodItems ingredients = new FoodItems();
+                final ArrayList<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().getList();
+                boolean mutatedMeal = false;
+                for (final Pair<FoodItem, Limits2> food : foodList) {
+                    final FoodItem foodItem = food.a();
+                    if (RANDOM.nextDouble() < ingredientMutationRate) {
+                        final Limits2 limits = food.b();
+                        // TODO: This is a copy of what happens in Meal.randomMeal() and should be extracted in a separate method (and called here and in Meal.randomMeal())
+                        final double minAmount = limits.getMin();
+                        final double maxAmount = limits.getMax();
+                        final double relAmount = nextRandomDoubleInclOne();
+                        final double amount = minAmount + relAmount * (maxAmount - minAmount);
+                        final double roundedAmount = foodItem.roundToPortions(amount);
+                        if (roundedAmount > 1e-6) {
+                            ingredients.set(foodItem, roundedAmount);
+                        }
+                        mutatedMeal = true;
+                    } else {
+                        ingredients.set(foodItem, meal.getAmount(foodItem));
+                    }
+                }
+                if (mutatedMeal) {
+                    meals3.add(meal(mealTemplate, ingredients));
+                } else {
+                    meals3.add(meal);
+                }
+            }
+        }
+        if (crossoverMeal < numberOfMeals2) {
+            if (RANDOM.nextDouble() < mealMutationRate) {
+                meals3.add(randomMeal(mealTemplates.get(RANDOM.nextInt(mealTemplates.size()))));
+            } else if (crossoverMeal < numberOfMeals1) {
+                final Meal meal1 = meals1.get(crossoverMeal);
+                final Meal meal2 = meals2.get(crossoverMeal);
+                final MealTemplate mealTemplate = meal1.getTemplate();
+                if (mealTemplate == meal2.getTemplate()) {
+                    final FoodItems ingredients = new FoodItems();
+                    final ArrayList<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().getList();
+                    final int numberOfFoods = foodList.size();
+                    final int crossoverFood = RANDOM.nextInt(numberOfFoods + 1);
+                    for (int i = 0; i < numberOfFoods; ++i) {
+                        final FoodItem foodItem = foodList.get(i).a();
+                        // TODO: ingredient mutation (see above)
+                        if (i < crossoverFood) {
+                            ingredients.set(foodItem, meal1.getAmount(foodItem));
+                        } else {
+                            ingredients.set(foodItem, meal2.getAmount(foodItem));
+                        }
+                    }
+                    meals3.add(meal(mealTemplate, ingredients));
+                } else {
+                    meals3.add(meal2);
+                }
+            } else {
+                meals3.add(meals2.get(crossoverMeal));
+            }
+            for (int i = crossoverMeal + 1; i < numberOfMeals2; ++i) {
+                if (RANDOM.nextDouble() < mealMutationRate) {
+                    meals3.add(randomMeal(mealTemplates.get(RANDOM.nextInt(mealTemplates.size()))));
+                } else {
+                    // TODO: ingredient mutation (see above)
+                    meals3.add(meals2.get(i));
+                }
             }
         }
 
-        return dietPlan(meals4);
+        return dietPlan(meals3);
     }
 
     @Override

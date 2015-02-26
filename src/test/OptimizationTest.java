@@ -215,7 +215,7 @@ public class OptimizationTest {
         addScore(scores, Requirement.ZINC, 1.0, requirements, dietPlanProperties.get(FoodProperty.ZINC), noMealIndex);
 
         // Criteria for individual meals
-        final int numberOfMeals = requirements.getNumberOfMeals();
+        final int numberOfMeals = dietPlan.getNumberOfMeals();
         for (int i = 0; i < numberOfMeals; ++i) {
             final Meal meal = dietPlan.getMeal(i);
             final FoodProperties mealProperties = meal.getProperties();

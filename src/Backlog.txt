@@ -1,5 +1,5 @@
 -   Improve optimisation algorithm
-    Fix exception; TODOs in DietPlan.java; TODOs in OptimizationTest.java; handwritten notes
+        TODOs in DietPlan.java; TODOs in OptimizationTest.java; handwritten notes
 -   Refactor code
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
