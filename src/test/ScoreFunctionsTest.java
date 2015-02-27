@@ -1,9 +1,9 @@
 package test;
 
-import util.Limits4;
+import util.ScoreParams;
 import util.ScoreFunctions;
 
-import static util.Limits4.limits4;
+import static util.ScoreParams.scoreParams;
 
 public class ScoreFunctionsTest {
     public static void runTests() {
@@ -23,7 +23,7 @@ public class ScoreFunctionsTest {
         testStandard(1, 3, 1, 2, 3, 4, upperBound, tolerance);
         testStandard(0.73, 3.3, 1, 2, 3, 4, upperBound, tolerance);
         testStandard(0.1, 4, 1, 2, 3, 4, upperBound, tolerance);
-        Test.test(true, ScoreFunctions.standard(10, limits4(1, 2, 3, 4), upperBound) < 0.1);
+        Test.test(true, ScoreFunctions.standard(10, scoreParams(1, 2, 3, 4, 1.0), upperBound) < 0.1);
         testStandard(1, 2, 1, 2, 2, 3, upperBound, tolerance);
         testStandard(0.55, 2.5, 1, 2, 2, 3, upperBound, tolerance);
         testStandard(1, 0, 0, 0, 1, 2, upperBound, tolerance);
@@ -47,8 +47,8 @@ public class ScoreFunctionsTest {
                                      double upperCritical,
                                      double upperBound,
                                      double tolerance) {
-        final Limits4 limits = limits4(lowerCritical, lowerOptimal, upperOptimal, upperCritical);
-        final double score = ScoreFunctions.standard(value, limits, upperBound);
+        final ScoreParams scoreParams = scoreParams(lowerCritical, lowerOptimal, upperOptimal, upperCritical, 1.0);
+        final double score = ScoreFunctions.standard(value, scoreParams, upperBound);
         Test.test(expected, score, tolerance);
     }
 }

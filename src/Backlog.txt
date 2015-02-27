@@ -1,4 +1,5 @@
 -   Improve optimisation algorithm
+        Do I need gradient descent for the initial population before I start with the evolutionary algorithm?
         Compare to genetic algorithm; test different evolution parameters (mutation rates, etc.)
 -   Refactor code
 -   Improve and use custom meal templates

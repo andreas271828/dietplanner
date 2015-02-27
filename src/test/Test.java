@@ -28,9 +28,9 @@ public class Test {
         // BinarySearchTest.runTests();
         // ScoreFunctionsTest.runTests();
 
-        OptimizationTest.runTests();
+        // OptimizationTest.runTests();
 
-        // GenePoolTest.runTests();
+        GenePoolTest.runTests();
         // GenomeTest.runTests();
     }
 

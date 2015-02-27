@@ -8,19 +8,15 @@ import java.util.function.BiConsumer;
 
 import static diet.Meal.meal;
 
-public class MealTemplates {
-    private final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
-
-    public boolean add(MealTemplate mealTemplate) {
-        return mealTemplates.add(mealTemplate);
-    }
-
-    public ArrayList<Meal> computeMeals(final int numberOfMeals, final Genome genome) {
+public abstract  class MealTemplates {
+    public static ArrayList<Meal> computeMeals(final ArrayList<MealTemplate> mealTemplates,
+                                               final int numberOfMeals,
+                                               final Genome genome) {
         final ArrayList<Meal> meals = new ArrayList<Meal>();
         final Genome.Iterator genomeIt = genome.getIterator();
         int templateIndex = 0;
         for (int i = 0; i < numberOfMeals; ++i) {
-            templateIndex = getNextIndex(templateIndex, genomeIt.getNextGene());
+            templateIndex = getNextIndex(mealTemplates, templateIndex, genomeIt.getNextGene());
             final MealTemplate mealTemplate = mealTemplates.get(templateIndex);
             final FoodItems ingredients = new FoodItems();
             mealTemplate.getIngredients().forEach(new BiConsumer<FoodItem, Limits2>() {
@@ -44,7 +40,7 @@ public class MealTemplates {
      * @param fraction Fraction (between 0 and 1, both inclusive) of maximum distance
      * @return New index
      */
-    private int getNextIndex(int start, double fraction) {
+    private static int getNextIndex(final ArrayList<MealTemplate> mealTemplates, int start, double fraction) {
         final int size = mealTemplates.size();
         final int maxDistance = size - 1;
         final int distance = (int) Math.round(fraction * maxDistance);
