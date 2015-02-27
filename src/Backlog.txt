@@ -1,6 +1,4 @@
 -   Improve optimisation algorithm
-        Transfer handwritten notes as TODOs
-        See TODOs in OptimizationTest.java
         Compare to genetic algorithm; test different evolution parameters (mutation rates, etc.)
 -   Refactor code
 -   Improve and use custom meal templates
@@ -8,3 +6,4 @@
 -   Create user interface (run evolutionary algorithm in background)
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.
 -   About, warnings and information (only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol)
+-   Parallel computation

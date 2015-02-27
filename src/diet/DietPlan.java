@@ -104,7 +104,7 @@ public class DietPlan {
                 final Meal meal1 = meals1.get(crossoverMeal);
                 final Meal meal2 = meals2.get(crossoverMeal);
                 final MealTemplate mealTemplate = meal1.getTemplate();
-                if (mealTemplate == meal2.getTemplate()) {
+                if (mealTemplate.equals(meal2.getTemplate())) {
                     final FoodItems ingredients = new FoodItems();
                     final ArrayList<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().getList();
                     final int numberOfFoods = foodList.size();
@@ -156,5 +156,16 @@ public class DietPlan {
     public String toString() {
         return "Meals:" + '\n' + getMeals() + '\n' + "Food items:" + '\n' + getFoodItems() + '\n' + "Properties:" +
                 '\n' + getProperties() + '\n' + "Costs:" + '\n' + String.format("AUD %1$,.2f", getCosts());
+    }
+
+    public double getDifference(final DietPlan dietPlan) {
+        double difference = 0.0;
+        final int maxNumberOfMeals = Math.max(getNumberOfMeals(), dietPlan.getNumberOfMeals());
+        for (int i = 0; i < maxNumberOfMeals; ++i) {
+            if (!getMeal(i).getTemplate().equals(dietPlan.getMeal(i).getTemplate())) {
+                difference += 1.0;
+            }
+        }
+        return difference;
     }
 }

@@ -11,6 +11,7 @@ import java.util.function.Function;
 import static diet.DietPlan.dietPlan;
 import static diet.DietPlanChange.dietPlanChange;
 import static diet.FoodItem.*;
+import static java.lang.Math.pow;
 import static util.Evaluation.evaluation;
 import static util.Evaluations.evaluations;
 import static util.Global.RANDOM;
@@ -18,6 +19,7 @@ import static util.Global.nextRandomDoubleInclOne;
 
 public class OptimizationTest {
     private static final MealTemplate DAY_MIX_TEMPLATE = getDayMixTemplate();
+    private static final ArrayList<MealTemplate> DAY_MIX_TEMPLATE_AS_LIST = getDayMixTemplateAsList();
     private static final Optional<ArrayList<FoodItems>> NO_CHANGE = Optional.empty();
     private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 7);
     private static final int NUMBER_OF_MEALS = REQUIREMENTS.getNumberOfMeals();
@@ -174,6 +176,12 @@ public class OptimizationTest {
                 addIngredient(COLES_ZUCCHINI, 0.0, 1.0);
             }
         };
+    }
+
+    private static ArrayList<MealTemplate> getDayMixTemplateAsList() {
+        final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
+        mealTemplates.add(DAY_MIX_TEMPLATE);
+        return mealTemplates;
     }
 
     private static Scores getScores(final DietPlan dietPlan, final Requirements requirements) {
@@ -347,35 +355,59 @@ public class OptimizationTest {
     }
 
     private static void test2() {
-        final int populationSize = 50;
+        Optional<Evaluation<DietPlan>> bestDietPlan = Optional.empty();
+
+        // Create random initial population
+        final int populationSize = 100;
         final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>();
         for (int i = 0; i < populationSize; ++i) {
             final DietPlan dietPlan = dietPlan(DAY_MIX_TEMPLATE.getRandomMeals(NUMBER_OF_MEALS));
             population.add(evaluation(dietPlan, FITNESS_FUNCTION_2));
         }
 
-        final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
-        mealTemplates.add(DAY_MIX_TEMPLATE);
-
+        // Evolve population
+        final double survivalFactor = 0.8;
         for (int i = 0; i < 10000; ++i) {
-            // TODO: We could just iterate over the whole population and begin again from the beginning when we have
-            // reached the end, if we can be sure that the iterator is updated properly when an item is removed.
-            final Evaluation<DietPlan> parent1 = population.get(RANDOM.nextInt(population.size()));
-            final Evaluation<DietPlan> parent2 = population.get(RANDOM.nextInt(population.size()));
-
-            // Probability of mating increases with relative fitness of second parent
-            // TODO: Calculate compatibility first - higher compatibility = higher chance of mating
-            final double relParent2Fitness = parent2.getTotalScore() / parent1.getTotalScore();
-            if (RANDOM.nextDouble() < relParent2Fitness) {
-                final DietPlan dietPlan = parent1.getObject().mate(parent2.getObject(), 0.002, mealTemplates, 0.01);
-                population.add(evaluation(dietPlan, FITNESS_FUNCTION_2));
+            final int index1 = RANDOM.nextInt(population.size());
+            final int index2 = RANDOM.nextInt(population.size());
+            final Evaluation<DietPlan> parent1 = population.get(index1);
+            final Evaluation<DietPlan> parent2 = population.get(index2);
+            final double fitness1 = parent1.getTotalScore();
+            final double fitness2 = parent2.getTotalScore();
+            if (!bestDietPlan.isPresent() || fitness1 > bestDietPlan.get().getTotalScore()) {
+                bestDietPlan = Optional.of(parent1);
+            }
+            if (fitness2 > bestDietPlan.get().getTotalScore()) {
+                bestDietPlan = Optional.of(parent2);
+            }
+            final double bestFitness = bestDietPlan.get().getTotalScore();
+            final double relFitness1 = fitness1 / bestFitness;
+            final double relFitness2 = fitness2 / bestFitness;
+            final double difference = parent1.getObject().getDifference(parent2.getObject());
+            final double differenceFactor = pow(0.9, difference);
+            if (RANDOM.nextDouble() < relFitness1 * relFitness2 * differenceFactor) {
+                final DietPlan offspring = parent1.getObject().mate(parent2.getObject(), 0.002,
+                        DAY_MIX_TEMPLATE_AS_LIST, 0.01);
+                population.add(evaluation(offspring, FITNESS_FUNCTION_2));
             }
 
-            // TODO: Kill individuals (probability increases with age and decreases with fitness)
-            // TODO: Always remember best individual, even if it's killed
+            final boolean remove1 = RANDOM.nextDouble() >= relFitness1 * survivalFactor;
+            final boolean remove2 = RANDOM.nextDouble() >= relFitness2 * survivalFactor;
+            if (remove1) {
+                population.remove(index1);
+                if (remove2) {
+                    if (index2 < index1) {
+                        population.remove(index2);
+                    } else if (index2 > index1) {
+                        population.remove(index2 - 1);
+                    }
+                }
+            } else if (remove2) {
+                population.remove(index2);
+            }
         }
 
-        evaluations(population).getBest().ifPresent(new Consumer<Evaluation<DietPlan>>() {
+        bestDietPlan.ifPresent(new Consumer<Evaluation<DietPlan>>() {
             @Override
             public void accept(final Evaluation<DietPlan> evaluatedDietPlan) {
                 System.out.println(evaluatedDietPlan.getObject());
