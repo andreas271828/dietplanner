@@ -15,7 +15,7 @@ import static util.Global.nextRandomDoubleInclOne;
 
 public abstract class MealTemplate {
     public static final MealTemplate STANDARD_DAY_MIX = getStandardDayMix();
-    public static final ArrayList<MealTemplate> STANDARD_DAY_MIX_AS_LIST = getStandardDayMixAsList();
+    public static final MealTemplate TEST_MIX = getTestMix();
 
     private final String name;
     private Ingredients ingredients;
@@ -279,9 +279,14 @@ public abstract class MealTemplate {
         };
     }
 
-    private static ArrayList<MealTemplate> getStandardDayMixAsList() {
-        final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
-        mealTemplates.add(STANDARD_DAY_MIX);
-        return mealTemplates;
+    private static MealTemplate getTestMix() {
+        return new MealTemplate("Test Mix") {
+            @Override
+            protected void addIngredients() {
+                addIngredientByWeight(TEST_CARBOHYDRATES, 0.0, 1000.0);
+                addIngredientByWeight(TEST_FAT, 0.0, 1000.0);
+                addIngredientByWeight(TEST_PROTEIN, 0.0, 1000.0);
+            }
+        };
     }
 }

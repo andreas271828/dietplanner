@@ -13,7 +13,6 @@ import java.util.function.Function;
 import static diet.DietPlan.dietPlan;
 import static diet.DietPlanChange.dietPlanChange;
 import static diet.MealTemplate.STANDARD_DAY_MIX;
-import static diet.MealTemplate.STANDARD_DAY_MIX_AS_LIST;
 import static java.lang.Math.min;
 import static java.lang.Math.pow;
 import static util.Evaluation.evaluation;
@@ -59,7 +58,7 @@ public class OptimizationTest {
             generation0.add(evaluation(dietPlanChange, FITNESS_FUNCTION_1));
         }
         Evaluations<DietPlanChange> curGeneration = evaluations(generation0);
-        for (int i = 2; i <= 1000; ++i) {
+        for (int i = 2; i <= 100; ++i) {
             curGeneration = getNextGeneration(curGeneration);
         }
 
@@ -130,14 +129,17 @@ public class OptimizationTest {
         // Create random initial population
         final int populationSize = 100;
         final int maxPopulationSize = 200;
+        final MealTemplate mealTemplate = MealTemplate.TEST_MIX;
         final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>();
         for (int i = 0; i < populationSize; ++i) {
-            final DietPlan dietPlan = dietPlan(STANDARD_DAY_MIX.getRandomMeals(NUMBER_OF_MEALS));
+            final DietPlan dietPlan = dietPlan(mealTemplate.getMinimalistMeals(NUMBER_OF_MEALS));
             population.add(evaluation(dietPlan, FITNESS_FUNCTION_2));
         }
 
         // Evolve population
-        for (int i = 0; i < 100000; ++i) {
+        final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
+        mealTemplates.add(mealTemplate);
+        for (int i = 0; i < 1000000; ++i) {
             final int index1 = RANDOM.nextInt(population.size());
             final int index2 = RANDOM.nextInt(population.size());
             final Evaluation<DietPlan> parent1 = population.get(index1);
@@ -156,8 +158,7 @@ public class OptimizationTest {
             final double difference = parent1.getObject().getDifference(parent2.getObject());
             final double differenceFactor = pow(0.9, difference);
             if (RANDOM.nextDouble() < relFitness1 * relFitness2 * differenceFactor) {
-                final DietPlan offspring = parent1.getObject().mate(parent2.getObject(), 0.002,
-                        STANDARD_DAY_MIX_AS_LIST, 0.01);
+                final DietPlan offspring = parent1.getObject().mate(parent2.getObject(), 0.002, mealTemplates, 0.01);
                 population.add(evaluation(offspring, FITNESS_FUNCTION_2));
             }
 

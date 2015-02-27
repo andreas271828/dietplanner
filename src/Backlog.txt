@@ -1,6 +1,7 @@
 -   Improve optimisation algorithm
-        Do I need gradient descent for the initial population before I start with the evolutionary algorithm?
-        Compare to genetic algorithm; test different evolution parameters (mutation rates, etc.)
+        Search space is too large - a clever algorithm is required that incrementally includes foods with certain properties.
+            When I started with minimal instead of random meals, fitness values were significantly better.
+            When I only included TEST_CARBOHYDRATES, TEST_FAT and TEST_PROTEIN, fitness values were significantly better, even if those food items were part of the other list.
 -   Refactor code
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

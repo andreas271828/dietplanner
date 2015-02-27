@@ -14,12 +14,12 @@ import java.util.function.Function;
 
 import static diet.DietPlan.dietPlan;
 import static diet.FoodItem.*;
-import static diet.MealTemplate.STANDARD_DAY_MIX_AS_LIST;
+import static diet.MealTemplate.STANDARD_DAY_MIX;
 import static diet.MealTemplates.computeMeals;
 
 public class GenePoolTest {
     public static void runTests() {
-        final ArrayList<MealTemplate> mealTemplates = STANDARD_DAY_MIX_AS_LIST;
+        final ArrayList<MealTemplate> mealTemplates = getStandardDayMixTemplates();
         final int numberOfMeals = 7;
         final Requirements requirements = new Requirements(PersonalDetails.ANDREAS, 7, numberOfMeals);
         final Function<Genome, Scores> fitnessFunction = getFitnessFunction(mealTemplates, requirements);
@@ -59,6 +59,12 @@ public class GenePoolTest {
                 System.out.println("Total score: " + scores.getTotalScore() + " / " + scores.getWeightSum());
             }
         });
+    }
+
+    private static ArrayList<MealTemplate> getStandardDayMixTemplates() {
+        final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
+        mealTemplates.add(STANDARD_DAY_MIX);
+        return mealTemplates;
     }
 
     private static ArrayList<MealTemplate> getMealTemplatesAnything() {

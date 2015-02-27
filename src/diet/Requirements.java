@@ -14,9 +14,9 @@ import static util.ScoreParams.*;
 
 public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
-    private static final double CARBOHYDRATES_WEIGHT = 10.0;
-    private static final double ENERGY_WEIGHT = 10.0;
-    private static final double PROTEIN_WEIGHT = 100.0;
+    private static final double CARBOHYDRATES_WEIGHT = 1.0;
+    private static final double ENERGY_WEIGHT = 1.0;
+    private static final double PROTEIN_WEIGHT = 1.0;
 
     private static final double DEFAULT_TOLERANCE = 0.05;
 
