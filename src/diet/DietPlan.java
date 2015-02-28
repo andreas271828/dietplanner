@@ -83,6 +83,16 @@ public class DietPlan {
         return costs.get();
     }
 
+    public DietPlan getWithChange(final int mealIndex, final FoodItem ingredient, final double change) {
+        // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
+        final int numberOfMeals = meals.size();
+        final ArrayList<Meal> changedMeals = new ArrayList<Meal>(numberOfMeals);
+        changedMeals.addAll(meals.subList(0, mealIndex));
+        changedMeals.add(mealWithChange(meals.get(mealIndex), ingredient, change));
+        changedMeals.addAll(meals.subList(mealIndex + 1, numberOfMeals));
+        return new DietPlan(changedMeals);
+    }
+
     public DietPlan mate(final DietPlan partner,
                          final double mealMutationRate,
                          final ArrayList<MealTemplate> mealTemplates,

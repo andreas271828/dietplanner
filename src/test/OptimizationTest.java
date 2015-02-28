@@ -1,9 +1,7 @@
 package test;
 
 import diet.*;
-import util.Evaluation;
-import util.Evaluations;
-import util.Scores;
+import util.*;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -13,6 +11,7 @@ import java.util.function.Function;
 import static diet.DietPlan.dietPlan;
 import static diet.DietPlanChange.dietPlanChange;
 import static diet.MealTemplate.STANDARD_DAY_MIX;
+import static diet.MealTemplate.TEST_MIX;
 import static java.lang.Math.min;
 import static java.lang.Math.pow;
 import static util.Evaluation.evaluation;
@@ -29,7 +28,8 @@ public class OptimizationTest {
 
     public static void runTests() {
         // test1();
-        test2();
+        // test2();
+        test3();
     }
 
     private static Function<DietPlanChange, Scores> getFitnessFunction1(final Requirements requirements) {
@@ -129,7 +129,7 @@ public class OptimizationTest {
         // Create random initial population
         final int populationSize = 100;
         final int maxPopulationSize = 200;
-        final MealTemplate mealTemplate = MealTemplate.TEST_MIX;
+        final MealTemplate mealTemplate = TEST_MIX;
         final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>();
         for (int i = 0; i < populationSize; ++i) {
             final DietPlan dietPlan = dietPlan(mealTemplate.getMinimalistMeals(NUMBER_OF_MEALS));
@@ -187,12 +187,34 @@ public class OptimizationTest {
         bestDietPlan.ifPresent(new Consumer<Evaluation<DietPlan>>() {
             @Override
             public void accept(final Evaluation<DietPlan> evaluatedDietPlan) {
-                System.out.println(evaluatedDietPlan.getObject());
-                System.out.println("Scores:");
-                System.out.println(evaluatedDietPlan.getScores());
+                final DietPlan dietPlan = evaluatedDietPlan.getObject();
                 final Scores scores = evaluatedDietPlan.getScores();
+                System.out.println(dietPlan);
+                System.out.println("Scores:");
+                System.out.println(scores);
                 System.out.println("Total score: " + scores.getTotalScore() + " of " + scores.getWeightSum());
             }
         });
+    }
+
+    private static void test3() {
+        final DietPlan dietPlan = dietPlan(TEST_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
+        final ArrayList<Meal> meals = dietPlan.getMeals();
+        final int mealIndex = RANDOM.nextInt(meals.size());
+        final Meal meal = meals.get(mealIndex);
+        final ArrayList<Pair<FoodItem, Limits2>> ingredients = meal.getTemplate().getIngredients().getList();
+        final int ingredientIndex = RANDOM.nextInt(ingredients.size());
+        final Pair<FoodItem, Limits2> ingredient = ingredients.get(ingredientIndex);
+        final FoodItem foodItem = ingredient.a();
+        final double amountToAdd = (1.0 - RANDOM.nextDouble()) * (ingredient.b().getMax() - meal.getAmount(foodItem));
+        final double change = foodItem.roundToPortions(amountToAdd);
+        final DietPlan dietPlan2 = change > 0.0 ? dietPlan.getWithChange(mealIndex, foodItem, change) : dietPlan;
+
+        final Evaluation<DietPlan> dietPlanEvaluation = evaluation(dietPlan2, FITNESS_FUNCTION_2);
+        final Scores scores = dietPlanEvaluation.getScores();
+        System.out.println(dietPlan2);
+        System.out.println("Scores:");
+        System.out.println(scores);
+        System.out.println("Total score: " + scores.getTotalScore() + " of " + scores.getWeightSum());
     }
 }

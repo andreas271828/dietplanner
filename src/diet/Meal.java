@@ -31,6 +31,12 @@ public class Meal {
         return new Meal(template, ingredients);
     }
 
+    public static Meal mealWithChange(final Meal meal, final FoodItem ingredient, final double change) {
+        // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
+        final FoodItems ingredients = meal.getIngredients().getWithChange(ingredient, change);
+        return new Meal(meal.getTemplate(), ingredients);
+    }
+
     public static Optional<Meal> mutatedMeal(final Meal meal, final double mutationRate) {
         final FoodItems ingredients = new FoodItems();
         final MealTemplate mealTemplate = meal.getTemplate();
