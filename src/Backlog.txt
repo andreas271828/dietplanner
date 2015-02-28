@@ -1,7 +1,11 @@
 -   Improve optimisation algorithm
-        Search space is too large - a clever algorithm is required that incrementally includes foods with certain properties.
-            When I started with minimal instead of random meals, fitness values were significantly better.
-            When I only included TEST_CARBOHYDRATES, TEST_FAT and TEST_PROTEIN, fitness values were significantly better, even if those food items were part of the other list.
+        Start with random minimal meals.
+        Add random portions of random ingredient to random meal.
+            If score doesn't improve try half the added portions. Repeat.
+            If even 1 added portion doesn't improve the score, continue with a different meal / ingredient (remember ingredient that can't be improved anymore).
+        Repeat adding ingredients until all ingredients of all meals are marked as being being able to be improved anymore.
+        Repeat creating diet plans this way until there is an initial population of diet plans.
+        Run evolutionary algorithm.
 -   Refactor code
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
