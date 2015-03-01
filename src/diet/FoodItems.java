@@ -9,6 +9,10 @@ public class FoodItems extends ItemList<FoodItem> {
         super(FoodItem.class);
     }
 
+    private FoodItems(final FoodItems foodItems, final FoodItem foodItem, final double change) {
+        super(foodItems, foodItem, change);
+    }
+
     public FoodProperties getProperties() {
         final FoodProperties properties = new FoodProperties();
         forEach(new BiConsumer<FoodItem, Double>() {
@@ -29,6 +33,10 @@ public class FoodItems extends ItemList<FoodItem> {
             }
         });
         return costs.get();
+    }
+
+    public FoodItems getWithChange(final FoodItem foodItem, final double change) {
+        return new FoodItems(this, foodItem, change);
     }
 
     private class Costs {

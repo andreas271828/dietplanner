@@ -31,29 +31,6 @@ public class Meal {
         return new Meal(template, ingredients);
     }
 
-    public static Meal mealWithChange(final Meal meal, final FoodItem ingredient, final double change) {
-        // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
-        final FoodItems ingredients = meal.getIngredients().getWithChange(ingredient, change);
-        return new Meal(meal.getTemplate(), ingredients);
-    }
-
-    public static Optional<Meal> mutatedMeal(final Meal meal, final double mutationRate) {
-        final FoodItems ingredients = new FoodItems();
-        final MealTemplate mealTemplate = meal.getTemplate();
-        final ArrayList<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().getList();
-        boolean mutatedMeal = false;
-        for (final Pair<FoodItem, Limits2> food : foodList) {
-            final FoodItem foodItem = food.a();
-            if (RANDOM.nextDouble() < mutationRate) {
-                ingredients.set(foodItem, foodItem.getRandomAmount(food.b()));
-                mutatedMeal = true;
-            } else {
-                ingredients.set(foodItem, meal.getAmount(foodItem));
-            }
-        }
-        return mutatedMeal ? Optional.of(meal(mealTemplate, ingredients)) : Optional.<Meal>empty();
-    }
-
     private Meal(final MealTemplate template, final FoodItems ingredients) {
         this.template = template;
         this.ingredients = ingredients;
@@ -95,6 +72,29 @@ public class Meal {
 
     public double getCosts() {
         return costs.get();
+    }
+
+    public Meal getWithChange(final FoodItem ingredient, final double change) {
+        // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
+        final FoodItems ingredients = getIngredients().getWithChange(ingredient, change);
+        return new Meal(getTemplate(), ingredients);
+    }
+
+    public Optional<Meal> getMutated(final double mutationRate) {
+        final FoodItems ingredients = new FoodItems();
+        final MealTemplate mealTemplate = getTemplate();
+        final ArrayList<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().getList();
+        boolean mutatedMeal = false;
+        for (final Pair<FoodItem, Limits2> food : foodList) {
+            final FoodItem foodItem = food.a();
+            if (RANDOM.nextDouble() < mutationRate) {
+                ingredients.set(foodItem, foodItem.getRandomAmount(food.b()));
+                mutatedMeal = true;
+            } else {
+                ingredients.set(foodItem, getAmount(foodItem));
+            }
+        }
+        return mutatedMeal ? Optional.of(meal(mealTemplate, ingredients)) : Optional.<Meal>empty();
     }
 
     @Override

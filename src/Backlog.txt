@@ -6,6 +6,7 @@
         Repeat adding ingredients until all ingredients of all meals are marked as being being able to be improved anymore.
         Repeat creating diet plans this way until there is an initial population of diet plans.
         Run evolutionary algorithm.
+        See TODOs.
 -   Refactor code
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

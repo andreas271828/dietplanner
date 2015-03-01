@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static diet.Meal.*;
+import static diet.Meal.meal;
+import static diet.Meal.randomMeal;
 import static util.Global.RANDOM;
 
 public class DietPlan {
@@ -88,7 +89,7 @@ public class DietPlan {
         final int numberOfMeals = meals.size();
         final ArrayList<Meal> changedMeals = new ArrayList<Meal>(numberOfMeals);
         changedMeals.addAll(meals.subList(0, mealIndex));
-        changedMeals.add(mealWithChange(meals.get(mealIndex), ingredient, change));
+        changedMeals.add(meals.get(mealIndex).getWithChange(ingredient, change));
         changedMeals.addAll(meals.subList(mealIndex + 1, numberOfMeals));
         return new DietPlan(changedMeals);
     }
@@ -155,7 +156,7 @@ public class DietPlan {
                 to.add(randomMeal(mealTemplates.get(RANDOM.nextInt(mealTemplates.size()))));
             } else {
                 final Meal meal = from.get(i);
-                final Optional<Meal> maybeMutatedMeal = mutatedMeal(meal, ingredientMutationRate);
+                final Optional<Meal> maybeMutatedMeal = meal.getMutated(ingredientMutationRate);
                 to.add(maybeMutatedMeal.orElse(meal));
             }
         }
