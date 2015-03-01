@@ -12,7 +12,6 @@ import java.util.function.Function;
 import static diet.DietPlan.dietPlan;
 import static diet.DietPlanChange.dietPlanChange;
 import static diet.MealTemplate.STANDARD_DAY_MIX;
-import static java.lang.Math.pow;
 import static util.Evaluation.evaluation;
 import static util.Evaluations.evaluations;
 import static util.Global.RANDOM;
@@ -125,8 +124,7 @@ public class OptimizationTest {
         Optional<Evaluation<DietPlan>> bestDietPlan = Optional.empty();
 
         // Create random initial population
-        final int populationSize = 100;
-        final int maxPopulationSize = 200;
+        final int populationSize = 50;
         final MealTemplate mealTemplate = STANDARD_DAY_MIX;
         final int numberOfMeals = NUMBER_OF_MEALS;
         final Function<DietPlan, Scores> fitnessFunction = FITNESS_FUNCTION_2;
@@ -153,33 +151,12 @@ public class OptimizationTest {
             if (fitness2 > bestDietPlan.get().getTotalScore()) {
                 bestDietPlan = Optional.of(parent2);
             }
-            final double bestFitness = bestDietPlan.get().getTotalScore();
-            final double relFitness1 = fitness1 / bestFitness;
-            final double relFitness2 = fitness2 / bestFitness;
-            final double difference = parent1.getObject().getDifference(parent2.getObject());
-            final double differenceFactor = pow(0.9, difference);
-            if (RANDOM.nextDouble() < relFitness1 * relFitness2 * differenceFactor) {
-                final DietPlan offspring = parent1.getObject().mate(parent2.getObject(), 0.002, mealTemplates, 0.01);
-                population.add(evaluation(offspring, fitnessFunction));
-            }
-
-            final int newPopulationSize = population.size();
-            if (newPopulationSize > populationSize) {
-                final boolean overpopulated = population.size() > maxPopulationSize;
-                final boolean remove1 = overpopulated || RANDOM.nextDouble() >= relFitness1;
-                final boolean remove2 = overpopulated || RANDOM.nextDouble() >= relFitness2;
-                if (remove1) {
-                    population.remove(index1);
-                    if (remove2) {
-                        if (index2 < index1) {
-                            population.remove(index2);
-                        } else if (index2 > index1) {
-                            population.remove(index2 - 1);
-                        }
-                    }
-                } else if (remove2) {
-                    population.remove(index2);
-                }
+            final DietPlan dietPlan = parent1.getObject().mate(parent2.getObject(), 0.01, mealTemplates, 0.05);
+            final Evaluation<DietPlan> offspring = evaluation(dietPlan, fitnessFunction);
+            final double fitness3 = offspring.getTotalScore();
+            if (fitness3 > fitness1 || fitness3 > fitness2) {
+                population.add(offspring);
+                population.remove(fitness2 > fitness1 ? index1 : index2);
             }
 
             if ((i + 1) % 1 == 0) {
