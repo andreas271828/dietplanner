@@ -137,10 +137,11 @@ public class OptimizationTest {
         // Evolve population
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
         mealTemplates.add(mealTemplate);
-        final double baseMealMutationRate = 0.01;
-        final double baseIngredientMutationRate = 0.05;
+        final double baseMealMutationRate = 0.0;
+        final double baseIngredientMutationRate = 0.0;
         final double maxMutationFactor = 5.0;
         double mutationFactor = 1.0;
+        int betterOffspring = 0;
         for (int i = 0; i < 100 && !population.isEmpty(); ++i) {
             final int curPopulationSize = population.size();
             final int index1 = RANDOM.nextInt(curPopulationSize);
@@ -164,6 +165,7 @@ public class OptimizationTest {
                 population.add(offspring);
                 population.remove(fitness2 > fitness1 ? index1 : index2);
                 mutationFactor = 1.0;
+                ++betterOffspring;
             } else if (mutationFactor < maxMutationFactor) {
                 mutationFactor *= 1.1;
                 if (mutationFactor > maxMutationFactor) {
@@ -183,6 +185,7 @@ public class OptimizationTest {
                 printDietPlanEvaluation(evaluatedDietPlan);
             }
         });
+        System.out.println("Better offspring: " + betterOffspring);
     }
 
     private static Evaluation<DietPlan> generateCandidate1(final MealTemplate mealTemplate,
