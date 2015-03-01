@@ -5,7 +5,7 @@ import evolution.GenePool;
 import evolution.Genome;
 import util.Evaluation;
 import util.Pair;
-import util.Scores;
+import diet.Scores;
 
 import java.util.ArrayList;
 import java.util.Optional;

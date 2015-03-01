@@ -34,12 +34,12 @@ public enum Requirement {
     VITAMIN_C("Vitamin C"),
     VITAMIN_E("Vitamin E"),
     ZINC("Zinc"),
-    MEAL_ALCOHOL("Alcohol"),
-    MEAL_CAFFEINE("Caffeine"),
-    MEAL_CARBOHYDRATES("Carbohydrates"),
-    MEAL_ENERGY("Energy"),
-    MEAL_FAT("Fat"),
-    MEAL_PROTEIN("Protein");
+    MEAL_ALCOHOL("Alcohol in meal"),
+    MEAL_CAFFEINE("Caffeine in meal"),
+    MEAL_CARBOHYDRATES("Carbohydrates in meal"),
+    MEAL_ENERGY("Energy in meal"),
+    MEAL_FAT("Fat in meal"),
+    MEAL_PROTEIN("Protein in meal");
 
     private final String name;
 
@@ -47,7 +47,8 @@ public enum Requirement {
         this.name = name;
     }
 
-    public String getName() {
+    @Override
+    public String toString() {
         return name;
     }
 }

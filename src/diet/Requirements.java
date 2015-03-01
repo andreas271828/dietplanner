@@ -1,7 +1,6 @@
 package diet;
 
 import util.Limits2;
-import util.ScoreParams;
 
 import java.util.EnumMap;
 import java.util.Optional;
@@ -10,7 +9,7 @@ import java.util.function.Function;
 import static diet.PersonalDetails.Gender.FEMALE;
 import static diet.PersonalDetails.Gender.MALE;
 import static util.Limits2.limits2;
-import static util.ScoreParams.*;
+import static diet.ScoreParams.*;
 
 public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;

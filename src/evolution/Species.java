@@ -2,7 +2,7 @@ package evolution;
 
 import util.Evaluation;
 import util.Evaluations;
-import util.Scores;
+import diet.Scores;
 
 import java.util.ArrayList;
 import java.util.Optional;

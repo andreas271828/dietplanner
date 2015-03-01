@@ -1,4 +1,4 @@
-package util;
+package diet;
 
 public class ScoreParams {
     private final double lowerCritical;

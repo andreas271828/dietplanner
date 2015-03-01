@@ -3,7 +3,7 @@ package evolution;
 import util.Evaluation;
 import util.LazyValue;
 import util.Pair;
-import util.Scores;
+import diet.Scores;
 
 import java.util.Optional;
 import java.util.Random;

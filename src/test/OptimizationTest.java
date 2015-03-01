@@ -267,7 +267,7 @@ public class OptimizationTest {
     private static void printDietPlanEvaluation(final Evaluation<DietPlan> dietPlanEvaluation) {
         final DietPlan dietPlan = dietPlanEvaluation.getObject();
         final Scores scores = dietPlanEvaluation.getScores();
-        final List<Pair<Score, Double>> relScores = scores.getRelativeScores();
+        final List<Pair<Pair<Requirement, Integer>, Double>> relScores = scores.getRelativeScores();
         System.out.println(dietPlan);
         System.out.println("Scores:");
         System.out.println(scores);

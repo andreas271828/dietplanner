@@ -1,5 +1,7 @@
 package util;
 
+import diet.Scores;
+
 import java.util.function.Function;
 
 public class Evaluation<T> {

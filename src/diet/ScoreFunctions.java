@@ -1,4 +1,4 @@
-package util;
+package diet;
 
 public abstract class ScoreFunctions {
     public static double standard(final double value, final ScoreParams scoreParams, final double upperBound) {

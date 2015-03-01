@@ -1,18 +1,16 @@
-package util;
+package diet;
 
 public class Score {
     private final double score;
     private final double weight;
-    private final String label;
 
-    public static Score score(final double score, final double weight, final String label) {
-        return new Score(score, weight, label);
+    public static Score score(final double score, final double weight) {
+        return new Score(score, weight);
     }
 
-    private Score(final double score, final double weight, final String label) {
+    private Score(final double score, final double weight) {
         this.score = score;
         this.weight = weight;
-        this.label = label;
     }
 
     public double getScore() {
@@ -29,6 +27,6 @@ public class Score {
 
     @Override
     public String toString() {
-        return "<" + label + ": " + getWeightedScore() + " / " + weight + ">";
+        return "<" + getWeightedScore() + " / " + weight + ">";
     }
 }

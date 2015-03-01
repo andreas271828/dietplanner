@@ -1,9 +1,9 @@
 package test;
 
-import util.ScoreParams;
-import util.ScoreFunctions;
+import diet.ScoreParams;
+import diet.ScoreFunctions;
 
-import static util.ScoreParams.scoreParams;
+import static diet.ScoreParams.scoreParams;
 
 public class ScoreFunctionsTest {
     public static void runTests() {
