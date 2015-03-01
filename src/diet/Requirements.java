@@ -14,9 +14,10 @@ import static util.ScoreParams.*;
 
 public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
-    private static final double CARBOHYDRATES_WEIGHT = 1.0;
-    private static final double ENERGY_WEIGHT = 1.0;
-    private static final double PROTEIN_WEIGHT = 1.0;
+    private static final double DEFAULT_MEAL_PROPERTY_WEIGHT = 0.1;
+    private static final double CARBOHYDRATES_WEIGHT = 10.0;
+    private static final double ENERGY_WEIGHT = 10.0;
+    private static final double PROTEIN_WEIGHT = 10.0;
 
     private static final double DEFAULT_TOLERANCE = 0.05;
 
@@ -151,7 +152,7 @@ public class Requirements {
      * @return AUD
      */
     private Optional<ScoreParams> getCostsParams() {
-        return Optional.of(scoreParamsUC(25 * days, 1.0));
+        return Optional.of(scoreParamsUC(25 * days, DEFAULT_WEIGHT));
     }
 
     /**
@@ -493,14 +494,14 @@ public class Requirements {
      * @return g
      */
     private Optional<ScoreParams> getMealAlcoholParams() {
-        return Optional.of(scoreParamsUC(0.5, 1.0));
+        return Optional.of(scoreParamsUC(0.5, DEFAULT_MEAL_PROPERTY_WEIGHT));
     }
 
     /**
      * @return mg
      */
     private Optional<ScoreParams> getMealCaffeineParams() {
-        return Optional.of(scoreParamsUC(10, 1.0));
+        return Optional.of(scoreParamsUC(10, DEFAULT_MEAL_PROPERTY_WEIGHT));
     }
 
     /**
@@ -513,7 +514,7 @@ public class Requirements {
         return maybeUpperOptimal.map(new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double upperOptimal) {
-                return scoreParamsUORUC(upperOptimal, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsUORUC(upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }
@@ -528,7 +529,7 @@ public class Requirements {
         return maybeUpperOptimal.map(new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double upperOptimal) {
-                return scoreParamsUORUC(upperOptimal, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsUORUC(upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }
@@ -554,7 +555,7 @@ public class Requirements {
         return maybeUpperOptimal.map(new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double upperOptimal) {
-                return scoreParamsUORUC(upperOptimal, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsUORUC(upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }

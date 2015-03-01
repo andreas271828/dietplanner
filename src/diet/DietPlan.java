@@ -3,12 +3,15 @@ package diet;
 import util.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static diet.Meal.meal;
 import static diet.Meal.randomMeal;
 import static util.Global.RANDOM;
+import static util.Pair.pair;
 
 public class DietPlan {
     private final ArrayList<Meal> meals;
@@ -84,6 +87,22 @@ public class DietPlan {
         return costs.get();
     }
 
+    public ArrayList<Pair<Integer, FoodItem>> getVariableIngredients() {
+        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = new ArrayList<Pair<Integer, FoodItem>>();
+        final int numberOfMeals = getNumberOfMeals();
+        for (int i = 0; i < numberOfMeals; ++i) {
+            final int mealIndex = i;
+            final Ingredients ingredients = getMeal(i).getTemplate().getIngredients();
+            ingredients.forEach(new BiConsumer<FoodItem, Limits2>() {
+                @Override
+                public void accept(final FoodItem foodItem, final Limits2 limits) {
+                    variableIngredients.add(pair(mealIndex, foodItem));
+                }
+            });
+        }
+        return variableIngredients;
+    }
+
     public DietPlan getWithChange(final int mealIndex, final FoodItem ingredient, final double change) {
         // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
         final int numberOfMeals = meals.size();
@@ -116,7 +135,7 @@ public class DietPlan {
                 final MealTemplate mealTemplate = meal1.getTemplate();
                 if (mealTemplate.equals(meal2.getTemplate())) {
                     final FoodItems ingredients = new FoodItems();
-                    final ArrayList<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().getList();
+                    final List<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().asList();
                     final int numberOfFoods = foodList.size();
                     final int crossoverFood = RANDOM.nextInt(numberOfFoods + 1);
                     for (int i = 0; i < numberOfFoods; ++i) {
@@ -168,37 +187,37 @@ public class DietPlan {
         // Criteria for complete diet plan
         final FoodProperties dietPlanProperties = getProperties();
         final Optional<Integer> noMealIndex = Optional.empty();
-        // addScore(scores, Requirement.ALPHA_LINOLENIC_ACID, requirements, dietPlanProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), noMealIndex);
-        // addScore(scores, Requirement.CALCIUM, requirements, dietPlanProperties.get(FoodProperty.CALCIUM), noMealIndex);
+        addScore(scores, Requirement.ALPHA_LINOLENIC_ACID, requirements, dietPlanProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), noMealIndex);
+        addScore(scores, Requirement.CALCIUM, requirements, dietPlanProperties.get(FoodProperty.CALCIUM), noMealIndex);
         addScore(scores, Requirement.CARBOHYDRATES, requirements, dietPlanProperties.get(FoodProperty.CARBOHYDRATES), noMealIndex);
-        // addScore(scores, Requirement.CHOLESTEROL, requirements, dietPlanProperties.get(FoodProperty.CHOLESTEROL), noMealIndex);
-        // addScore(scores, Requirement.COSTS, requirements, getCosts(), noMealIndex);
-        // addScore(scores, Requirement.DIETARY_FIBRE, requirements, dietPlanProperties.get(FoodProperty.DIETARY_FIBRE), noMealIndex);
+        addScore(scores, Requirement.CHOLESTEROL, requirements, dietPlanProperties.get(FoodProperty.CHOLESTEROL), noMealIndex);
+        addScore(scores, Requirement.COSTS, requirements, getCosts(), noMealIndex);
+        addScore(scores, Requirement.DIETARY_FIBRE, requirements, dietPlanProperties.get(FoodProperty.DIETARY_FIBRE), noMealIndex);
         addScore(scores, Requirement.ENERGY, requirements, dietPlanProperties.get(FoodProperty.ENERGY), noMealIndex);
-        // addScore(scores, Requirement.FAT, requirements, dietPlanProperties.get(FoodProperty.FAT), noMealIndex);
-        // addScore(scores, Requirement.FOLATES, requirements, dietPlanProperties.get(FoodProperty.TOTAL_FOLATES), noMealIndex);
-        // addScore(scores, Requirement.IODINE, requirements, dietPlanProperties.get(FoodProperty.IODINE), noMealIndex);
-        // addScore(scores, Requirement.IRON, requirements, dietPlanProperties.get(FoodProperty.IRON), noMealIndex);
-        // addScore(scores, Requirement.LINOLEIC_ACID, requirements, dietPlanProperties.get(FoodProperty.LINOLEIC_ACID), noMealIndex);
-        // addScore(scores, Requirement.MAGNESIUM, requirements, dietPlanProperties.get(FoodProperty.MAGNESIUM), noMealIndex);
-        // addScore(scores, Requirement.NIACIN_DERIVED_EQUIVALENTS, requirements, dietPlanProperties.get(FoodProperty.NIACIN_DERIVED_EQUIVALENTS), noMealIndex);
-        // addScore(scores, Requirement.OMEGA_3_FATTY_ACIDS, requirements, dietPlanProperties.get(FoodProperty.OMEGA_3_FATTY_ACIDS), noMealIndex);
-        // addScore(scores, Requirement.PHOSPHORUS, requirements, dietPlanProperties.get(FoodProperty.PHOSPHORUS), noMealIndex);
-        // addScore(scores, Requirement.POTASSIUM, requirements, dietPlanProperties.get(FoodProperty.POTASSIUM), noMealIndex);
+        addScore(scores, Requirement.FAT, requirements, dietPlanProperties.get(FoodProperty.FAT), noMealIndex);
+        addScore(scores, Requirement.FOLATES, requirements, dietPlanProperties.get(FoodProperty.TOTAL_FOLATES), noMealIndex);
+        addScore(scores, Requirement.IODINE, requirements, dietPlanProperties.get(FoodProperty.IODINE), noMealIndex);
+        addScore(scores, Requirement.IRON, requirements, dietPlanProperties.get(FoodProperty.IRON), noMealIndex);
+        addScore(scores, Requirement.LINOLEIC_ACID, requirements, dietPlanProperties.get(FoodProperty.LINOLEIC_ACID), noMealIndex);
+        addScore(scores, Requirement.MAGNESIUM, requirements, dietPlanProperties.get(FoodProperty.MAGNESIUM), noMealIndex);
+        addScore(scores, Requirement.NIACIN_DERIVED_EQUIVALENTS, requirements, dietPlanProperties.get(FoodProperty.NIACIN_DERIVED_EQUIVALENTS), noMealIndex);
+        addScore(scores, Requirement.OMEGA_3_FATTY_ACIDS, requirements, dietPlanProperties.get(FoodProperty.OMEGA_3_FATTY_ACIDS), noMealIndex);
+        addScore(scores, Requirement.PHOSPHORUS, requirements, dietPlanProperties.get(FoodProperty.PHOSPHORUS), noMealIndex);
+        addScore(scores, Requirement.POTASSIUM, requirements, dietPlanProperties.get(FoodProperty.POTASSIUM), noMealIndex);
         addScore(scores, Requirement.PROTEIN, requirements, dietPlanProperties.get(FoodProperty.PROTEIN), noMealIndex);
-        // addScore(scores, Requirement.RIBOFLAVIN, requirements, dietPlanProperties.get(FoodProperty.RIBOFLAVIN), noMealIndex);
-        // addScore(scores, Requirement.SELENIUM, requirements, dietPlanProperties.get(FoodProperty.SELENIUM), noMealIndex);
-        // addScore(scores, Requirement.SODIUM, requirements, dietPlanProperties.get(FoodProperty.SODIUM), noMealIndex);
-        // addScore(scores, Requirement.SUGARS, requirements, dietPlanProperties.get(FoodProperty.SUGARS), noMealIndex);
-        // addScore(scores, Requirement.THIAMIN, requirements, dietPlanProperties.get(FoodProperty.THIAMIN), noMealIndex);
-        // addScore(scores, Requirement.TRANS_FATTY_ACIDS, requirements, dietPlanProperties.get(FoodProperty.TRANS_FATTY_ACIDS), noMealIndex);
-        // addScore(scores, Requirement.TRYPTOPHAN, requirements, dietPlanProperties.get(FoodProperty.TRYPTOPHAN), noMealIndex);
-        // addScore(scores, Requirement.VITAMIN_A_RETINOL_EQUIVALENTS, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_A_RETINOL_EQUIVALENTS), noMealIndex);
-        // addScore(scores, Requirement.VITAMIN_B12, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B12), noMealIndex);
-        // addScore(scores, Requirement.VITAMIN_B6, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B6), noMealIndex);
-        // addScore(scores, Requirement.VITAMIN_C, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_C), noMealIndex);
-        // addScore(scores, Requirement.VITAMIN_E, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_E), noMealIndex);
-        // addScore(scores, Requirement.ZINC, requirements, dietPlanProperties.get(FoodProperty.ZINC), noMealIndex);
+        addScore(scores, Requirement.RIBOFLAVIN, requirements, dietPlanProperties.get(FoodProperty.RIBOFLAVIN), noMealIndex);
+        addScore(scores, Requirement.SELENIUM, requirements, dietPlanProperties.get(FoodProperty.SELENIUM), noMealIndex);
+        addScore(scores, Requirement.SODIUM, requirements, dietPlanProperties.get(FoodProperty.SODIUM), noMealIndex);
+        addScore(scores, Requirement.SUGARS, requirements, dietPlanProperties.get(FoodProperty.SUGARS), noMealIndex);
+        addScore(scores, Requirement.THIAMIN, requirements, dietPlanProperties.get(FoodProperty.THIAMIN), noMealIndex);
+        addScore(scores, Requirement.TRANS_FATTY_ACIDS, requirements, dietPlanProperties.get(FoodProperty.TRANS_FATTY_ACIDS), noMealIndex);
+        addScore(scores, Requirement.TRYPTOPHAN, requirements, dietPlanProperties.get(FoodProperty.TRYPTOPHAN), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_A_RETINOL_EQUIVALENTS, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_A_RETINOL_EQUIVALENTS), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_B12, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B12), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_B6, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_B6), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_C, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_C), noMealIndex);
+        addScore(scores, Requirement.VITAMIN_E, requirements, dietPlanProperties.get(FoodProperty.VITAMIN_E), noMealIndex);
+        addScore(scores, Requirement.ZINC, requirements, dietPlanProperties.get(FoodProperty.ZINC), noMealIndex);
 
         // Criteria for individual meals
         final int numberOfMeals = getNumberOfMeals();
@@ -206,12 +225,12 @@ public class DietPlan {
             final Meal meal = getMeal(i);
             final FoodProperties mealProperties = meal.getProperties();
             final Optional<Integer> mealIndex = Optional.of(i);
-            // addScore(scores, Requirement.MEAL_ALCOHOL, requirements, mealProperties.get(FoodProperty.ALCOHOL), mealIndex);
-            // addScore(scores, Requirement.MEAL_CAFFEINE, requirements, mealProperties.get(FoodProperty.CAFFEINE), mealIndex);
-            // addScore(scores, Requirement.MEAL_CARBOHYDRATES, requirements, mealProperties.get(FoodProperty.CARBOHYDRATES), mealIndex);
-            // addScore(scores, Requirement.MEAL_ENERGY, requirements, mealProperties.get(FoodProperty.ENERGY), mealIndex);
-            // addScore(scores, Requirement.MEAL_FAT, requirements, mealProperties.get(FoodProperty.FAT), mealIndex);
-            // addScore(scores, Requirement.MEAL_PROTEIN, requirements, mealProperties.get(FoodProperty.PROTEIN), mealIndex);
+            addScore(scores, Requirement.MEAL_ALCOHOL, requirements, mealProperties.get(FoodProperty.ALCOHOL), mealIndex);
+            addScore(scores, Requirement.MEAL_CAFFEINE, requirements, mealProperties.get(FoodProperty.CAFFEINE), mealIndex);
+            addScore(scores, Requirement.MEAL_CARBOHYDRATES, requirements, mealProperties.get(FoodProperty.CARBOHYDRATES), mealIndex);
+            addScore(scores, Requirement.MEAL_ENERGY, requirements, mealProperties.get(FoodProperty.ENERGY), mealIndex);
+            addScore(scores, Requirement.MEAL_FAT, requirements, mealProperties.get(FoodProperty.FAT), mealIndex);
+            addScore(scores, Requirement.MEAL_PROTEIN, requirements, mealProperties.get(FoodProperty.PROTEIN), mealIndex);
         }
 
         return scores;

@@ -15,6 +15,10 @@ public class Score {
         this.label = label;
     }
 
+    public double getScore() {
+        return score;
+    }
+
     public double getWeightedScore() {
         return score * weight;
     }

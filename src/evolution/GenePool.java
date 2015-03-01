@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static util.Pair.pair;
+
 public class GenePool {
     private static final int SPECIES_SIZE = 50;
     private static final int CALLBACK_ITERATION = 1;
@@ -123,7 +125,7 @@ public class GenePool {
         while (continueEvolution) {
             genePool = genePool.getNextGeneration();
             if (++i % CALLBACK_ITERATION == 0) {
-                continueEvolution = callback.apply(new Pair<Integer, GenePool>(i, genePool));
+                continueEvolution = callback.apply(pair(i, genePool));
             }
         }
         return genePool.getBestGenome();

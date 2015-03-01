@@ -9,6 +9,7 @@ import java.util.function.Function;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static util.Pair.pair;
 
 public class Genome {
     public static final int GENE_STATES = 16;
@@ -98,7 +99,7 @@ public class Genome {
         for (int i = 0; i < mutationCnt; ++i) {
             final int locus = RANDOM.nextInt(genes.length);
             final int change = RANDOM.nextBoolean() ? 1 : -1;
-            mutations.add(new Pair<Integer, Integer>(locus, change));
+            mutations.add(pair(locus, change));
         }
         return mutations;
     }

@@ -50,6 +50,10 @@ public abstract class MealTemplate {
         return ingredients;
     }
 
+    public double getMaxAmount(final FoodItem ingredient) {
+        return getIngredients().getMaxAmount(ingredient);
+    }
+
     public ArrayList<Meal> getRandomMeals(final int numberOfMeals) {
         final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
         for (int i = 0; i < numberOfMeals; ++i) {

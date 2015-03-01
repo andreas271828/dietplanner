@@ -247,6 +247,10 @@ public enum FoodItem {
         return roundToPortions(amount);
     }
 
+    public double getPortionAmount() {
+        return 1.0 / portions;
+    }
+
     public double roundToPortions(final double amount) {
         return Math.round(amount * portions) / portions;
     }

@@ -1,7 +1,10 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
+import static util.Pair.pair;
 import static util.Score.score;
 
 public class Scores {
@@ -24,6 +27,20 @@ public class Scores {
             weightSum += score.getWeight();
         }
         return weightSum;
+    }
+
+    public List<Pair<Score, Double>> getRelativeScores() {
+        final List<Pair<Score, Double>> relScores = new ArrayList<Pair<Score, Double>>();
+        for (final Score score : scores) {
+            relScores.add(pair(score, score.getScore()));
+        }
+        relScores.sort(new Comparator<Pair<Score, Double>>() {
+            @Override
+            public int compare(final Pair<Score, Double> score1, final Pair<Score, Double> score2) {
+                return score1.b().compareTo(score2.b());
+            }
+        });
+        return relScores;
     }
 
     @Override

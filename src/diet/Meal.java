@@ -4,7 +4,7 @@ import util.LazyValue;
 import util.Limits2;
 import util.Pair;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
@@ -83,7 +83,7 @@ public class Meal {
     public Optional<Meal> getMutated(final double mutationRate) {
         final FoodItems ingredients = new FoodItems();
         final MealTemplate mealTemplate = getTemplate();
-        final ArrayList<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().getList();
+        final List<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().asList();
         boolean mutatedMeal = false;
         for (final Pair<FoodItem, Limits2> food : foodList) {
             final FoodItem foodItem = food.a();

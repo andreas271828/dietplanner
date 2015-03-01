@@ -4,15 +4,18 @@ import util.Limits2;
 import util.Pair;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 import static util.Limits2.limits2;
+import static util.Pair.pair;
 
 public class Ingredients {
-    final ArrayList<Pair<FoodItem, Limits2>> ingredients = new ArrayList<Pair<FoodItem, Limits2>>();
+    private final EnumMap<FoodItem, Limits2> ingredients = new EnumMap<FoodItem, Limits2>(FoodItem.class);
 
     public void add(final FoodItem foodItem, final double minAmount, final double maxAmount) {
-        ingredients.add(new Pair<FoodItem, Limits2>(foodItem, limits2(minAmount, maxAmount)));
+        ingredients.put(foodItem, limits2(minAmount, maxAmount));
     }
 
     /**
@@ -25,16 +28,26 @@ public class Ingredients {
     }
 
     public void addAll(final Ingredients ingredients) {
-        this.ingredients.addAll(ingredients.ingredients);
+        this.ingredients.putAll(ingredients.ingredients);
     }
 
     public void forEach(final BiConsumer<FoodItem, Limits2> action) {
-        for (final Pair<FoodItem, Limits2> ingredient : ingredients) {
-            action.accept(ingredient.a(), ingredient.b());
-        }
+        ingredients.forEach(action);
     }
 
-    public ArrayList<Pair<FoodItem, Limits2>> getList() {
-        return ingredients;
+    public List<Pair<FoodItem, Limits2>> asList() {
+        final List<Pair<FoodItem, Limits2>> list = new ArrayList<Pair<FoodItem, Limits2>>();
+        forEach(new BiConsumer<FoodItem, Limits2>() {
+            @Override
+            public void accept(final FoodItem foodItem, final Limits2 limits) {
+                list.add(pair(foodItem, limits));
+            }
+        });
+        return list;
+    }
+
+    public double getMaxAmount(final FoodItem ingredient) {
+        final Limits2 limits = ingredients.get(ingredient);
+        return limits == null ? 0.0 : limits.getMax();
     }
 }

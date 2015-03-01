@@ -5,6 +5,8 @@ import util.Pair;
 
 import java.util.ArrayList;
 
+import static util.Pair.pair;
+
 public class GenomeTest {
     public static void runTests() {
         runGetOffspringGenesTests();
@@ -25,12 +27,12 @@ public class GenomeTest {
         final int[] genes = {0, 1, 2, 3, 4};
 
         final ArrayList<Pair<Integer, Integer>> mutations1 = new ArrayList<Pair<Integer, Integer>>();
-        mutations1.add(new Pair<Integer, Integer>(0, -1));
+        mutations1.add(pair(0, -1));
         Genome.applyMutations(genes, mutations1);
         Test.testArray(new int[]{0, 1, 2, 3, 4}, genes);
 
         final ArrayList<Pair<Integer, Integer>> mutations2 = new ArrayList<Pair<Integer, Integer>>();
-        mutations2.add(new Pair<Integer, Integer>(2, 1));
+        mutations2.add(pair(2, 1));
         Genome.applyMutations(genes, mutations2);
         Test.testArray(new int[]{0, 1, 3, 3, 4}, genes);
 
@@ -38,7 +40,7 @@ public class GenomeTest {
         Test.testArray(new int[]{0, 1, 4, 3, 4}, genes);
 
         final ArrayList<Pair<Integer, Integer>> mutations3 = new ArrayList<Pair<Integer, Integer>>();
-        mutations3.add(new Pair<Integer, Integer>(3, 100));
+        mutations3.add(pair(3, 100));
         Genome.applyMutations(genes, mutations3);
         Test.testArray(new int[]{0, 1, 4, Genome.GENE_STATES - 1, 4}, genes);
     }
