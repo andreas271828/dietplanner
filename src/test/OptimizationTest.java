@@ -1,7 +1,9 @@
 package test;
 
 import diet.*;
-import util.*;
+import util.Evaluation;
+import util.Evaluations;
+import util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +132,7 @@ public class OptimizationTest {
         final Function<DietPlan, Scores> fitnessFunction = FITNESS_FUNCTION_2;
         final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>();
         for (int i = 0; i < populationSize; ++i) {
-            population.add(generateCandidate3(mealTemplate, numberOfMeals, fitnessFunction));
+            population.add(generateCandidate4(mealTemplate, numberOfMeals, fitnessFunction));
             System.out.println("Generated diet plan " + (i + 1) + ".");
         }
 
@@ -262,6 +264,22 @@ public class OptimizationTest {
             }
         }
         return bestDietPlan;
+    }
+
+    private static Evaluation<DietPlan> generateCandidate4(final MealTemplate mealTemplate,
+                                                           final int numberOfMeals,
+                                                           final Function<DietPlan, Scores> fitnessFunction) {
+        final DietPlan minDietPlan = dietPlan(mealTemplate.getMinimalistMeals(numberOfMeals));
+        final Evaluation<DietPlan> dietPlanEvaluation = evaluation(minDietPlan, fitnessFunction);
+        final Optional<Pair<Requirement, Integer>> worstScore = dietPlanEvaluation.getWorstScore();
+        worstScore.ifPresent(new Consumer<Pair<Requirement, Integer>>() {
+            @Override
+            public void accept(final Pair<Requirement, Integer> worstScoreId) {
+                System.out.println(dietPlanEvaluation.getScore(worstScoreId));
+            }
+        });
+
+        return dietPlanEvaluation;
     }
 
     private static void printDietPlanEvaluation(final Evaluation<DietPlan> dietPlanEvaluation) {

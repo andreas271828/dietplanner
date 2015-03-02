@@ -13,6 +13,27 @@ public class Scores {
     private final Map<Requirement, ArrayList<Score>> scores = new HashMap<Requirement, ArrayList<Score>>();
     private double totalScore = 0.0;
     private double weightSum = 0.0;
+    private Optional<Pair<Requirement, Integer>> worstScore = Optional.empty();
+
+    public Score getScore(final Requirement requirement, final int index) {
+        return scores.get(requirement).get(index);
+    }
+
+    public Score getScore(final Pair<Requirement, Integer> scoreId) {
+        return scores.get(scoreId.a()).get(scoreId.b());
+    }
+
+    public double getTotalScore() {
+        return totalScore;
+    }
+
+    public double getWeightSum() {
+        return weightSum;
+    }
+
+    public Optional<Pair<Requirement, Integer>> getWorstScore() {
+        return worstScore;
+    }
 
     public void addScore(final Requirement requirement,
                          final double score,
@@ -26,6 +47,19 @@ public class Scores {
         requirementScores.add(scoreDetails);
         totalScore += scoreDetails.getWeightedScore();
         weightSum += scoreDetails.getWeight();
+
+        boolean isWorstScore = false;
+        if (worstScore.isPresent()) {
+            final Score worstScoreDetails = getScore(worstScore.get().a(), worstScore.get().b());
+            if (scoreDetails.getDiffFromWeight() > worstScoreDetails.getDiffFromWeight()) {
+                isWorstScore = true;
+            }
+        } else {
+            isWorstScore = true;
+        }
+        if (isWorstScore) {
+            worstScore = Optional.of(pair(requirement, requirementScores.size() - 1));
+        }
     }
 
     public void addStandardScore(final Requirement requirement,
@@ -38,14 +72,6 @@ public class Scores {
                 addScore(requirement, score, scoreParams.getWeight());
             }
         });
-    }
-
-    public double getTotalScore() {
-        return totalScore;
-    }
-
-    public double getWeightSum() {
-        return weightSum;
     }
 
     public List<Pair<Pair<Requirement, Integer>, Double>> getRelativeScores() {

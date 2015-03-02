@@ -17,12 +17,16 @@ public class Score {
         return score;
     }
 
+    public double getWeight() {
+        return weight;
+    }
+
     public double getWeightedScore() {
         return score * weight;
     }
 
-    public double getWeight() {
-        return weight;
+    public double getDiffFromWeight() {
+        return getWeight() - getWeightedScore();
     }
 
     @Override

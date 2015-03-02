@@ -1,7 +1,10 @@
 package util;
 
+import diet.Requirement;
+import diet.Score;
 import diet.Scores;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class Evaluation<T> {
@@ -46,7 +49,15 @@ public class Evaluation<T> {
         return scores.get();
     }
 
+    public Score getScore(final Pair<Requirement, Integer> scoreId) {
+        return getScores().getScore(scoreId);
+    }
+
     public double getTotalScore() {
         return getScores().getTotalScore();
+    }
+
+    public Optional<Pair<Requirement, Integer>> getWorstScore() {
+        return getScores().getWorstScore();
     }
 }
