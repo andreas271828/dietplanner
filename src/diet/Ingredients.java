@@ -46,6 +46,11 @@ public class Ingredients {
         return list;
     }
 
+    public double getMinAmount(final FoodItem ingredient) {
+        final Limits2 limits = ingredients.get(ingredient);
+        return limits == null ? 0.0 : limits.getMin();
+    }
+
     public double getMaxAmount(final FoodItem ingredient) {
         final Limits2 limits = ingredients.get(ingredient);
         return limits == null ? 0.0 : limits.getMax();

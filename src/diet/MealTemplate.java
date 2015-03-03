@@ -50,6 +50,10 @@ public abstract class MealTemplate {
         return ingredients;
     }
 
+    public double getMinAmount(final FoodItem ingredient) {
+        return getIngredients().getMinAmount(ingredient);
+    }
+
     public double getMaxAmount(final FoodItem ingredient) {
         return getIngredients().getMaxAmount(ingredient);
     }
