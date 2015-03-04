@@ -21,7 +21,7 @@ public class ItemList<K extends Enum<K>> {
     }
 
     public void set(final K item, final double amount) {
-        if (amount == 0.0) {
+        if (amount <= 0.0) {
             items.remove(item);
         } else {
             items.put(item, amount);

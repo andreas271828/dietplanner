@@ -54,8 +54,16 @@ public abstract class MealTemplate {
         return getIngredients().getMinAmount(ingredient);
     }
 
+    public double getRoundedMinAmount(final FoodItem ingredient) {
+        return getIngredients().getRoundedMinAmount(ingredient);
+    }
+
     public double getMaxAmount(final FoodItem ingredient) {
         return getIngredients().getMaxAmount(ingredient);
+    }
+
+    public double getRoundedMaxAmount(final FoodItem ingredient) {
+        return getIngredients().getRoundedMaxAmount(ingredient);
     }
 
     public ArrayList<Meal> getRandomMeals(final int numberOfMeals) {

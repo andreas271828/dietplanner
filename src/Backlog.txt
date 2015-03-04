@@ -1,13 +1,5 @@
 -   Improve optimisation algorithm
-        generateCandidate4():
-            Address one score at a time (the one that is furthest from its optimum).
-            Add a portion of a random ingredient.
-                Better score? Continue with poorest score.
-                Same or worse score? Remove a portion of the same ingredient.
-                    Better score (than original)? Continue with poorest score.
-                    Same or worse score (than original)? Remove ingredient from variable list and continue with different ingredient.
-            No more ingredients to adjust? Try the same with one more portion and continue until improvement has been made or all limits have been reached.
-            After each improvement check the total score and remember diet plan with best total score.
+        See handwritten notes (recursive algorithm)
         See TODOs.
 -   Refactor code
 -   Improve and use custom meal templates

@@ -51,8 +51,16 @@ public class Ingredients {
         return limits == null ? 0.0 : limits.getMin();
     }
 
+    public double getRoundedMinAmount(final FoodItem ingredient) {
+        return ingredient.roundToPortions(getMinAmount(ingredient));
+    }
+
     public double getMaxAmount(final FoodItem ingredient) {
         final Limits2 limits = ingredients.get(ingredient);
         return limits == null ? 0.0 : limits.getMax();
+    }
+
+    public double getRoundedMaxAmount(final FoodItem ingredient) {
+        return ingredient.roundToPortions(getMaxAmount(ingredient));
     }
 }
