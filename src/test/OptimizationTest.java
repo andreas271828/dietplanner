@@ -28,7 +28,8 @@ public class OptimizationTest {
 
     public static void runTests() {
         // test1();
-        test2();
+        // test2();
+        test3();
     }
 
     private static Function<DietPlanChange, Scores> getFitnessFunction1(final Requirements requirements) {
@@ -91,7 +92,7 @@ public class OptimizationTest {
                 } else {
                     // Don't try the same change again
                     final DietPlanChange dietPlanWithoutChange = dietPlanChange(dietPlan, NO_CHANGE);
-                    nextGeneration.add(evaluation(dietPlanWithoutChange, evaluation.getScores()));
+                    nextGeneration.add(evaluation(dietPlanWithoutChange, FITNESS_FUNCTION_1, evaluation.getScores()));
                 }
             }
         }
@@ -476,6 +477,48 @@ public class OptimizationTest {
             }
         }
         return candidate;
+    }
+
+    private static void test3() {
+        final DietPlan minDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
+        final Evaluation<DietPlan> minDietPlanEvaluation = evaluation(minDietPlan, FITNESS_FUNCTION_2);
+        printScore(minDietPlanEvaluation.getScores());
+        printDietPlanEvaluation(addBestIngredients(minDietPlanEvaluation, minDietPlanEvaluation));
+    }
+
+    private static Evaluation<DietPlan> addBestIngredients(final Evaluation<DietPlan> base,
+                                                           final Evaluation<DietPlan> best) {
+        Evaluation<DietPlan> newBest = best;
+        final DietPlan dietPlan = base.getObject();
+        final double totalScore = base.getTotalScore();
+        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+        while (!variableIngredients.isEmpty()) {
+            final int variableIngredientIndex = RANDOM.nextInt(variableIngredients.size());
+            final Pair<Integer, FoodItem> variableIngredient = variableIngredients.get(variableIngredientIndex);
+            final int mealIndex = variableIngredient.a();
+            final Meal meal = dietPlan.getMeal(mealIndex);
+            final FoodItem foodItem = variableIngredient.b();
+            final double curAmount = meal.getAmount(foodItem);
+            final double maxAmount = meal.getTemplate().getRoundedMaxAmount(foodItem);
+            if (curAmount < maxAmount) {
+                final DietPlan newDietPlan = dietPlan.getWithChange(mealIndex, foodItem, foodItem.getPortionAmount());
+                final Evaluation<DietPlan> newDietPlanEvaluation = evaluation(newDietPlan, base.getEvaluationFunction());
+                final double newTotalScore = newDietPlanEvaluation.getTotalScore();
+                if (newTotalScore > totalScore) {
+                    if (newTotalScore > newBest.getTotalScore()) {
+                        newBest = newDietPlanEvaluation;
+                        printScore(newBest.getScores());
+                    }
+                    newBest = addBestIngredients(newDietPlanEvaluation, newBest);
+                }
+            }
+            variableIngredients.remove(variableIngredientIndex);
+        }
+        return newBest;
+    }
+
+    private static void printScore(final Scores scores) {
+        System.out.println("Score: " + scores.getTotalScore() + " / " + scores.getWeightSum());
     }
 
     private static void printDietPlanEvaluation(final Evaluation<DietPlan> dietPlanEvaluation) {
