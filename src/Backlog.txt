@@ -1,6 +1,8 @@
 -   Improve optimisation algorithm
-        See handwritten notes (recursive algorithm)
-        See TODOs.
+        Improve recursive algorithm - it needs to spread the search out more.
+            Try 1 step several times (with all ingredients as next test case?) before going deeper with the best one?
+                Remember the total score of all of them - continue with next best when finished with best?
+            Randomly fork branches, compute in parallel and kill least successful ones regularly?
 -   Refactor code
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
