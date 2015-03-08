@@ -637,7 +637,7 @@ public class OptimizationTest {
                 do {
                     final int variableIngredientIndex = RANDOM.nextInt(variableIngredients.size());
                     removeList.add(variableIngredients.get(variableIngredientIndex));
-                } while (RANDOM.nextDouble() < 0.5); // TODO: Different probability to continue?
+                } while (RANDOM.nextDouble() < 0.8); // TODO: Different probability to continue (increase every time no improvement was made?)?
                 final Optional<DietPlan> maybeNewDietPlan = dietPlan.removePortions(removeList);
                 if (maybeNewDietPlan.isPresent()) {
                     final Evaluation<DietPlan> cur = evaluation(maybeNewDietPlan.get(), best.getEvaluationFunction());
@@ -654,6 +654,7 @@ public class OptimizationTest {
                 }
             }
             if (best.getTotalScore() >= best.getScores().getWeightSum()) {
+                // TODO: Prioritise worst individual scores (over the total score) when trying to find better alternatives?
                 // TODO: Start several threads and kill unsuccessful ones (or when we are happy to read the result)
                 continueChanging = false;
             }
