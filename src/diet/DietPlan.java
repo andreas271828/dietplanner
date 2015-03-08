@@ -1,6 +1,8 @@
 package diet;
 
-import util.*;
+import util.LazyValue;
+import util.Limits2;
+import util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +112,42 @@ public class DietPlan {
         changedMeals.add(meals.get(mealIndex).getWithChange(ingredient, change));
         changedMeals.addAll(meals.subList(mealIndex + 1, numberOfMeals));
         return new DietPlan(changedMeals);
+    }
+
+    public Optional<DietPlan> addPortion(final int mealIndex, final FoodItem ingredient) {
+        final Meal meal = meals.get(mealIndex);
+        final double curAmount = meal.getAmount(ingredient);
+        final double maxAmount = meal.getTemplate().getRoundedMaxAmount(ingredient);
+        if (curAmount < maxAmount) {
+            final DietPlan dietPlan = getWithChange(mealIndex, ingredient, ingredient.getPortionAmount());
+            return Optional.of(dietPlan);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<DietPlan> removePortion(final int mealIndex, final FoodItem ingredient) {
+        final Meal meal = meals.get(mealIndex);
+        final double curAmount = meal.getAmount(ingredient);
+        final double minAmount = meal.getTemplate().getRoundedMinAmount(ingredient);
+        if (curAmount > minAmount) {
+            final DietPlan dietPlan = getWithChange(mealIndex, ingredient, -ingredient.getPortionAmount());
+            return Optional.of(dietPlan);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<DietPlan> removePortions(final List<Pair<Integer, FoodItem>> removeList) {
+        // TODO: Implement faster version that considers all items to remove at once
+        DietPlan dietPlan = this;
+        for (final Pair<Integer, FoodItem> remove : removeList) {
+            final Optional<DietPlan> maybeDietPlan = dietPlan.removePortion(remove.a(), remove.b());
+            if (maybeDietPlan.isPresent()) {
+                dietPlan = maybeDietPlan.get();
+            }
+        }
+        return dietPlan == this ? Optional.<DietPlan>empty() : Optional.of(dietPlan);
     }
 
     public DietPlan mate(final DietPlan partner,
