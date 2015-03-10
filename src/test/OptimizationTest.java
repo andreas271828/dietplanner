@@ -487,7 +487,8 @@ public class OptimizationTest {
         //printDietPlanEvaluation(addBestIngredients2(minDietPlanEvaluation));
         //printDietPlanEvaluation(addBestIngredients3(minDietPlanEvaluation, minDietPlanEvaluation));
         //printDietPlanEvaluation(addBestIngredients4(minDietPlanEvaluation));
-        printDietPlanEvaluation(addBestIngredients5(minDietPlanEvaluation));
+        //printDietPlanEvaluation(addBestIngredients5(minDietPlanEvaluation));
+        printDietPlanEvaluation(addBestIngredients6(minDietPlanEvaluation));
     }
 
     private static Evaluation<DietPlan> addBestIngredients1(final Evaluation<DietPlan> base,
@@ -637,7 +638,8 @@ public class OptimizationTest {
                 do {
                     final int variableIngredientIndex = RANDOM.nextInt(variableIngredients.size());
                     removeList.add(variableIngredients.get(variableIngredientIndex));
-                } while (RANDOM.nextDouble() < 0.8); // TODO: Different probability to continue (increase every time no improvement was made?)?
+                }
+                while (RANDOM.nextDouble() < 0.8); // TODO: Different probability to continue (increase every time no improvement was made?)?
                 final Optional<DietPlan> maybeNewDietPlan = dietPlan.removePortions(removeList);
                 if (maybeNewDietPlan.isPresent()) {
                     final Evaluation<DietPlan> cur = evaluation(maybeNewDietPlan.get(), best.getEvaluationFunction());
@@ -657,6 +659,65 @@ public class OptimizationTest {
                 // TODO: Prioritise worst individual scores (over the total score) when trying to find better alternatives?
                 // TODO: Start several threads and kill unsuccessful ones (or when we are happy to read the result)
                 continueChanging = false;
+            }
+        }
+        return best;
+    }
+
+    private static Evaluation<DietPlan> addBestIngredients6(final Evaluation<DietPlan> base) {
+        Evaluation<DietPlan> best = addBestIngredients4(base, base);
+        boolean continueChanging = true;
+        while (continueChanging) {
+            continueChanging = false;
+            System.out.println("---------- improveWorstScore1 ----------");
+            final Evaluation<DietPlan> newBest = improveWorstScore1(best);
+            if (newBest != best) {
+                System.out.println("---------- addBestIngredients4 ----------");
+                best = addBestIngredients4(newBest, newBest);
+                continueChanging = true;
+            }
+        }
+        return best;
+    }
+
+    private static Evaluation<DietPlan> improveWorstScore1(final Evaluation<DietPlan> base) {
+        Evaluation<DietPlan> best = base;
+        boolean continueChanging = true;
+        while (continueChanging) {
+            continueChanging = false;
+            final Optional<Pair<Requirement, Integer>> worstScoreId = best.getWorstScore();
+            if (worstScoreId.isPresent()) {
+                Evaluation<DietPlan> tmpBest = best;
+                double tmpBestScore = tmpBest.getScore(worstScoreId.get()).getScore();
+                final DietPlan dietPlan = best.getObject();
+                final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+                for (final Pair<Integer, FoodItem> variableIngredient : variableIngredients) {
+                    final Optional<DietPlan> maybeNewDietPlan1 = dietPlan.removePortion(variableIngredient.a(), variableIngredient.b());
+                    if (maybeNewDietPlan1.isPresent()) {
+                        final Evaluation<DietPlan> cur1 = evaluation(maybeNewDietPlan1.get(), best.getEvaluationFunction());
+                        final double curScore1 = cur1.getScore(worstScoreId.get()).getScore();
+                        // TODO: Consider cases with equal scores (it could take several times to get improvement)?
+                        if (curScore1 > tmpBestScore) {
+                            tmpBest = cur1;
+                            tmpBestScore = curScore1;
+                        } else {
+                            final Optional<DietPlan> maybeNewDietPlan2 = dietPlan.addPortion(variableIngredient.a(), variableIngredient.b());
+                            if (maybeNewDietPlan2.isPresent()) {
+                                final Evaluation<DietPlan> cur2 = evaluation(maybeNewDietPlan2.get(), best.getEvaluationFunction());
+                                final double curScore2 = cur2.getScore(worstScoreId.get()).getScore();
+                                if (curScore2 > tmpBestScore) {
+                                    tmpBest = cur1;
+                                    tmpBestScore = curScore1;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (tmpBest.getTotalScore() > best.getTotalScore()) {
+                    best = tmpBest;
+                    continueChanging = true;
+                    printScore(best.getScores());
+                }
             }
         }
         return best;

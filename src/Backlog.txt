@@ -1,3 +1,4 @@
+-   Work on addBestIngredients6()
 -   Refactor code; see TODOs
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
