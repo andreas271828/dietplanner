@@ -488,7 +488,9 @@ public class OptimizationTest {
         //printDietPlanEvaluation(addBestIngredients3(minDietPlanEvaluation, minDietPlanEvaluation));
         //printDietPlanEvaluation(addBestIngredients4(minDietPlanEvaluation));
         //printDietPlanEvaluation(addBestIngredients5(minDietPlanEvaluation));
-        printDietPlanEvaluation(addBestIngredients6(minDietPlanEvaluation));
+        //printDietPlanEvaluation(addBestIngredients6(minDietPlanEvaluation));
+        //printDietPlanEvaluation(addBestIngredients7(minDietPlanEvaluation));
+        printDietPlanEvaluation(addBestIngredients8(minDietPlanEvaluation));
     }
 
     private static Evaluation<DietPlan> addBestIngredients1(final Evaluation<DietPlan> base,
@@ -717,6 +719,96 @@ public class OptimizationTest {
                     best = tmpBest;
                     continueChanging = true;
                     printScore(best.getScores());
+                }
+            }
+        }
+        return best;
+    }
+
+    private static Evaluation<DietPlan> addBestIngredients7(final Evaluation<DietPlan> base) {
+        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = base.getObject().getVariableIngredients();
+        final Function<DietPlan, Scores> evaluationFunction = base.getEvaluationFunction();
+        Evaluation<DietPlan> best = addBestIngredients4(base, base);
+        Optional<Pair<Requirement, Integer>> maybeWorstScoreId = best.getWorstScore();
+        Evaluation<DietPlan> tmp = best;
+        while (maybeWorstScoreId.isPresent()) {
+            final Pair<Requirement, Integer> worstScoreId = maybeWorstScoreId.get();
+            System.out.println("Worst score: " + tmp.getScore(worstScoreId));
+            double tmpScore = tmp.getScore(worstScoreId).getScore();
+            boolean continueChanging = true;
+            while (continueChanging) {
+                continueChanging = false;
+                int changeMode = 0; // Optimisation (only works if all changes affect a score the same way)
+                for (final Pair<Integer, FoodItem> variableIngredient : variableIngredients) {
+                    if (changeMode <= 0) {
+                        final Optional<DietPlan> maybeNewDietPlan = tmp.getObject().removePortion(variableIngredient);
+                        if (maybeNewDietPlan.isPresent()) {
+                            final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
+                            final double newScore = newEvaluation.getScore(worstScoreId).getScore();
+                            if (newScore > tmpScore) {
+                                tmp = newEvaluation;
+                                tmpScore = newScore;
+                                continueChanging = true;
+                                changeMode = -1;
+                            }
+                            if (newEvaluation.getTotalScore() > best.getTotalScore()) {
+                                best = newEvaluation;
+                                printScore(best.getScores());
+                            }
+                        }
+                    }
+                    if (changeMode >= 0) {
+                        final Optional<DietPlan> maybeNewDietPlan = tmp.getObject().addPortion(variableIngredient);
+                        if (maybeNewDietPlan.isPresent()) {
+                            final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
+                            final double newScore = newEvaluation.getScore(worstScoreId).getScore();
+                            if (newScore > tmpScore) {
+                                tmp = newEvaluation;
+                                tmpScore = newScore;
+                                continueChanging = true;
+                                changeMode = 1;
+                            }
+                            if (newEvaluation.getTotalScore() > best.getTotalScore()) {
+                                best = newEvaluation;
+                                printScore(best.getScores());
+                            }
+                        }
+                    }
+                }
+            }
+            System.out.println("Worst score improved to: " + tmp.getScore(worstScoreId));
+            maybeWorstScoreId = tmp.getWorstScore(); // TODO: Make sure that scores that can't be improved anymore will be ignored.
+        }
+        return best;
+    }
+
+    private static Evaluation<DietPlan> addBestIngredients8(final Evaluation<DietPlan> base) {
+        Evaluation<DietPlan> best = base;
+        boolean continueChanging = true;
+        while (continueChanging) {
+            continueChanging = false;
+            final DietPlan dietPlan = best.getObject();
+            final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+            for (final Pair<Integer, FoodItem> variableIngredient : variableIngredients) {
+                final Optional<DietPlan> maybeNewDietPlan1 = dietPlan.addPortion(variableIngredient);
+                if (maybeNewDietPlan1.isPresent()) {
+                    final Evaluation<DietPlan> cur = evaluation(maybeNewDietPlan1.get(), best.getEvaluationFunction());
+                    // TODO: Consider cases with equal scores (it could take several times to get improvement)?
+                    if (cur.getTotalScore() > best.getTotalScore()) {
+                        best = cur;
+                        continueChanging = true;
+                        printScore(best.getScores());
+                    }
+                }
+                final Optional<DietPlan> maybeNewDietPlan2 = dietPlan.removePortion(variableIngredient);
+                if (maybeNewDietPlan2.isPresent()) {
+                    final Evaluation<DietPlan> cur = evaluation(maybeNewDietPlan2.get(), best.getEvaluationFunction());
+                    // TODO: Consider cases with equal scores (it could take several times to get improvement)?
+                    if (cur.getTotalScore() > best.getTotalScore()) {
+                        best = cur;
+                        continueChanging = true;
+                        printScore(best.getScores());
+                    }
                 }
             }
         }

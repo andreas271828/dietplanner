@@ -126,6 +126,10 @@ public class DietPlan {
         }
     }
 
+    public Optional<DietPlan> addPortion(final Pair<Integer, FoodItem> foodItemId) {
+        return addPortion(foodItemId.a(), foodItemId.b());
+    }
+
     public Optional<DietPlan> removePortion(final int mealIndex, final FoodItem ingredient) {
         final Meal meal = meals.get(mealIndex);
         final double curAmount = meal.getAmount(ingredient);
@@ -138,11 +142,15 @@ public class DietPlan {
         }
     }
 
+    public Optional<DietPlan> removePortion(final Pair<Integer, FoodItem> foodItemId) {
+        return removePortion(foodItemId.a(), foodItemId.b());
+    }
+
     public Optional<DietPlan> removePortions(final List<Pair<Integer, FoodItem>> removeList) {
         // TODO: Implement faster version that considers all items to remove at once
         DietPlan dietPlan = this;
         for (final Pair<Integer, FoodItem> remove : removeList) {
-            final Optional<DietPlan> maybeDietPlan = dietPlan.removePortion(remove.a(), remove.b());
+            final Optional<DietPlan> maybeDietPlan = dietPlan.removePortion(remove);
             if (maybeDietPlan.isPresent()) {
                 dietPlan = maybeDietPlan.get();
             }
