@@ -29,7 +29,8 @@ public class OptimizationTest {
     public static void runTests() {
         // test1();
         // test2();
-        test3();
+        // test3();
+        test4();
     }
 
     private static Function<DietPlanChange, Scores> getFitnessFunction1(final Requirements requirements) {
@@ -830,5 +831,10 @@ public class OptimizationTest {
         System.out.println(relScores);
         System.out.println("Total score: " + scores.getTotalScore() + " of " + scores.getWeightSum());
         System.out.println();
+    }
+
+    private static void test4() {
+        final DietPlan minDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
+        final Additions additions = minDietPlan.getBasicAdditions(FITNESS_FUNCTION_2);
     }
 }

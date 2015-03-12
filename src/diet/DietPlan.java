@@ -1,5 +1,6 @@
 package diet;
 
+import util.Evaluation;
 import util.LazyValue;
 import util.Limits2;
 import util.Pair;
@@ -8,9 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
+import static diet.Addition.addition;
 import static diet.Meal.meal;
 import static diet.Meal.randomMeal;
+import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
 import static util.Pair.pair;
 
@@ -104,6 +108,19 @@ public class DietPlan {
         return variableIngredients;
     }
 
+    public Additions getBasicAdditions(final Function<DietPlan, Scores> evaluationFunction) {
+        final Additions additions = new Additions();
+        final Evaluation<DietPlan> dietPlanEvaluation = evaluation(this, evaluationFunction);
+        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = getVariableIngredients();
+        for (final Pair<Integer, FoodItem> variableIngredient : variableIngredients) {
+            final Optional<Addition> maybeAddition = addition(variableIngredient, dietPlanEvaluation);
+            if (maybeAddition.isPresent()) {
+                additions.add(maybeAddition.get());
+            }
+        }
+        return additions;
+    }
+
     public DietPlan getWithChange(final int mealIndex, final FoodItem ingredient, final double change) {
         // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
         final int numberOfMeals = meals.size();
@@ -126,8 +143,8 @@ public class DietPlan {
         }
     }
 
-    public Optional<DietPlan> addPortion(final Pair<Integer, FoodItem> foodItemId) {
-        return addPortion(foodItemId.a(), foodItemId.b());
+    public Optional<DietPlan> addPortion(final Pair<Integer, FoodItem> ingredientId) {
+        return addPortion(ingredientId.a(), ingredientId.b());
     }
 
     public Optional<DietPlan> removePortion(final int mealIndex, final FoodItem ingredient) {
@@ -142,8 +159,8 @@ public class DietPlan {
         }
     }
 
-    public Optional<DietPlan> removePortion(final Pair<Integer, FoodItem> foodItemId) {
-        return removePortion(foodItemId.a(), foodItemId.b());
+    public Optional<DietPlan> removePortion(final Pair<Integer, FoodItem> ingredientId) {
+        return removePortion(ingredientId.a(), ingredientId.b());
     }
 
     public Optional<DietPlan> removePortions(final List<Pair<Integer, FoodItem>> removeList) {

@@ -1,10 +1,5 @@
 -   Improve optimisation algorithm
-    Loop until there is no more improvement to any of the scores
-        Loop over all scores
-            Loop until there is no more improvement for the score
-                Loop over all ingredients
-                    Try adding a portion
-                    Try removing a portion
+    See TODOs and handwritten notes
 -   Refactor code; see TODOs
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
