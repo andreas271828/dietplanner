@@ -836,5 +836,6 @@ public class OptimizationTest {
     private static void test4() {
         final DietPlan minDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
         final Additions additions = minDietPlan.getBasicAdditions(FITNESS_FUNCTION_2);
+        System.out.println(additions);
     }
 }

@@ -147,6 +147,19 @@ public class DietPlan {
         return addPortion(ingredientId.a(), ingredientId.b());
     }
 
+    public Optional<DietPlan> addAddition(final Addition addition) {
+        // TODO: Make method more efficient
+        Optional<DietPlan> maybeDietPlan = Optional.of(this);
+        final ArrayList<Pair<Integer, FoodItem>> additionalIngredients = addition.getIngredients();
+        for (final Pair<Integer, FoodItem> ingredientId : additionalIngredients) {
+            maybeDietPlan = maybeDietPlan.get().addPortion(ingredientId);
+            if (!maybeDietPlan.isPresent()) {
+                return maybeDietPlan;
+            }
+        }
+        return maybeDietPlan;
+    }
+
     public Optional<DietPlan> removePortion(final int mealIndex, final FoodItem ingredient) {
         final Meal meal = meals.get(mealIndex);
         final double curAmount = meal.getAmount(ingredient);
@@ -248,7 +261,6 @@ public class DietPlan {
 
         // Criteria for complete diet plan
         final FoodProperties dietPlanProperties = getProperties();
-        final Optional<Integer> noIndex = Optional.empty();
         scores.addStandardScore(Requirement.ALPHA_LINOLENIC_ACID, dietPlanProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), requirements);
         scores.addStandardScore(Requirement.CALCIUM, dietPlanProperties.get(FoodProperty.CALCIUM), requirements);
         scores.addStandardScore(Requirement.CARBOHYDRATES, dietPlanProperties.get(FoodProperty.CARBOHYDRATES), requirements);
@@ -286,7 +298,6 @@ public class DietPlan {
         for (int i = 0; i < numberOfMeals; ++i) {
             final Meal meal = getMeal(i);
             final FoodProperties mealProperties = meal.getProperties();
-            final Optional<Integer> mealIndex = Optional.of(i);
             scores.addStandardScore(Requirement.MEAL_ALCOHOL, mealProperties.get(FoodProperty.ALCOHOL), requirements);
             scores.addStandardScore(Requirement.MEAL_CAFFEINE, mealProperties.get(FoodProperty.CAFFEINE), requirements);
             scores.addStandardScore(Requirement.MEAL_CARBOHYDRATES, mealProperties.get(FoodProperty.CARBOHYDRATES), requirements);
@@ -302,16 +313,5 @@ public class DietPlan {
     public String toString() {
         return "Meals:" + '\n' + getMeals() + '\n' + "Food items:" + '\n' + getFoodItems() + '\n' + "Properties:" +
                 '\n' + getProperties() + '\n' + "Costs:" + '\n' + String.format("AUD %1$,.2f", getCosts());
-    }
-
-    public double getDifference(final DietPlan dietPlan) {
-        double difference = 0.0;
-        final int maxNumberOfMeals = Math.max(getNumberOfMeals(), dietPlan.getNumberOfMeals());
-        for (int i = 0; i < maxNumberOfMeals; ++i) {
-            if (!getMeal(i).getTemplate().equals(dietPlan.getMeal(i).getTemplate())) {
-                difference += 1.0;
-            }
-        }
-        return difference;
     }
 }
