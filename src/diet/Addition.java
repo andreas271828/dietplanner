@@ -7,50 +7,50 @@ import java.util.Optional;
 
 import static util.Evaluation.evaluation;
 
-public class Addition {
-    private final Pair<Integer, FoodItem> ingredientId;
-    private final Optional<Addition> base;
-    private final Evaluation<DietPlan> evaluation;
-
+public abstract class Addition {
     public static Optional<Addition> addition(final Pair<Integer, FoodItem> ingredientId,
                                               final Evaluation<DietPlan> dietPlanEvaluation) {
-        return addition(ingredientId, Optional.<Addition>empty(), dietPlanEvaluation);
-    }
-
-    public static Optional<Addition> addition(final Pair<Integer, FoodItem> ingredientId,
-                                              final Addition base) {
-        // TODO: Combine two additions instead of addition and ingredient (one of them can be a basic one; addition can either have an ingredient or two additions; score must be better than both individual scores)?!
-        return addition(ingredientId, Optional.of(base), base.getEvaluation());
-    }
-
-    private static Optional<Addition> addition(final Pair<Integer, FoodItem> ingredientId,
-                                               final Optional<Addition> base,
-                                               final Evaluation<DietPlan> dietPlanEvaluation) {
         final Optional<DietPlan> maybeDietPlan = dietPlanEvaluation.getObject().addPortion(ingredientId);
         if (maybeDietPlan.isPresent()) {
             final Evaluation<DietPlan> evaluation = evaluation(maybeDietPlan.get(), dietPlanEvaluation.getEvaluationFunction());
             final double baseScore = dietPlanEvaluation.getTotalScore();
             final double score = evaluation.getTotalScore();
             if (score > baseScore) {
-                return Optional.of(new Addition(ingredientId, base, evaluation));
+                final Addition addition = new Addition() {
+                    @Override
+                    public Evaluation<DietPlan> getEvaluation() {
+                        return evaluation;
+                    }
+                };
+                return Optional.of(addition);
             }
         }
         return Optional.empty();
     }
 
-    private Addition(final Pair<Integer, FoodItem> ingredientId,
-                     final Optional<Addition> base,
-                     final Evaluation<DietPlan> evaluation) {
-        this.ingredientId = ingredientId;
-        this.base = base;
-        this.evaluation = evaluation;
+    public static Optional<Addition> addition(final Addition addition1, final Addition addition2) {
+        // TODO: Create a new diet plan with both base additions (add addition2 to diet plan of addition1).
+        final Optional<DietPlan> maybeDietPlan = Optional.empty();
+        if (maybeDietPlan.isPresent()) {
+            // TODO: Do similar stuff like in basic case (extract methods).
+            final Evaluation<DietPlan> evaluation = evaluation(maybeDietPlan.get(), dietPlanEvaluation.getEvaluationFunction());
+            final double baseScore = dietPlanEvaluation.getTotalScore();
+            final double score = evaluation.getTotalScore();
+            if (score > baseScore) {
+                final Addition addition = new Addition() {
+                    @Override
+                    public Evaluation<DietPlan> getEvaluation() {
+                        return evaluation;
+                    }
+                };
+                return Optional.of(addition);
+            }
+        }
+        return Optional.empty();
     }
 
-    public Optional<Addition> getBase() {
-        return base;
+    private Addition() {
     }
 
-    public Evaluation<DietPlan> getEvaluation() {
-        return evaluation;
-    }
+    public abstract Evaluation<DietPlan> getEvaluation();
 }
