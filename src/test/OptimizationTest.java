@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static diet.Addition.addition;
 import static diet.DietPlan.dietPlan;
 import static diet.DietPlanChange.dietPlanChange;
 import static diet.MealTemplate.STANDARD_DAY_MIX;
@@ -834,8 +835,31 @@ public class OptimizationTest {
     }
 
     private static void test4() {
-        final DietPlan minDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
-        final Additions additions = minDietPlan.getBasicAdditions(FITNESS_FUNCTION_2);
-        System.out.println(additions);
+        final DietPlan startDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
+        Evaluation<DietPlan> best = evaluation(startDietPlan, FITNESS_FUNCTION_2);
+        System.out.println("New best score: " + best.getTotalScore());
+        final Additions additions = startDietPlan.getBasicAdditions(FITNESS_FUNCTION_2);
+        // TODO: Add additions in several threads; remove additions with little use in a cleanup thread
+        // TODO: For faster results, select additions with higher scores more frequently?
+        //   However, this might not be a good idea for complex additions that can't be combined with other complex additions.
+        //   Consider score (+), successful use (+) and unsuccessful tries (-) to use for selection probability.
+        for (int i = 0; i < 50000; ++i) {
+            final Optional<Addition> maybeAddition1 = additions.getRandom();
+            if (maybeAddition1.isPresent()) {
+                final Optional<Addition> maybeAddition2 = additions.getRandom();
+                if (maybeAddition2.isPresent()) {
+                    final Optional<Addition> maybeAddition = addition(maybeAddition1.get(), maybeAddition2.get());
+                    if (maybeAddition.isPresent()) {
+                        additions.add(maybeAddition.get());
+                        final Evaluation<DietPlan> evaluation = maybeAddition.get().getEvaluation();
+                        if (evaluation.getTotalScore() > best.getTotalScore()) {
+                            best = evaluation;
+                            System.out.println("New best score: " + best.getTotalScore());
+                        }
+                    }
+                }
+            }
+        }
+        printDietPlanEvaluation(best);
     }
 }

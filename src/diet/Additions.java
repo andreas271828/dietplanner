@@ -2,28 +2,39 @@ package diet;
 
 import util.Pair;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static util.Global.RANDOM;
+
 public class Additions {
-    private final Map<Addition, Integer> additions = new HashMap<Addition, Integer>();
+    private final ArrayList<Addition> additions = new ArrayList<Addition>();
+    private final Map<Addition, Integer> additionUsages = new HashMap<Addition, Integer>();
 
     public void add(final Addition addition) {
-        // TODO: Keep index for use count for cleaning up?
-        additions.put(addition, 1);
+        additions.add(addition);
 
+        additionUsages.put(addition, 1);
         final Optional<Pair<Addition, Addition>> maybeBases = addition.getBases();
         if (maybeBases.isPresent()) {
             final Addition base1 = maybeBases.get().a();
             final Addition base2 = maybeBases.get().b();
-            additions.put(base1, additions.get(base1) + 1);
-            additions.put(base2, additions.get(base2) + 1);
+            additionUsages.put(base1, additionUsages.get(base1) + 1);
+            additionUsages.put(base2, additionUsages.get(base2) + 1);
         }
+    }
+
+    public Optional<Addition> getRandom() {
+        if (additions.size() > 0) {
+            return Optional.of(additions.get(RANDOM.nextInt(additions.size())));
+        }
+        return Optional.empty();
     }
 
     @Override
     public String toString() {
-        return additions.toString();
+        return additionUsages.toString();
     }
 }
