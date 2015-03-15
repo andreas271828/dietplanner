@@ -28,10 +28,11 @@ public class OptimizationTest {
     private static final Function<DietPlan, Scores> FITNESS_FUNCTION_2 = getFitnessFunction2(REQUIREMENTS);
 
     public static void runTests() {
-        // test1();
-        // test2();
-        // test3();
-        test4();
+        //test1();
+        //test2();
+        //test3();
+        //test4();
+        test5();
     }
 
     private static Function<DietPlanChange, Scores> getFitnessFunction1(final Requirements requirements) {
@@ -488,7 +489,7 @@ public class OptimizationTest {
         //printDietPlanEvaluation(addBestIngredients1(minDietPlanEvaluation, minDietPlanEvaluation));
         //printDietPlanEvaluation(addBestIngredients2(minDietPlanEvaluation));
         //printDietPlanEvaluation(addBestIngredients3(minDietPlanEvaluation, minDietPlanEvaluation));
-        //printDietPlanEvaluation(addBestIngredients4(minDietPlanEvaluation));
+        //printDietPlanEvaluation(addBestIngredients4(minDietPlanEvaluation, minDietPlanEvaluation));
         //printDietPlanEvaluation(addBestIngredients5(minDietPlanEvaluation));
         //printDietPlanEvaluation(addBestIngredients6(minDietPlanEvaluation));
         //printDietPlanEvaluation(addBestIngredients7(minDietPlanEvaluation));
@@ -871,5 +872,33 @@ public class OptimizationTest {
             }
         }
         printDietPlanEvaluation(best);
+    }
+
+    private static void test5() {
+        final DietPlan startDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
+        final Function<DietPlan, Scores> evaluationFunction = FITNESS_FUNCTION_2;
+        Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
+        boolean continueAdding = true;
+        while (continueAdding) {
+            final DietPlan dietPlan = evaluation.getObject();
+            final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+            continueAdding = false;
+            while (!continueAdding && !variableIngredients.isEmpty()) {
+                final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
+                if (maybeNewDietPlan.isPresent()) {
+                    final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
+                    if (newEvaluation.getTotalScore() > evaluation.getTotalScore()) {
+                        evaluation = newEvaluation;
+                        continueAdding = true;
+                    }
+                }
+                if (!continueAdding) {
+                    variableIngredients.remove(ingredientIndex);
+                }
+            }
+        }
+        printDietPlanEvaluation(evaluation);
     }
 }
