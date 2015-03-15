@@ -835,12 +835,16 @@ public class OptimizationTest {
     }
 
     private static void test4() {
-        // TODO: Fine tune values of additions
-        // TODO: Add additions in several threads; remove additions with little use in a cleanup thread
+        // TODO: Fine tune values of additions.
+        // TODO: Recombine additions using an evolutionary algorithm?
+        // TODO: Add additions in several threads; remove additions with little use in a cleanup thread.
         final DietPlan startDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
         Evaluation<DietPlan> best = evaluation(startDietPlan, FITNESS_FUNCTION_2);
         System.out.println("New best score: " + best.getTotalScore());
         final Additions additions = startDietPlan.getBasicAdditions(FITNESS_FUNCTION_2);
+        // TODO: What is the best diet plan now?
+        final double incFactor = 1.1;
+        final double decFactor = 1 / incFactor;
         for (int i = 0; i < 50000; ++i) {
             final Optional<Addition> maybeAddition1 = additions.getRandom();
             if (maybeAddition1.isPresent()) {
@@ -853,15 +857,15 @@ public class OptimizationTest {
                         final Addition addition = maybeAddition.get();
                         final Evaluation<DietPlan> evaluation = addition.getEvaluation();
                         additions.add(addition, evaluation.getTotalScore());
-                        additions.addValue(addition1, 1.0);
-                        additions.addValue(addition2, 1.0);
+                        additions.scaleValue(addition1, incFactor);
+                        additions.scaleValue(addition2, incFactor);
                         if (evaluation.getTotalScore() > best.getTotalScore()) {
                             best = evaluation;
                             System.out.println("New best score: " + best.getTotalScore());
                         }
                     } else {
-                        additions.addValue(addition1, -1.0);
-                        additions.addValue(addition2, -1.0);
+                        additions.scaleValue(addition1, decFactor);
+                        additions.scaleValue(addition2, decFactor);
                     }
                 }
             }

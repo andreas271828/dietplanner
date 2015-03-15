@@ -28,6 +28,13 @@ public class Additions {
         valueSum += value;
     }
 
+    public void scaleValue(final Addition addition, final double factor) {
+        final double oldValue = additions.get(addition);
+        final double newValue = oldValue * factor;
+        additions.put(addition, newValue);
+        valueSum += newValue - oldValue;
+    }
+
     public Optional<Addition> getRandom() {
         final double selector = RANDOM.nextDouble() * valueSum;
         double cumulativeValue = 0.0;

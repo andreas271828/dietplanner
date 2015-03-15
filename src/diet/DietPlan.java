@@ -115,7 +115,8 @@ public class DietPlan {
         for (final Pair<Integer, FoodItem> variableIngredient : variableIngredients) {
             final Optional<Addition> maybeAddition = addition(variableIngredient, dietPlanEvaluation);
             if (maybeAddition.isPresent()) {
-                additions.add(maybeAddition.get());
+                final Addition addition = maybeAddition.get();
+                additions.add(addition, addition.getEvaluation().getTotalScore());
             }
         }
         return additions;
