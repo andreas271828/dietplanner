@@ -875,8 +875,41 @@ public class OptimizationTest {
     }
 
     private static void test5() {
-        final DietPlan startDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
         final Function<DietPlan, Scores> evaluationFunction = FITNESS_FUNCTION_2;
+        final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>();
+        Optional<Evaluation<DietPlan>> maybeBest = Optional.empty();
+        for (int i = 0; i < 10; ++i) {
+            final Evaluation<DietPlan> individual = createIndividual1(evaluationFunction);
+            population.add(individual);
+            if (!maybeBest.isPresent() || individual.getTotalScore() > maybeBest.get().getTotalScore()) {
+                maybeBest = Optional.of(individual);
+                System.out.println(individual.getTotalScore());
+            }
+        }
+        System.out.println("----------");
+
+        for (int i = 0; i < 1000; ++i) {
+            final int parentIndex1 = RANDOM.nextInt(population.size());
+            final int parentIndex2 = RANDOM.nextInt(population.size());
+            if (parentIndex1 != parentIndex2) {
+                final DietPlan parent1 = population.get(parentIndex1).getObject();
+                final DietPlan parent2 = population.get(parentIndex2).getObject();
+                // TODO: See TODOs in mate()
+                final Evaluation<DietPlan> individual = evaluation(parent1.mate(parent2, 0.1), evaluationFunction);
+                population.add(individual);
+                if (individual.getTotalScore() > maybeBest.get().getTotalScore()) {
+                    maybeBest = Optional.of(individual);
+                    System.out.println(individual.getTotalScore());
+                }
+            }
+        }
+        System.out.println("----------");
+
+        printDietPlanEvaluation(maybeBest.get());
+    }
+
+    private static Evaluation<DietPlan> createIndividual1(final Function<DietPlan, Scores> evaluationFunction) {
+        final DietPlan startDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
         boolean continueAdding = true;
         while (continueAdding) {
@@ -899,6 +932,6 @@ public class OptimizationTest {
                 }
             }
         }
-        printDietPlanEvaluation(evaluation);
+        return evaluation;
     }
 }

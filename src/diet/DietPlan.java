@@ -5,15 +5,14 @@ import util.LazyValue;
 import util.Limits2;
 import util.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static diet.Addition.addition;
 import static diet.Meal.meal;
 import static diet.Meal.randomMeal;
+import static java.lang.Math.min;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
 import static util.Pair.pair;
@@ -197,7 +196,7 @@ public class DietPlan {
         final ArrayList<Meal> meals2 = partner.getMeals();
         final int numberOfMeals1 = meals1.size();
         final int numberOfMeals2 = meals2.size();
-        final int minNumberOfMeals = Math.min(numberOfMeals1, numberOfMeals2);
+        final int minNumberOfMeals = min(numberOfMeals1, numberOfMeals2);
         final int crossoverMeal = RANDOM.nextInt(minNumberOfMeals + 1);
         final ArrayList<Meal> meals3 = new ArrayList<Meal>();
         copyMealsWithMutations(meals3, meals1, 0, crossoverMeal, mealMutationRate,
@@ -234,6 +233,53 @@ public class DietPlan {
             }
             copyMealsWithMutations(meals3, meals2, crossoverMeal + 1, numberOfMeals2, mealMutationRate,
                     mealTemplates, ingredientMutationRate);
+        }
+
+        return dietPlan(meals3);
+    }
+
+    public DietPlan mate(final DietPlan partner, final double mutationRate) {
+        final ArrayList<Pair<Integer, FoodItem>> variableIngredients1 = getVariableIngredients();
+        final ArrayList<Pair<Integer, FoodItem>> variableIngredients2 = partner.getVariableIngredients();
+        final int size1 = variableIngredients1.size();
+        final int size2 = variableIngredients2.size();
+        final int maxCrossoverIndex = min(size1, size2);
+        final int crossoverIndex = RANDOM.nextInt(maxCrossoverIndex + 1);
+        final ArrayList<Meal> meals1 = getMeals();
+        final ArrayList<Meal> meals2 = partner.getMeals();
+        final Map<Integer, Pair<MealTemplate, FoodItems>> mealsParams = new HashMap<Integer, Pair<MealTemplate, FoodItems>>();
+        for (int i = 0; i < size2; ++i) {
+            final ArrayList<Pair<Integer, FoodItem>> sourceIngredients;
+            final ArrayList<Meal> sourceMeals;
+            if (i < crossoverIndex) {
+                sourceIngredients = variableIngredients1;
+                sourceMeals = meals1;
+            } else {
+                sourceIngredients = variableIngredients2;
+                sourceMeals = meals2;
+            }
+            final Pair<Integer, FoodItem> ingredientId = sourceIngredients.get(i);
+            final int mealIndex = ingredientId.a();
+            final FoodItem foodItem = ingredientId.b();
+            final Meal sourceMeal = sourceMeals.get(mealIndex);
+            // TODO: Mutate.
+            // TODO: Keep amounts within allowed ranges.
+            final Pair<MealTemplate, FoodItems> mealParams = mealsParams.get(mealIndex);
+            final FoodItems ingredients;
+            if (mealParams == null) {
+                ingredients = new FoodItems();
+                mealsParams.put(mealIndex, pair(sourceMeal.getTemplate(), ingredients));
+            } else {
+                ingredients = mealParams.b();
+            }
+            ingredients.set(foodItem, sourceMeal.getAmount(foodItem));
+        }
+
+        final ArrayList<Meal> meals3 = new ArrayList<Meal>();
+        for (final Map.Entry<Integer, Pair<MealTemplate, FoodItems>> mealParams : mealsParams.entrySet()) {
+            // TODO: Map doesn't guarantee order - use ArrayList instead!
+            final Pair<MealTemplate, FoodItems> mealDetails = mealParams.getValue();
+            meals3.add(meal(mealDetails.a(), mealDetails.b()));
         }
 
         return dietPlan(meals3);
