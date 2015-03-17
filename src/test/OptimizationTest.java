@@ -888,7 +888,9 @@ public class OptimizationTest {
         }
         System.out.println("----------");
 
-        for (int i = 0; i < 1000; ++i) {
+        for (int i = 0; i < 10000; ++i) {
+            // TODO: Probabilistic selection depending on fitness?
+            // TODO: Limit population size
             final int parentIndex1 = RANDOM.nextInt(population.size());
             final int parentIndex2 = RANDOM.nextInt(population.size());
             if (parentIndex1 != parentIndex2) {
