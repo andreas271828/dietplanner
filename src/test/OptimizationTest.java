@@ -895,7 +895,7 @@ public class OptimizationTest {
                 final DietPlan parent1 = population.get(parentIndex1).getObject();
                 final DietPlan parent2 = population.get(parentIndex2).getObject();
                 // TODO: See TODOs in mate()
-                final Evaluation<DietPlan> individual = evaluation(parent1.mate(parent2, 0.1), evaluationFunction);
+                final Evaluation<DietPlan> individual = evaluation(parent1.mate(parent2, 0.01), evaluationFunction);
                 population.add(individual);
                 if (individual.getTotalScore() > maybeBest.get().getTotalScore()) {
                     maybeBest = Optional.of(individual);

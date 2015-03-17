@@ -12,6 +12,7 @@ import java.util.function.Function;
 import static diet.Addition.addition;
 import static diet.Meal.meal;
 import static diet.Meal.randomMeal;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
@@ -262,17 +263,17 @@ public class DietPlan {
             final int mealIndex = ingredientId.a();
             final FoodItem foodItem = ingredientId.b();
             final Meal sourceMeal = sourceMeals.get(mealIndex);
-            // TODO: Mutate.
-            // TODO: Keep amounts within allowed ranges.
-            final Pair<MealTemplate, FoodItems> mealParams = mealsParams.get(mealIndex);
-            final FoodItems ingredients;
+            Pair<MealTemplate, FoodItems> mealParams = mealsParams.get(mealIndex);
             if (mealParams == null) {
-                ingredients = new FoodItems();
-                mealsParams.put(mealIndex, pair(sourceMeal.getTemplate(), ingredients));
-            } else {
-                ingredients = mealParams.b();
+                mealParams = pair(sourceMeal.getTemplate(), new FoodItems());
+                mealsParams.put(mealIndex, mealParams);
             }
-            ingredients.set(foodItem, sourceMeal.getAmount(foodItem));
+            final MealTemplate mealTemplate = mealParams.a();
+            final double minAmount = mealTemplate.getMinAmount(foodItem);
+            final double maxAmount = mealTemplate.getMaxAmount(foodItem);
+            final double sourceAmount = sourceMeal.getAmount(foodItem);
+            final double amount = min(max(sourceAmount, minAmount), maxAmount); // TODO: Mutate.
+            mealParams.b().set(foodItem, amount);
         }
 
         final ArrayList<Meal> meals3 = new ArrayList<Meal>();
