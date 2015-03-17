@@ -5,7 +5,9 @@ import util.LazyValue;
 import util.Limits2;
 import util.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -240,6 +242,7 @@ public class DietPlan {
     }
 
     public DietPlan mate(final DietPlan partner, final double mutationRate) {
+        // TODO: Maybe make a bit nicer
         final ArrayList<Pair<Integer, FoodItem>> variableIngredients1 = getVariableIngredients();
         final ArrayList<Pair<Integer, FoodItem>> variableIngredients2 = partner.getVariableIngredients();
         final int size1 = variableIngredients1.size();
@@ -248,7 +251,7 @@ public class DietPlan {
         final int crossoverIndex = RANDOM.nextInt(maxCrossoverIndex + 1);
         final ArrayList<Meal> meals1 = getMeals();
         final ArrayList<Meal> meals2 = partner.getMeals();
-        final Map<Integer, Pair<MealTemplate, FoodItems>> mealsParams = new HashMap<Integer, Pair<MealTemplate, FoodItems>>();
+        final ArrayList<Pair<MealTemplate, FoodItems>> mealsParams = new ArrayList<Pair<MealTemplate, FoodItems>>();
         for (int i = 0; i < size2; ++i) {
             final ArrayList<Pair<Integer, FoodItem>> sourceIngredients;
             final ArrayList<Meal> sourceMeals;
@@ -259,28 +262,32 @@ public class DietPlan {
                 sourceIngredients = variableIngredients2;
                 sourceMeals = meals2;
             }
+
             final Pair<Integer, FoodItem> ingredientId = sourceIngredients.get(i);
             final int mealIndex = ingredientId.a();
-            final FoodItem foodItem = ingredientId.b();
             final Meal sourceMeal = sourceMeals.get(mealIndex);
-            Pair<MealTemplate, FoodItems> mealParams = mealsParams.get(mealIndex);
-            if (mealParams == null) {
-                mealParams = pair(sourceMeal.getTemplate(), new FoodItems());
-                mealsParams.put(mealIndex, mealParams);
+            for (int j = mealsParams.size(); j <= mealIndex; ++j) {
+                mealsParams.add(null); // TODO: Use Optional
             }
+            if (mealsParams.get(mealIndex) == null) {
+                mealsParams.set(mealIndex, pair(sourceMeal.getTemplate(), new FoodItems()));
+            }
+            final Pair<MealTemplate, FoodItems> mealParams = mealsParams.get(mealIndex);
+
+            final FoodItem foodItem = ingredientId.b();
             final MealTemplate mealTemplate = mealParams.a();
             final double minAmount = mealTemplate.getMinAmount(foodItem);
             final double maxAmount = mealTemplate.getMaxAmount(foodItem);
             final double sourceAmount = sourceMeal.getAmount(foodItem);
-            final double amount = min(max(sourceAmount, minAmount), maxAmount); // TODO: Mutate.
+            final double amount = min(max(sourceAmount, minAmount), maxAmount); // TODO: Mutate
             mealParams.b().set(foodItem, amount);
         }
 
         final ArrayList<Meal> meals3 = new ArrayList<Meal>();
-        for (final Map.Entry<Integer, Pair<MealTemplate, FoodItems>> mealParams : mealsParams.entrySet()) {
-            // TODO: Map doesn't guarantee order - use ArrayList instead!
-            final Pair<MealTemplate, FoodItems> mealDetails = mealParams.getValue();
-            meals3.add(meal(mealDetails.a(), mealDetails.b()));
+        for (final Pair<MealTemplate, FoodItems> mealParams : mealsParams) {
+            if (mealParams != null) {
+                meals3.add(meal(mealParams.a(), mealParams.b()));
+            }
         }
 
         return dietPlan(meals3);
