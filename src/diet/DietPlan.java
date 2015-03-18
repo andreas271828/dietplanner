@@ -285,10 +285,15 @@ public class DietPlan {
                 }
 
                 final FoodItem foodItem = ingredientId.b();
-                final double minAmount = mealTemplate.getMinAmount(foodItem);
-                final double maxAmount = mealTemplate.getMaxAmount(foodItem);
-                final double sourceAmount = sourceMeal.getAmount(foodItem);
-                final double amount = min(max(sourceAmount, minAmount), maxAmount); // TODO: Mutate
+                final double minAmount = mealTemplate.getRoundedMinAmount(foodItem);
+                final double maxAmount = mealTemplate.getRoundedMaxAmount(foodItem);
+                final double amount;
+                if (RANDOM.nextDouble() < mutationRate) {
+                    amount = foodItem.getRandomAmount(minAmount, maxAmount);
+                } else {
+                    final double sourceAmount = sourceMeal.getAmount(foodItem);
+                    amount = min(max(sourceAmount, minAmount), maxAmount);
+                }
                 foodItems.set(foodItem, amount);
             }
         }

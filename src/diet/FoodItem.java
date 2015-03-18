@@ -240,8 +240,10 @@ public enum FoodItem {
     }
 
     public double getRandomAmount(final Limits2 limits) {
-        final double minAmount = limits.getMin();
-        final double maxAmount = limits.getMax();
+        return getRandomAmount(limits.getMin(), limits.getMax());
+    }
+
+    public double getRandomAmount(final double minAmount, final double maxAmount) {
         final double relAmount = nextRandomDoubleInclOne();
         final double amount = minAmount + relAmount * (maxAmount - minAmount);
         return roundToPortions(amount);
