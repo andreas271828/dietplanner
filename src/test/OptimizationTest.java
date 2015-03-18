@@ -874,8 +874,8 @@ public class OptimizationTest {
 
     private static void test5() {
         final Function<DietPlan, Scores> evaluationFunction = FITNESS_FUNCTION_2;
-        final int startPopulationSize = 20;
-        final int maxPopulationSize = 20 * startPopulationSize;
+        final int startPopulationSize = 100;
+        final int maxPopulationSize = 10 * startPopulationSize;
         final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
         Optional<Evaluation<DietPlan>> maybeBest = Optional.empty();
         for (int i = 0; i < startPopulationSize; ++i) {
@@ -890,7 +890,7 @@ public class OptimizationTest {
 
         Collections.sort(population, dietPlanEvaluationComparator());
 
-        for (int i = 0; i < 1000000; ++i) {
+        for (int i = 0; i < 200000; ++i) {
             // TODO: Probabilistic selection for mating and removing depending on fitness?
             // TODO: Increase mutation rate when individuals become too similar or no improvement is made anymore?
             // TODO: How can diversity be ensured (avoiding local minima)?
