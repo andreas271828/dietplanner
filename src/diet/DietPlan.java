@@ -242,7 +242,6 @@ public class DietPlan {
     }
 
     public DietPlan mate(final DietPlan partner, final double mutationRate) {
-        // TODO: Maybe make a bit nicer
         final ArrayList<Pair<Integer, FoodItem>> variableIngredients1 = getVariableIngredients();
         final ArrayList<Pair<Integer, FoodItem>> variableIngredients2 = partner.getVariableIngredients();
         final int size1 = variableIngredients1.size();
@@ -251,7 +250,12 @@ public class DietPlan {
         final int crossoverIndex = RANDOM.nextInt(maxCrossoverIndex + 1);
         final ArrayList<Meal> meals1 = getMeals();
         final ArrayList<Meal> meals2 = partner.getMeals();
-        final ArrayList<Pair<MealTemplate, FoodItems>> mealsParams = new ArrayList<Pair<MealTemplate, FoodItems>>();
+        final int numberOfMeals = min(meals1.size(), meals2.size());
+        final ArrayList<Optional<Pair<MealTemplate, FoodItems>>> mealsParams =
+                new ArrayList<Optional<Pair<MealTemplate, FoodItems>>>(numberOfMeals);
+        for (int i = 0; i < numberOfMeals; ++i) {
+            mealsParams.add(Optional.<Pair<MealTemplate, FoodItems>>empty());
+        }
         for (int i = 0; i < size2; ++i) {
             final ArrayList<Pair<Integer, FoodItem>> sourceIngredients;
             final ArrayList<Meal> sourceMeals;
@@ -265,27 +269,34 @@ public class DietPlan {
 
             final Pair<Integer, FoodItem> ingredientId = sourceIngredients.get(i);
             final int mealIndex = ingredientId.a();
-            final Meal sourceMeal = sourceMeals.get(mealIndex);
-            for (int j = mealsParams.size(); j <= mealIndex; ++j) {
-                mealsParams.add(null); // TODO: Use Optional
-            }
-            if (mealsParams.get(mealIndex) == null) {
-                mealsParams.set(mealIndex, pair(sourceMeal.getTemplate(), new FoodItems()));
-            }
-            final Pair<MealTemplate, FoodItems> mealParams = mealsParams.get(mealIndex);
+            if (mealIndex < numberOfMeals) {
+                final Meal sourceMeal = sourceMeals.get(mealIndex);
+                final Optional<Pair<MealTemplate, FoodItems>> maybeMealParams = mealsParams.get(mealIndex);
+                final MealTemplate mealTemplate;
+                final FoodItems foodItems;
+                if (maybeMealParams.isPresent()) {
+                    final Pair<MealTemplate, FoodItems> mealParams = maybeMealParams.get();
+                    mealTemplate = mealParams.a();
+                    foodItems = mealParams.b();
+                } else {
+                    mealTemplate = sourceMeal.getTemplate();
+                    foodItems = new FoodItems();
+                    mealsParams.set(mealIndex, Optional.of(pair(mealTemplate, foodItems)));
+                }
 
-            final FoodItem foodItem = ingredientId.b();
-            final MealTemplate mealTemplate = mealParams.a();
-            final double minAmount = mealTemplate.getMinAmount(foodItem);
-            final double maxAmount = mealTemplate.getMaxAmount(foodItem);
-            final double sourceAmount = sourceMeal.getAmount(foodItem);
-            final double amount = min(max(sourceAmount, minAmount), maxAmount); // TODO: Mutate
-            mealParams.b().set(foodItem, amount);
+                final FoodItem foodItem = ingredientId.b();
+                final double minAmount = mealTemplate.getMinAmount(foodItem);
+                final double maxAmount = mealTemplate.getMaxAmount(foodItem);
+                final double sourceAmount = sourceMeal.getAmount(foodItem);
+                final double amount = min(max(sourceAmount, minAmount), maxAmount); // TODO: Mutate
+                foodItems.set(foodItem, amount);
+            }
         }
 
         final ArrayList<Meal> meals3 = new ArrayList<Meal>();
-        for (final Pair<MealTemplate, FoodItems> mealParams : mealsParams) {
-            if (mealParams != null) {
+        for (final Optional<Pair<MealTemplate, FoodItems>> maybeMealParams : mealsParams) {
+            if (maybeMealParams.isPresent()) {
+                final Pair<MealTemplate, FoodItems> mealParams = maybeMealParams.get();
                 meals3.add(meal(mealParams.a(), mealParams.b()));
             }
         }
