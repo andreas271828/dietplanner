@@ -888,7 +888,7 @@ public class OptimizationTest {
         Evaluation<DietPlan> best = population.get(0);
         System.out.println(best.getTotalScore());
 
-        while (best.getTotalScore() > population.get(population.size() - 1).getTotalScore()) {
+        while (true) {
             final int populationSize = population.size();
             final int parentIndex1 = RANDOM.nextInt(populationSize);
             final int parentIndex2 = RANDOM.nextInt(populationSize);
@@ -909,9 +909,9 @@ public class OptimizationTest {
                 }
             }
         }
-        System.out.println("----------");
+        //System.out.println("----------");
 
-        printDietPlanEvaluation(best);
+        //printDietPlanEvaluation(best);
     }
 
     private static Comparator<Evaluation<DietPlan>> dietPlanEvaluationComparator() {
