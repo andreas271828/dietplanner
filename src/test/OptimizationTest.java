@@ -877,47 +877,41 @@ public class OptimizationTest {
         final int startPopulationSize = 100;
         final int maxPopulationSize = 10 * startPopulationSize;
         final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
-        Optional<Evaluation<DietPlan>> maybeBest = Optional.empty();
         for (int i = 0; i < startPopulationSize; ++i) {
             final Evaluation<DietPlan> individual = createIndividual1(evaluationFunction);
             population.add(individual);
-            if (!maybeBest.isPresent() || individual.getTotalScore() > maybeBest.get().getTotalScore()) {
-                maybeBest = Optional.of(individual);
-                System.out.println(individual.getTotalScore());
-            }
+            System.out.println(individual.getTotalScore());
         }
         System.out.println("----------");
 
         Collections.sort(population, dietPlanEvaluationComparator());
+        Evaluation<DietPlan> best = population.get(0);
+        System.out.println(best.getTotalScore());
 
-        for (int i = 0; i < 200000; ++i) {
-            // TODO: Probabilistic selection for mating and removing depending on fitness?
-            // TODO: Increase mutation rate when individuals become too similar or no improvement is made anymore?
-            // TODO: How can diversity be ensured (avoiding local minima)?
+        while (best.getTotalScore() > population.get(population.size() - 1).getTotalScore()) {
             final int populationSize = population.size();
             final int parentIndex1 = RANDOM.nextInt(populationSize);
             final int parentIndex2 = RANDOM.nextInt(populationSize);
             if (parentIndex1 != parentIndex2) {
                 final DietPlan parent1 = population.get(parentIndex1).getObject();
                 final DietPlan parent2 = population.get(parentIndex2).getObject();
-                final Evaluation<DietPlan> individual = evaluation(parent1.mate(parent2, 0.0), evaluationFunction);
+                final Evaluation<DietPlan> individual = evaluation(parent1.mate(parent2, 0.001), evaluationFunction);
                 final int index = Collections.binarySearch(population, individual, dietPlanEvaluationComparator());
                 final int insertionIndex = index < 0 ? -index - 1 : index;
                 population.add(insertionIndex, individual);
-
                 final int newPopulationSize = population.size();
                 if (newPopulationSize > maxPopulationSize) {
                     population.remove(newPopulationSize - 1);
                 }
-                if (individual.getTotalScore() > maybeBest.get().getTotalScore()) {
-                    maybeBest = Optional.of(individual);
-                    System.out.println(individual.getTotalScore());
+                if (individual.getTotalScore() > best.getTotalScore()) {
+                    best = individual;
+                    System.out.println(best.getTotalScore());
                 }
             }
         }
         System.out.println("----------");
 
-        printDietPlanEvaluation(maybeBest.get());
+        printDietPlanEvaluation(best);
     }
 
     private static Comparator<Evaluation<DietPlan>> dietPlanEvaluationComparator() {

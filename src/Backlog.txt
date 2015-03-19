@@ -1,9 +1,8 @@
--   Improve optimisation algorithm
-    test5()
 -   Adjust score function for costs (upper limit for optimum > 0.0, so that the algorithm doesn't try to reduce costs unnecessarily in favour of optimising nutritional values)
--   Refactor code; see TODOs
+-   Refactor code; remove unused code; see TODOs
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
+-   Improve optimisation algorithm (higher diversity? subpopulations?)
 -   Create user interface (run evolutionary algorithm in background)
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.
 -   About, warnings and information (only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol)
