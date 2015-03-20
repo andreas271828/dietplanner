@@ -151,7 +151,7 @@ public class Requirements {
      * @return AUD
      */
     private Optional<ScoreParams> getCostsParams() {
-        return Optional.of(scoreParamsUC(25 * days, DEFAULT_WEIGHT));
+        return Optional.of(scoreParamsUORUC(13.0 * days, 0.5, DEFAULT_WEIGHT));
     }
 
     /**
