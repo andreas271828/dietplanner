@@ -1,13 +1,18 @@
 package test;
 
 import diet.*;
+import optimization.Optimization;
 import util.Evaluation;
 import util.Evaluations;
 import util.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static diet.Addition.addition;
 import static diet.DietPlan.dietPlan;
@@ -874,56 +879,37 @@ public class OptimizationTest {
 
     private static void test5() {
         final Function<DietPlan, Scores> evaluationFunction = FITNESS_FUNCTION_2;
-        final int startPopulationSize = 100;
-        final int maxPopulationSize = 10 * startPopulationSize;
-        final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
-        for (int i = 0; i < startPopulationSize; ++i) {
-            final Evaluation<DietPlan> individual = createIndividual1(evaluationFunction);
-            population.add(individual);
-            System.out.println(individual.getTotalScore());
-        }
-        System.out.println("----------");
-
-        Collections.sort(population, dietPlanEvaluationComparator());
-        Evaluation<DietPlan> best = population.get(0);
-        System.out.println(best.getTotalScore());
-
-        while (true) {
-            final int populationSize = population.size();
-            final int parentIndex1 = RANDOM.nextInt(populationSize);
-            final int parentIndex2 = RANDOM.nextInt(populationSize);
-            if (parentIndex1 != parentIndex2) {
-                final DietPlan parent1 = population.get(parentIndex1).getObject();
-                final DietPlan parent2 = population.get(parentIndex2).getObject();
-                final Evaluation<DietPlan> individual = evaluation(parent1.mate(parent2, 0.001), evaluationFunction);
-                final int index = Collections.binarySearch(population, individual, dietPlanEvaluationComparator());
-                final int insertionIndex = index < 0 ? -index - 1 : index;
-                population.add(insertionIndex, individual);
-                final int newPopulationSize = population.size();
-                if (newPopulationSize > maxPopulationSize) {
-                    population.remove(newPopulationSize - 1);
-                }
-                if (individual.getTotalScore() > best.getTotalScore()) {
-                    best = individual;
-                    System.out.println(best.getTotalScore());
-                }
+        Optimization.<DietPlan>optimize(5, 100, new Supplier<Evaluation<DietPlan>>() {
+            @Override
+            public Evaluation<DietPlan> get() {
+                return createIndividual(evaluationFunction);
             }
-        }
-        //System.out.println("----------");
-
-        //printDietPlanEvaluation(best);
-    }
-
-    private static Comparator<Evaluation<DietPlan>> dietPlanEvaluationComparator() {
-        return new Comparator<Evaluation<DietPlan>>() {
+        }, new Comparator<Evaluation<DietPlan>>() {
             @Override
             public int compare(final Evaluation<DietPlan> evaluation1, final Evaluation<DietPlan> evaluation2) {
                 return Double.compare(evaluation2.getTotalScore(), evaluation1.getTotalScore()); // Descending order
             }
-        };
+        }, new Consumer<Evaluation<DietPlan>>() {
+            @Override
+            public void accept(final Evaluation<DietPlan> evaluation) {
+                System.out.println(evaluation.getTotalScore());
+            }
+        }, new Supplier<Boolean>() {
+            @Override
+            public Boolean get() {
+                return false;
+            }
+        }, new Function<Pair<Evaluation<DietPlan>, Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+            @Override
+            public Evaluation<DietPlan> apply(final Pair<Evaluation<DietPlan>, Evaluation<DietPlan>> parents) {
+                final DietPlan dietPlan1 = parents.a().getObject();
+                final DietPlan dietPlan2 = parents.b().getObject();
+                return evaluation(dietPlan1.mate(dietPlan2, 0.001), evaluationFunction);
+            }
+        });
     }
 
-    private static Evaluation<DietPlan> createIndividual1(final Function<DietPlan, Scores> evaluationFunction) {
+    private static Evaluation<DietPlan> createIndividual(final Function<DietPlan, Scores> evaluationFunction) {
         final DietPlan startDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(NUMBER_OF_MEALS));
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
         boolean continueAdding = true;

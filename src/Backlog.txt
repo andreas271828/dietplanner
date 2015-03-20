@@ -1,5 +1,4 @@
--   Adjust score function for costs (upper limit for optimum > 0.0, so that the algorithm doesn't try to reduce costs unnecessarily in favour of optimising nutritional values)
--   Refactor code; remove unused code; see TODOs
+-   Refactor code; remove unused code; see TODOs; UI to finish optimization; use threading
 -   Improve and use custom meal templates
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
 -   Improve optimisation algorithm (higher diversity? subpopulations?)
