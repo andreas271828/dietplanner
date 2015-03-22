@@ -21,7 +21,7 @@ public abstract class Optimization {
                                              final Consumer<Evaluation<T>> updateBestCallback,
                                              final Supplier<Boolean> abortCondition,
                                              final Function<Pair<Evaluation<T>, Evaluation<T>>, Evaluation<T>> mateFunction) {
-        final ArrayList<Evaluation<T>> population = createPopulation(startPopulationSize, individualCreator);
+        final ArrayList<Evaluation<T>> population = createPopulation(startPopulationSize, individualCreator, abortCondition);
         Collections.sort(population, evaluationComparator);
         updateBestCallback.accept(population.get(0));
 
@@ -50,9 +50,10 @@ public abstract class Optimization {
     }
 
     private static <T> ArrayList<Evaluation<T>> createPopulation(final int populationSize,
-                                                                 final Supplier<Evaluation<T>> individualCreator) {
+                                                                 final Supplier<Evaluation<T>> individualCreator,
+                                                                 final Supplier<Boolean> abortCondition) {
         final ArrayList<Evaluation<T>> population = new ArrayList<Evaluation<T>>(populationSize);
-        for (int i = 0; i < populationSize; ++i) {
+        for (int i = 0; i < populationSize && !abortCondition.get(); ++i) {
             final Evaluation<T> individual = individualCreator.get();
             population.add(individual);
         }
