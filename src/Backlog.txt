@@ -1,4 +1,5 @@
--   Improve and use custom meal templates
+-   Analyse and improve optimisation algorithm using custom meal templates
+-   Improve and add custom meal templates
 --- POC complete?! Does it work for me? Look for joint ventures / business partners / investors?
 -   Refactor code; remove unused code; see TODOs; use threading
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

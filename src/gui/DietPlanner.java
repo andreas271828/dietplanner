@@ -17,7 +17,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static diet.DietPlan.dietPlan;
-import static diet.MealTemplate.SALAD;
+import static diet.MealTemplate.*;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
@@ -26,6 +26,7 @@ import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
     private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 21);
+    private static final ArrayList<MealTemplate> MEAL_TEMPLATES = getMealTemplates();
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();
 
@@ -79,8 +80,8 @@ public class DietPlanner extends JFrame {
         return new SwingWorker<Evaluation<DietPlan>, Evaluation<DietPlan>>() {
             @Override
             protected Evaluation<DietPlan> doInBackground() throws Exception {
-                final int startPopulationSize = 5;
-                final int maxPopulationSize = 100;
+                final int startPopulationSize = 100;
+                final int maxPopulationSize = 1000;
                 final Mutable<Pair<Integer, Integer>> startPopulationProgress = mutable(pair(0, startPopulationSize));
                 return optimize(startPopulationSize, maxPopulationSize, new Supplier<Evaluation<DietPlan>>() {
                     @Override
@@ -121,9 +122,17 @@ public class DietPlanner extends JFrame {
         };
     }
 
+    private static ArrayList<MealTemplate> getMealTemplates() {
+        final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
+        mealTemplates.add(SALAD);
+        mealTemplates.add(STIR_FRY_WITH_RICE);
+        mealTemplates.add(STIR_FRY_WITH_PASTA);
+        return mealTemplates;
+    }
+
     private static Evaluation<DietPlan> createIndividual(final Function<DietPlan, Scores> evaluationFunction,
                                                          final Mutable<Pair<Integer, Integer>> startPopulationProgress) {
-        final DietPlan startDietPlan = dietPlan(SALAD.getMinimalMeals(REQUIREMENTS.getNumberOfMeals()));
+        final DietPlan startDietPlan = createStartDietPlan();
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
         boolean continueAdding = true;
         while (continueAdding) {
@@ -152,6 +161,16 @@ public class DietPlanner extends JFrame {
         startPopulationProgress.set(pair(numberOfIndividuals, startPopulationSize));
         System.out.println("Created candidate " + numberOfIndividuals + " of " + startPopulationSize + ".");
         return evaluation;
+    }
+
+    private static DietPlan createStartDietPlan() {
+        final int numberOfMeals = REQUIREMENTS.getNumberOfMeals();
+        final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
+        for (int i = 0; i < numberOfMeals; ++i) {
+            final int mealTemplateIndex = RANDOM.nextInt(MEAL_TEMPLATES.size());
+            meals.add(MEAL_TEMPLATES.get(mealTemplateIndex).getMinimalMeal());
+        }
+        return dietPlan(meals);
     }
 
     public static void main(final String[] args) {
