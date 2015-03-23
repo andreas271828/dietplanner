@@ -17,7 +17,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static diet.DietPlan.dietPlan;
-import static diet.MealTemplate.STANDARD_DAY_MIX;
+import static diet.MealTemplate.SALAD;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
@@ -25,7 +25,7 @@ import static util.Mutable.mutable;
 import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
-    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 7);
+    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 21);
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();
 
@@ -123,7 +123,7 @@ public class DietPlanner extends JFrame {
 
     private static Evaluation<DietPlan> createIndividual(final Function<DietPlan, Scores> evaluationFunction,
                                                          final Mutable<Pair<Integer, Integer>> startPopulationProgress) {
-        final DietPlan startDietPlan = dietPlan(STANDARD_DAY_MIX.getMinimalistMeals(REQUIREMENTS.getNumberOfMeals()));
+        final DietPlan startDietPlan = dietPlan(SALAD.getMinimalistMeals(REQUIREMENTS.getNumberOfMeals()));
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
         boolean continueAdding = true;
         while (continueAdding) {

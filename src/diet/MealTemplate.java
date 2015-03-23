@@ -14,8 +14,10 @@ import static util.Global.RANDOM;
 import static util.Global.nextRandomDoubleInclOne;
 
 public abstract class MealTemplate {
-    public static final MealTemplate STANDARD_DAY_MIX = getStandardDayMix();
-    public static final MealTemplate TEST_MIX = getTestMix();
+    public static final MealTemplate STANDARD_DAY_MIX = getStandardDayMixTemplate();
+    public static final MealTemplate TEST_MIX = getTestMixTemplate();
+    public static final MealTemplate SALAD = getSaladTemplate();
+    public static final MealTemplate STIR_FRY = getStirFryTemplate();
 
     private final String name;
     private Ingredients ingredients;
@@ -148,7 +150,7 @@ public abstract class MealTemplate {
         return name;
     }
 
-    private static MealTemplate getStandardDayMix() {
+    private static MealTemplate getStandardDayMixTemplate() {
         return new MealTemplate("Standard Day Mix") {
             @Override
             protected void addIngredients() {
@@ -295,13 +297,41 @@ public abstract class MealTemplate {
         };
     }
 
-    private static MealTemplate getTestMix() {
+    private static MealTemplate getTestMixTemplate() {
         return new MealTemplate("Test Mix") {
             @Override
             protected void addIngredients() {
                 addIngredientByWeight(TEST_CARBOHYDRATES, 0.0, 1000.0);
                 addIngredientByWeight(TEST_FAT, 0.0, 1000.0);
                 addIngredientByWeight(TEST_PROTEIN, 0.0, 1000.0);
+            }
+        };
+    }
+
+    private static MealTemplate getSaladTemplate() {
+        return new MealTemplate("Salad") {
+            @Override
+            protected void addIngredients() {
+                addIngredient(COLES_APPLE_RED_DELICIOUS, 0.0, 2.0);
+                addIngredient(COLES_CAPSICUM_RED, 0.0, 1.0);
+                addIngredient(COLES_CARROT, 0.0, 2.0);
+                addIngredient(COLES_LEMON, 0.0, 0.5);
+                addIngredientByWeight(COLES_MAYONNAISE, 0.0, 300.0);
+                addIngredientByWeight(COLES_OIL_OLIVE, 1.0, 100.0);
+                addIngredientByWeight(COLES_SALT_SEA, 0.0, 5.0);
+                addIngredientByWeight(COLES_SPINACH, 0.0, 200.0);
+                addIngredient(COLES_TUNA_IN_OIL_DRAINED, 0.0, 2.0);
+            }
+        };
+    }
+
+    private static MealTemplate getStirFryTemplate() {
+        return new MealTemplate("Stir-fry") {
+            @Override
+            protected void addIngredients() {
+                addIngredientByWeight(COLES_BROCCOLI, 0.0, 300.0);
+                addIngredient(COLES_CARROT, 0.0, 2.0);
+                addIngredientByWeight(COLES_COCONUT_OIL_ORGANIC, 0.0, 50.0);
             }
         };
     }
