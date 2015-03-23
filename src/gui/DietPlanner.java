@@ -32,7 +32,7 @@ public class DietPlanner extends JFrame {
     private JPanel panel;
     private JButton stopButton;
 
-    public DietPlanner() {
+    private DietPlanner() {
         super("DietPlanner");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
@@ -123,7 +123,7 @@ public class DietPlanner extends JFrame {
 
     private static Evaluation<DietPlan> createIndividual(final Function<DietPlan, Scores> evaluationFunction,
                                                          final Mutable<Pair<Integer, Integer>> startPopulationProgress) {
-        final DietPlan startDietPlan = dietPlan(SALAD.getMinimalistMeals(REQUIREMENTS.getNumberOfMeals()));
+        final DietPlan startDietPlan = dietPlan(SALAD.getMinimalMeals(REQUIREMENTS.getNumberOfMeals()));
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
         boolean continueAdding = true;
         while (continueAdding) {

@@ -1,22 +1,16 @@
 package diet;
 
-import util.Evaluation;
 import util.LazyValue;
 import util.Limits2;
 import util.Pair;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
-import static diet.Addition.addition;
 import static diet.Meal.meal;
-import static diet.Meal.randomMeal;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
 import static util.Pair.pair;
 
@@ -110,20 +104,6 @@ public class DietPlan {
         return variableIngredients;
     }
 
-    public Additions getBasicAdditions(final Function<DietPlan, Scores> evaluationFunction) {
-        final Additions additions = new Additions();
-        final Evaluation<DietPlan> dietPlanEvaluation = evaluation(this, evaluationFunction);
-        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = getVariableIngredients();
-        for (final Pair<Integer, FoodItem> variableIngredient : variableIngredients) {
-            final Optional<Addition> maybeAddition = addition(variableIngredient, dietPlanEvaluation);
-            if (maybeAddition.isPresent()) {
-                final Addition addition = maybeAddition.get();
-                additions.add(addition, addition.getEvaluation().getTotalScore());
-            }
-        }
-        return additions;
-    }
-
     public DietPlan getWithChange(final int mealIndex, final FoodItem ingredient, final double change) {
         // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
         final int numberOfMeals = meals.size();
@@ -148,97 +128,6 @@ public class DietPlan {
 
     public Optional<DietPlan> addPortion(final Pair<Integer, FoodItem> ingredientId) {
         return addPortion(ingredientId.a(), ingredientId.b());
-    }
-
-    public Optional<DietPlan> addAddition(final Addition addition) {
-        // TODO: Make method more efficient
-        Optional<DietPlan> maybeDietPlan = Optional.of(this);
-        final ArrayList<Pair<Integer, FoodItem>> additionalIngredients = addition.getIngredients();
-        for (final Pair<Integer, FoodItem> ingredientId : additionalIngredients) {
-            maybeDietPlan = maybeDietPlan.get().addPortion(ingredientId);
-            if (!maybeDietPlan.isPresent()) {
-                return maybeDietPlan;
-            }
-        }
-        return maybeDietPlan;
-    }
-
-    public Optional<DietPlan> removePortion(final int mealIndex, final FoodItem ingredient) {
-        final Meal meal = meals.get(mealIndex);
-        final double curAmount = meal.getAmount(ingredient);
-        final double minAmount = meal.getTemplate().getRoundedMinAmount(ingredient);
-        if (curAmount > minAmount) {
-            final DietPlan dietPlan = getWithChange(mealIndex, ingredient, -ingredient.getPortionAmount());
-            return Optional.of(dietPlan);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<DietPlan> removePortion(final Pair<Integer, FoodItem> ingredientId) {
-        return removePortion(ingredientId.a(), ingredientId.b());
-    }
-
-    public Optional<DietPlan> removePortions(final List<Pair<Integer, FoodItem>> removeList) {
-        // TODO: Implement faster version that considers all items to remove at once
-        DietPlan dietPlan = this;
-        for (final Pair<Integer, FoodItem> remove : removeList) {
-            final Optional<DietPlan> maybeDietPlan = dietPlan.removePortion(remove);
-            if (maybeDietPlan.isPresent()) {
-                dietPlan = maybeDietPlan.get();
-            }
-        }
-        return dietPlan == this ? Optional.<DietPlan>empty() : Optional.of(dietPlan);
-    }
-
-    public DietPlan mate(final DietPlan partner,
-                         final double mealMutationRate,
-                         final ArrayList<MealTemplate> mealTemplates,
-                         final double ingredientMutationRate) {
-        final ArrayList<Meal> meals1 = getMeals();
-        final ArrayList<Meal> meals2 = partner.getMeals();
-        final int numberOfMeals1 = meals1.size();
-        final int numberOfMeals2 = meals2.size();
-        final int minNumberOfMeals = min(numberOfMeals1, numberOfMeals2);
-        final int crossoverMeal = RANDOM.nextInt(minNumberOfMeals + 1);
-        final ArrayList<Meal> meals3 = new ArrayList<Meal>();
-        copyMealsWithMutations(meals3, meals1, 0, crossoverMeal, mealMutationRate,
-                mealTemplates, ingredientMutationRate);
-        if (crossoverMeal < numberOfMeals2) {
-            if (RANDOM.nextDouble() < mealMutationRate) {
-                meals3.add(randomMeal(mealTemplates.get(RANDOM.nextInt(mealTemplates.size()))));
-            } else if (crossoverMeal < numberOfMeals1) {
-                final Meal meal1 = meals1.get(crossoverMeal);
-                final Meal meal2 = meals2.get(crossoverMeal);
-                final MealTemplate mealTemplate = meal1.getTemplate();
-                if (mealTemplate.equals(meal2.getTemplate())) {
-                    final FoodItems ingredients = new FoodItems();
-                    final List<Pair<FoodItem, Limits2>> foodList = mealTemplate.getIngredients().asList();
-                    final int numberOfFoods = foodList.size();
-                    final int crossoverFood = RANDOM.nextInt(numberOfFoods + 1);
-                    for (int i = 0; i < numberOfFoods; ++i) {
-                        final Pair<FoodItem, Limits2> food = foodList.get(i);
-                        final FoodItem foodItem = food.a();
-                        if (RANDOM.nextDouble() < ingredientMutationRate) {
-                            ingredients.set(foodItem, foodItem.getRandomAmount(food.b()));
-                        } else if (i < crossoverFood) {
-                            ingredients.set(foodItem, meal1.getAmount(foodItem));
-                        } else {
-                            ingredients.set(foodItem, meal2.getAmount(foodItem));
-                        }
-                    }
-                    meals3.add(meal(mealTemplate, ingredients));
-                } else {
-                    meals3.add(meal2);
-                }
-            } else {
-                meals3.add(meals2.get(crossoverMeal));
-            }
-            copyMealsWithMutations(meals3, meals2, crossoverMeal + 1, numberOfMeals2, mealMutationRate,
-                    mealTemplates, ingredientMutationRate);
-        }
-
-        return dietPlan(meals3);
     }
 
     public DietPlan mate(final DietPlan partner, final double mutationRate) {
@@ -307,24 +196,6 @@ public class DietPlan {
         }
 
         return dietPlan(meals3);
-    }
-
-    private void copyMealsWithMutations(final ArrayList<Meal> to,
-                                        final ArrayList<Meal> from,
-                                        final int start,
-                                        final int end,
-                                        final double mealMutationRate,
-                                        final ArrayList<MealTemplate> mealTemplates,
-                                        final double ingredientMutationRate) {
-        for (int i = start; i < end; ++i) {
-            if (RANDOM.nextDouble() < mealMutationRate) {
-                to.add(randomMeal(mealTemplates.get(RANDOM.nextInt(mealTemplates.size()))));
-            } else {
-                final Meal meal = from.get(i);
-                final Optional<Meal> maybeMutatedMeal = meal.getMutated(ingredientMutationRate);
-                to.add(maybeMutatedMeal.orElse(meal));
-            }
-        }
     }
 
     public Scores getScores(final Requirements requirements) {

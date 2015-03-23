@@ -1,6 +1,6 @@
 -   Improve and use custom meal templates
--   Refactor code; remove unused code; see TODOs; use threading
 --- POC complete?! Does it work for me? Look for joint ventures / business partners / investors?
+-   Refactor code; remove unused code; see TODOs; use threading
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
 -   Improve optimisation algorithm (higher diversity? subpopulations?)
 -   Create user interface (run evolutionary algorithm in background)

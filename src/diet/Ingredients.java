@@ -1,15 +1,11 @@
 package diet;
 
 import util.Limits2;
-import util.Pair;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.function.BiConsumer;
 
 import static util.Limits2.limits2;
-import static util.Pair.pair;
 
 public class Ingredients {
     private final EnumMap<FoodItem, Limits2> ingredients = new EnumMap<FoodItem, Limits2>(FoodItem.class);
@@ -35,17 +31,6 @@ public class Ingredients {
         ingredients.forEach(action);
     }
 
-    public List<Pair<FoodItem, Limits2>> asList() {
-        final List<Pair<FoodItem, Limits2>> list = new ArrayList<Pair<FoodItem, Limits2>>();
-        forEach(new BiConsumer<FoodItem, Limits2>() {
-            @Override
-            public void accept(final FoodItem foodItem, final Limits2 limits) {
-                list.add(pair(foodItem, limits));
-            }
-        });
-        return list;
-    }
-
     public double getMinAmount(final FoodItem ingredient) {
         final Limits2 limits = ingredients.get(ingredient);
         return limits == null ? 0.0 : limits.getMin();
@@ -62,5 +47,16 @@ public class Ingredients {
 
     public double getRoundedMaxAmount(final FoodItem ingredient) {
         return ingredient.roundToPortions(getMaxAmount(ingredient));
+    }
+
+    public FoodItems getMinAmounts() {
+        final FoodItems foodItems = new FoodItems();
+        forEach(new BiConsumer<FoodItem, Limits2>() {
+            @Override
+            public void accept(final FoodItem foodItem, final Limits2 limits) {
+                foodItems.set(foodItem, foodItem.roundToPortions(limits.getMin()));
+            }
+        });
+        return foodItems;
     }
 }
