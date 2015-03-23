@@ -17,7 +17,8 @@ public abstract class MealTemplate {
     public static final MealTemplate STANDARD_DAY_MIX = getStandardDayMixTemplate();
     public static final MealTemplate TEST_MIX = getTestMixTemplate();
     public static final MealTemplate SALAD = getSaladTemplate();
-    public static final MealTemplate STIR_FRY = getStirFryTemplate();
+    public static final MealTemplate STIR_FRY_WITH_RICE = getStirFryWithRiceTemplate();
+    public static final MealTemplate STIR_FRY_WITH_PASTA = getStirFryWithPastaTemplate();
 
     private final String name;
     private Ingredients ingredients;
@@ -325,14 +326,31 @@ public abstract class MealTemplate {
         };
     }
 
-    private static MealTemplate getStirFryTemplate() {
-        return new MealTemplate("Stir-fry") {
+    private static MealTemplate getStirFryWithRiceTemplate() {
+        return new MealTemplate("Stir-fry with rice") {
             @Override
             protected void addIngredients() {
-                addIngredientByWeight(COLES_BROCCOLI, 0.0, 300.0);
-                addIngredient(COLES_CARROT, 0.0, 2.0);
-                addIngredientByWeight(COLES_COCONUT_OIL_ORGANIC, 0.0, 50.0);
+                addIngredients(getBasicStirFryIngredients());
+                addIngredientByWeight(COLES_RICE_BROWN, 0.0, 200.0);
             }
         };
+    }
+
+    private static MealTemplate getStirFryWithPastaTemplate() {
+        return new MealTemplate("Stir-fry with pasta") {
+            @Override
+            protected void addIngredients() {
+                addIngredients(getBasicStirFryIngredients());
+                addIngredientByWeight(COLES_PASTA_WHOLEMEAL, 0.0, 200.0);
+            }
+        };
+    }
+
+    private static Ingredients getBasicStirFryIngredients() {
+        final Ingredients basicStirFryIngredients = new Ingredients();
+        basicStirFryIngredients.addByWeight(COLES_BROCCOLI, 0.0, 300.0);
+        basicStirFryIngredients.add(COLES_CARROT, 0.0, 2.0);
+        basicStirFryIngredients.addByWeight(COLES_COCONUT_OIL_ORGANIC, 0.0, 50.0);
+        return basicStirFryIngredients;
     }
 }
