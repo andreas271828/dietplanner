@@ -27,7 +27,6 @@ public class Test {
     private static void runTests() {
         BinarySearchTest.runTests();
         ScoreFunctionsTest.runTests();
-        GenePoolTest.runTests();
     }
 
     public static void test(final double expected, final double actual, final double tolerance) {
