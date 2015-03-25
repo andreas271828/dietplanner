@@ -20,4 +20,8 @@ public class Limits2 {
     public double getMax() {
         return max;
     }
+
+    public Limits2 scale(final double factor) {
+        return limits2(min * factor, max * factor);
+    }
 }

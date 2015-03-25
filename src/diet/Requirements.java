@@ -321,10 +321,10 @@ public class Requirements {
         // http://www.nrv.gov.au/nutrients/protein
         // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return getParamsFromValuePerDay(getProteinTargetPerDay(), new Function<Double, ScoreParams>() {
+        return getParamsFromLimitsPerDay(getProteinLimitsPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
-            public ScoreParams apply(final Double total) {
-                return scoreParamsORC(total, DEFAULT_TOLERANCE, PROTEIN_WEIGHT);
+            public ScoreParams apply(final Limits2 totalLimits) {
+                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, PROTEIN_WEIGHT);
             }
         });
     }
@@ -557,11 +557,10 @@ public class Requirements {
         // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         // Limit protein per meal to protein target per day.
-        final Optional<Double> maybeUpperOptimal = getProteinTargetPerDay();
-        return maybeUpperOptimal.map(new Function<Double, ScoreParams>() {
+        return getProteinLimitsPerDay().map(new Function<Limits2, ScoreParams>() {
             @Override
-            public ScoreParams apply(final Double upperOptimal) {
-                return scoreParamsUORUC(upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
+            public ScoreParams apply(final Limits2 limits) {
+                return scoreParamsUORUC(limits.getMax(), DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }
@@ -748,11 +747,11 @@ public class Requirements {
     /**
      * @return g
      */
-    private Optional<Double> getProteinTargetPerDay() {
+    private Optional<Limits2> getProteinLimitsPerDay() {
         // http://www.nrv.gov.au/nutrients/protein
         // http://www.ausport.gov.au/ais/nutrition/factsheets/basics/protein_-_how_much
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return Optional.of(personalDetails.getProteinTarget() * personalDetails.getIdealBodyWeight());
+        return Optional.of(personalDetails.getProteinLimits().scale(personalDetails.getIdealBodyWeight()));
     }
 
     /**

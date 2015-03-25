@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 import static util.Limits2.limits2;
 
 public enum PersonalDetails {
-    ANDREAS(Gender.MALE, "14/08/1982", 1.91, 80.0, 2.0, Optional.<Double>empty(), Optional.of(15.0), 1.0, Optional.of(limits2(3000.0, 5000.0)), false, false, false, false),
-    ANDREAS_LOW_CARB(Gender.MALE, "14/08/1982", 1.91, 80.0, 2.0, Optional.of(60.0), Optional.<Double>empty(), 1.0, Optional.of(limits2(3000.0, 5000.0)), false, false, false, false);
+    ANDREAS(Gender.MALE, "14/08/1982", 1.91, 80.0, 2.0, Optional.<Double>empty(), Optional.of(30.0), limits2(0.9, 1.5), Optional.of(limits2(3000.0, 5000.0)), false, false, false, false),
+    ANDREAS_LOW_CARB(Gender.MALE, "14/08/1982", 1.91, 80.0, 2.0, Optional.of(60.0), Optional.<Double>empty(), limits2(0.9, 1.1), Optional.of(limits2(3000.0, 5000.0)), false, false, false, false);
 
     public enum Gender {
         MALE,
@@ -27,7 +27,7 @@ public enum PersonalDetails {
     private final double physicalActivityLevel; // http://www.nrv.gov.au/dietary-energy
     private final Optional<Double> maxCarbohydrates; // g per day
     private final Optional<Double> maxFat; // % of energy intake per day
-    private final double proteinTarget; // g per kg of ideal body weight per day
+    private final Limits2 proteinLimits; // g per kg of ideal body weight per day
     private final Optional<Limits2> sodiumLimits; // mg per day
     private final boolean pregnancy;
     private final boolean lactation;
@@ -42,7 +42,7 @@ public enum PersonalDetails {
      * @param physicalActivityLevel http://www.nrv.gov.au/dietary-energy
      * @param maxCarbohydrates      g per day
      * @param maxFat                % of energy intake per day
-     * @param proteinTarget         g per kg of ideal body weight per day
+     * @param proteinLimits         g per kg of ideal body weight per day
      * @param sodiumLimits          mg per day
      * @param pregnancy             boolean
      * @param lactation             boolean
@@ -56,7 +56,7 @@ public enum PersonalDetails {
                     final double physicalActivityLevel,
                     final Optional<Double> maxCarbohydrates,
                     final Optional<Double> maxFat,
-                    final double proteinTarget,
+                    final Limits2 proteinLimits,
                     final Optional<Limits2> sodiumLimits,
                     final boolean pregnancy,
                     final boolean lactation,
@@ -69,7 +69,7 @@ public enum PersonalDetails {
         this.physicalActivityLevel = physicalActivityLevel;
         this.maxCarbohydrates = maxCarbohydrates;
         this.maxFat = maxFat;
-        this.proteinTarget = proteinTarget;
+        this.proteinLimits = proteinLimits;
         this.sodiumLimits = sodiumLimits;
         this.pregnancy = pregnancy;
         this.lactation = lactation;
@@ -131,8 +131,8 @@ public enum PersonalDetails {
     /**
      * @return g per kg of ideal body weight per day
      */
-    public double getProteinTarget() {
-        return proteinTarget;
+    public Limits2 getProteinLimits() {
+        return proteinLimits;
     }
 
     /**
