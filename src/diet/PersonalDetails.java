@@ -11,7 +11,8 @@ import java.util.concurrent.TimeUnit;
 import static util.Limits2.limits2;
 
 public enum PersonalDetails {
-    ANDREAS(Gender.MALE, "14/08/1982", 1.91, 80.0, 2.0, Optional.<Double>empty(), Optional.of(30.0), limits2(0.9, 1.5), Optional.of(limits2(3000.0, 5000.0)), false, false, false, false),
+    // If fat, protein and sugar are limited too much, it's difficult to get enough energy without violating other limits.
+    ANDREAS(Gender.MALE, "14/08/1982", 1.91, 80.0, 2.0, Optional.<Double>empty(), Optional.of(20.0), limits2(0.9, 1.2), Optional.of(limits2(3000.0, 5000.0)), false, false, false, false),
     ANDREAS_LOW_CARB(Gender.MALE, "14/08/1982", 1.91, 80.0, 2.0, Optional.of(60.0), Optional.<Double>empty(), limits2(0.9, 1.1), Optional.of(limits2(3000.0, 5000.0)), false, false, false, false);
 
     public enum Gender {

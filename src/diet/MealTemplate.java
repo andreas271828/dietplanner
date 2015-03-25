@@ -4,6 +4,7 @@ import static diet.FoodItem.*;
 import static diet.Meal.meal;
 
 public enum MealTemplate {
+    SMOOTHIE("Smoothie", getSmoothieIngredients()),
     SALAD("Salad", getSaladIngredients()),
     STIR_FRY_WITH_PASTA("Stir-fry with pasta", getStirFryWithPastaIngredients()),
     STIR_FRY_WITH_RICE("Stir-fry with rice", getStirFryWithRiceIngredients()),
@@ -42,6 +43,24 @@ public enum MealTemplate {
     @Override
     public String toString() {
         return name;
+    }
+
+    private static Ingredients getSmoothieIngredients() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 2.0);
+        ingredients.add(COLES_AVOCADO, 0.0, 1.0);
+        ingredients.add(COLES_BANANA, 0.0, 2.0);
+        ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 0.0, 200.0);
+        ingredients.addByWeight(COLES_BROCCOLI, 0.0, 100.0);
+        ingredients.add(COLES_CARROT, 0.0, 2.0);
+        ingredients.add(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 2.0);
+        ingredients.addByWeight(COLES_GINGER, 0.0, 10.0);
+        ingredients.addByWeight(COLES_HONEY, 0.0, 20.0);
+        ingredients.add(COLES_LEMON, 0.0, 1.0);
+        ingredients.addByWeight(COLES_SPINACH, 0.0, 200.0);
+        ingredients.addByWeight(COLES_STRAWBERRY_FROZEN, 0.0, 200.0);
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL, 0.0, 200.0);
+        return ingredients;
     }
 
     private static Ingredients getSaladIngredients() {

@@ -124,10 +124,10 @@ public class DietPlanner extends JFrame {
 
     private static ArrayList<MealTemplate> getMealTemplates() {
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
-        //mealTemplates.add(SALAD);
-        //mealTemplates.add(STIR_FRY_WITH_RICE);
-        //mealTemplates.add(STIR_FRY_WITH_PASTA);
-        mealTemplates.add(STANDARD_DAY_MIX);
+        mealTemplates.add(SMOOTHIE);
+        mealTemplates.add(SALAD);
+        mealTemplates.add(STIR_FRY_WITH_RICE);
+        mealTemplates.add(STIR_FRY_WITH_PASTA);
         return mealTemplates;
     }
 
