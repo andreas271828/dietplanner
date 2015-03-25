@@ -55,6 +55,10 @@ public enum FoodProperty {
     VITAMIN_E("Vitamin E (mg)"),
     ZINC("Zinc (Zn) (mg)");
 
+    public static final double PROTEIN_ENERGY = 16.7; // kJ / g
+    public static final double FAT_ENERGY = 37.7; // kJ / g
+    public static final double CARBOHYDRATES_ENERGY = 16.7; // kJ / g
+
     private final String name;
 
     FoodProperty(String name) {

@@ -6,15 +6,17 @@ import java.util.EnumMap;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static diet.FoodProperty.FAT_ENERGY;
 import static diet.PersonalDetails.Gender.FEMALE;
 import static diet.PersonalDetails.Gender.MALE;
-import static util.Limits2.limits2;
 import static diet.ScoreParams.*;
+import static util.Limits2.limits2;
 
 public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
     private static final double DEFAULT_MEAL_PROPERTY_WEIGHT = 0.1;
     private static final double CARBOHYDRATES_WEIGHT = 10.0;
+    private static final double FAT_WEIGHT = 10.0;
     private static final double ENERGY_WEIGHT = 10.0;
     private static final double PROTEIN_WEIGHT = 10.0;
 
@@ -186,7 +188,12 @@ public class Requirements {
     private Optional<ScoreParams> getFatParams() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
         // http://www.cdc.gov/nutrition/everyone/basics/fat/index.html?s_cid=tw_ob294
-        return Optional.empty();
+        return getParamsFromValuePerDay(getMaxFatPerDay(), new Function<Double, ScoreParams>() {
+            @Override
+            public ScoreParams apply(final Double total) {
+                return scoreParams(0, 0, 0.9 * total, total, FAT_WEIGHT);
+            }
+        });
     }
 
     /**
@@ -610,7 +617,27 @@ public class Requirements {
      */
     private Optional<Double> getMaxCarbohydratesPerDay() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        return Optional.of(personalDetails.getMaxCarbohydrates());
+        return personalDetails.getMaxCarbohydrates();
+    }
+
+    /**
+     * @return g
+     */
+    private Optional<Double> getMaxFatPerDay() {
+        // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
+        // http://www.cdc.gov/nutrition/everyone/basics/fat/index.html?s_cid=tw_ob294
+        return personalDetails.getMaxFat().flatMap(new Function<Double, Optional<Double>>() {
+            @Override
+            public Optional<Double> apply(final Double maxFatPercent) {
+                return getEnergyDemandPerDay().map(new Function<Double, Double>() {
+                    @Override
+                    public Double apply(final Double energyDemand) {
+                        final double maxFatEnergy = energyDemand * maxFatPercent / 100.0;
+                        return maxFatEnergy / FAT_ENERGY;
+                    }
+                });
+            }
+        });
     }
 
     /**
