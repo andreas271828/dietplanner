@@ -1,3 +1,4 @@
+-   Refactor mate(): Don't have three blocks that are almost the same.
 -   Improve optimisation algorithm when using different meal templates - use subpopulations / species?
 -   Improve and add custom meal templates.
 --- POC complete?! Does it work for me? Look for joint ventures / business partners / investors?

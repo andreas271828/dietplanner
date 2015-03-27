@@ -2,6 +2,7 @@ package diet;
 
 import util.LazyValue;
 import util.Limits2;
+import util.Mutable;
 import util.Pair;
 
 import java.util.ArrayList;
@@ -9,7 +10,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import static diet.Meal.meal;
-import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static util.Global.RANDOM;
 import static util.Pair.pair;
@@ -131,71 +131,86 @@ public class DietPlan {
     }
 
     public DietPlan mate(final DietPlan partner, final double mutationRate) {
-        final ArrayList<Pair<Integer, FoodItem>> variableIngredients1 = getVariableIngredients();
-        final ArrayList<Pair<Integer, FoodItem>> variableIngredients2 = partner.getVariableIngredients();
-        final int size1 = variableIngredients1.size();
-        final int size2 = variableIngredients2.size();
-        final int maxCrossoverIndex = min(size1, size2);
-        final int crossoverIndex = RANDOM.nextInt(maxCrossoverIndex + 1);
-        final ArrayList<Meal> meals1 = getMeals();
-        final ArrayList<Meal> meals2 = partner.getMeals();
-        final int numberOfMeals = min(meals1.size(), meals2.size());
-        final ArrayList<Optional<Pair<MealTemplate, FoodItems>>> mealsParams =
-                new ArrayList<Optional<Pair<MealTemplate, FoodItems>>>(numberOfMeals);
-        for (int i = 0; i < numberOfMeals; ++i) {
-            mealsParams.add(Optional.<Pair<MealTemplate, FoodItems>>empty());
-        }
-        for (int i = 0; i < size2; ++i) {
-            final ArrayList<Pair<Integer, FoodItem>> sourceIngredients;
-            final ArrayList<Meal> sourceMeals;
-            if (i < crossoverIndex) {
-                sourceIngredients = variableIngredients1;
-                sourceMeals = meals1;
-            } else {
-                sourceIngredients = variableIngredients2;
-                sourceMeals = meals2;
-            }
-
-            final Pair<Integer, FoodItem> ingredientId = sourceIngredients.get(i);
-            final int mealIndex = ingredientId.a();
-            if (mealIndex < numberOfMeals) {
-                final Meal sourceMeal = sourceMeals.get(mealIndex);
-                final Optional<Pair<MealTemplate, FoodItems>> maybeMealParams = mealsParams.get(mealIndex);
-                final MealTemplate mealTemplate;
-                final FoodItems foodItems;
-                if (maybeMealParams.isPresent()) {
-                    final Pair<MealTemplate, FoodItems> mealParams = maybeMealParams.get();
-                    mealTemplate = mealParams.a();
-                    foodItems = mealParams.b();
-                } else {
-                    mealTemplate = sourceMeal.getTemplate();
-                    foodItems = new FoodItems();
-                    mealsParams.set(mealIndex, Optional.of(pair(mealTemplate, foodItems)));
+        final ArrayList<Meal> meals = new ArrayList<Meal>();
+        final int numberOfMeals1 = getNumberOfMeals();
+        final int numberOfMeals2 = partner.getNumberOfMeals();
+        final int numberOfMeals = min(numberOfMeals1, numberOfMeals2);
+        final int crossoverMealIndex = RANDOM.nextInt(numberOfMeals + 1);
+        for (int i = 0; i < crossoverMealIndex; ++i) {
+            final FoodItems foodItems = new FoodItems();
+            final Meal sourceMeal = getMeal(i);
+            final MealTemplate mealTemplate = sourceMeal.getTemplate();
+            final Ingredients ingredients = mealTemplate.getIngredients();
+            ingredients.forEach(new BiConsumer<FoodItem, Limits2>() {
+                @Override
+                public void accept(final FoodItem foodItem, final Limits2 limits) {
+                    final double amount;
+                    if (RANDOM.nextDouble() < mutationRate) {
+                        final double minAmount = foodItem.roundToPortions(limits.getMin());
+                        final double maxAmount = foodItem.roundToPortions(limits.getMax());
+                        amount = foodItem.getRandomAmount(minAmount, maxAmount);
+                    } else {
+                        amount = sourceMeal.getAmount(foodItem);
+                    }
+                    foodItems.set(foodItem, amount);
                 }
+            });
+            meals.add(meal(mealTemplate, foodItems));
+        }
+        if (crossoverMealIndex < numberOfMeals) {
+            final FoodItems foodItems = new FoodItems();
+            final Meal sourceMeal1 = getMeal(crossoverMealIndex);
+            final Meal sourceMeal2 = partner.getMeal(crossoverMealIndex);
+            final MealTemplate mealTemplate1 = sourceMeal1.getTemplate();
+            final MealTemplate mealTemplate2 = sourceMeal2.getTemplate();
+            final Ingredients ingredients = mealTemplate2.getIngredients();
+            final int crossoverIngredientIndex = mealTemplate1.equals(mealTemplate2) ?
+                    RANDOM.nextInt(ingredients.getCount() + 1) :
+                    0;
+            final Mutable<Integer> ingredientIndex = Mutable.mutable(0);
+            ingredients.forEach(new BiConsumer<FoodItem, Limits2>() {
+                @Override
+                public void accept(final FoodItem foodItem, final Limits2 limits) {
+                    final int i = ingredientIndex.get();
+                    ingredientIndex.set(i + 1);
 
-                final FoodItem foodItem = ingredientId.b();
-                final double minAmount = mealTemplate.getRoundedMinAmount(foodItem);
-                final double maxAmount = mealTemplate.getRoundedMaxAmount(foodItem);
-                final double amount;
-                if (RANDOM.nextDouble() < mutationRate) {
-                    amount = foodItem.getRandomAmount(minAmount, maxAmount);
-                } else {
-                    final double sourceAmount = sourceMeal.getAmount(foodItem);
-                    amount = min(max(sourceAmount, minAmount), maxAmount);
+                    final double amount;
+                    if (RANDOM.nextDouble() < mutationRate) {
+                        final double minAmount = foodItem.roundToPortions(limits.getMin());
+                        final double maxAmount = foodItem.roundToPortions(limits.getMax());
+                        amount = foodItem.getRandomAmount(minAmount, maxAmount);
+                    } else {
+                        final Meal sourceMeal = i < crossoverIngredientIndex ? sourceMeal1 : sourceMeal2;
+                        amount = sourceMeal.getAmount(foodItem);
+                    }
+                    foodItems.set(foodItem, amount);
                 }
-                foodItems.set(foodItem, amount);
-            }
+            });
+            meals.add(meal(mealTemplate2, foodItems));
+        }
+        for (int i = crossoverMealIndex + 1; i < numberOfMeals; ++i) {
+            final FoodItems foodItems = new FoodItems();
+            final Meal sourceMeal = partner.getMeal(i);
+            final MealTemplate mealTemplate = sourceMeal.getTemplate();
+            final Ingredients ingredients = mealTemplate.getIngredients();
+            ingredients.forEach(new BiConsumer<FoodItem, Limits2>() {
+                @Override
+                public void accept(final FoodItem foodItem, final Limits2 limits) {
+                    final double amount;
+                    if (RANDOM.nextDouble() < mutationRate) {
+                        final double minAmount = foodItem.roundToPortions(limits.getMin());
+                        final double maxAmount = foodItem.roundToPortions(limits.getMax());
+                        amount = foodItem.getRandomAmount(minAmount, maxAmount);
+                    } else {
+                        amount = sourceMeal.getAmount(foodItem);
+                    }
+                    foodItems.set(foodItem, amount);
+                }
+            });
+            meals.add(meal(mealTemplate, foodItems));
         }
 
-        final ArrayList<Meal> meals3 = new ArrayList<Meal>();
-        for (final Optional<Pair<MealTemplate, FoodItems>> maybeMealParams : mealsParams) {
-            if (maybeMealParams.isPresent()) {
-                final Pair<MealTemplate, FoodItems> mealParams = maybeMealParams.get();
-                meals3.add(meal(mealParams.a(), mealParams.b()));
-            }
-        }
-
-        return dietPlan(meals3);
+        return dietPlan(meals);
     }
 
     public Scores getScores(final Requirements requirements) {

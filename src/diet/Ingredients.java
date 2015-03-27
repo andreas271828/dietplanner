@@ -27,6 +27,10 @@ public class Ingredients {
         this.ingredients.putAll(ingredients.ingredients);
     }
 
+    public int getCount() {
+        return ingredients.size();
+    }
+
     public void forEach(final BiConsumer<FoodItem, Limits2> action) {
         ingredients.forEach(action);
     }

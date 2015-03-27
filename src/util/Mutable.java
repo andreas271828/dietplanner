@@ -25,4 +25,9 @@ public class Mutable<T> {
     public void set(final T t) {
         this.t = t;
     }
+
+    @Override
+    public String toString() {
+        return t.toString();
+    }
 }
