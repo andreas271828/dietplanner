@@ -1,9 +1,9 @@
--   Improve and add custom meal templates.
---- POC complete?! Does it work for me? Look for joint ventures / business partners / investors?
--   Refactor code; remove unused code; see TODOs; use threading
+-   Make adjustments to meal templates, parameters, optimisation algorithm and printing until I get a useful diet plan for myself.
+--- POC complete: Develop business.
+-   Refactor code; remove unused code; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
 -   Improve optimisation algorithm (higher diversity? subpopulations / species [for different combinations of meal templates]? variable mutation rates? optimise individual scores?)
--   Create user interface (run evolutionary algorithm in background)
+-   Create user interface
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.
 -   About, warnings and information (only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol)
 -   Parallel computation

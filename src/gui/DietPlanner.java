@@ -80,7 +80,7 @@ public class DietPlanner extends JFrame {
         return new SwingWorker<Evaluation<DietPlan>, Evaluation<DietPlan>>() {
             @Override
             protected Evaluation<DietPlan> doInBackground() throws Exception {
-                final int startPopulationSize = 10;
+                final int startPopulationSize = 100;
                 final int maxPopulationSize = 1000;
                 final Mutable<Pair<Integer, Integer>> startPopulationProgress = mutable(pair(0, startPopulationSize));
                 return optimize(startPopulationSize, maxPopulationSize, new Supplier<Evaluation<DietPlan>>() {
@@ -124,10 +124,12 @@ public class DietPlanner extends JFrame {
 
     private static ArrayList<MealTemplate> getMealTemplates() {
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
-        mealTemplates.add(SMOOTHIE);
+        mealTemplates.add(MUESLI);
         mealTemplates.add(SALAD);
-        mealTemplates.add(STIR_FRY_WITH_RICE);
+        mealTemplates.add(SMOOTHIE);
+        mealTemplates.add(SNACK);
         mealTemplates.add(STIR_FRY_WITH_PASTA);
+        mealTemplates.add(STIR_FRY_WITH_RICE);
         return mealTemplates;
     }
 
