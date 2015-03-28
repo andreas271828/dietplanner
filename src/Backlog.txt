@@ -1,4 +1,3 @@
--   Refactor mate(): Don't have three blocks that are almost the same.
 -   Improve and add custom meal templates.
 --- POC complete?! Does it work for me? Look for joint ventures / business partners / investors?
 -   Refactor code; remove unused code; see TODOs; use threading

@@ -1,6 +1,14 @@
 package diet;
 
 import util.LazyValue;
+import util.Limits2;
+import util.Mutable;
+
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+
+import static util.Global.RANDOM;
 
 public class Meal {
     private final MealTemplate template;
@@ -59,6 +67,38 @@ public class Meal {
         // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
         final FoodItems ingredients = getIngredients().getWithChange(ingredient, change);
         return new Meal(getTemplate(), ingredients);
+    }
+
+    public Meal getWithMutations(final Optional<Meal> maybeCrossoverMeal, final double mutationRate) {
+        final FoodItems foodItems = new FoodItems();
+        final MealTemplate mealTemplate = getTemplate();
+        final Ingredients ingredients = mealTemplate.getIngredients();
+        final int crossoverIngredientIndex = maybeCrossoverMeal.map(new Function<Meal, Integer>() {
+            @Override
+            public Integer apply(final Meal crossoverMeal) {
+                return mealTemplate.equals(crossoverMeal.getTemplate()) ? RANDOM.nextInt(ingredients.getCount() + 1) : 0;
+            }
+        }).orElse(0);
+        final Mutable<Integer> ingredientIndex = Mutable.mutable(0);
+        ingredients.forEach(new BiConsumer<FoodItem, Limits2>() {
+            @Override
+            public void accept(final FoodItem foodItem, final Limits2 limits) {
+                final int i = ingredientIndex.get();
+                ingredientIndex.set(i + 1);
+
+                final double amount;
+                if (RANDOM.nextDouble() < mutationRate) {
+                    final double minAmount = foodItem.roundToPortions(limits.getMin());
+                    final double maxAmount = foodItem.roundToPortions(limits.getMax());
+                    amount = foodItem.getRandomAmount(minAmount, maxAmount);
+                } else {
+                    final Meal meal = i < crossoverIngredientIndex ? maybeCrossoverMeal.get() : Meal.this;
+                    amount = meal.getAmount(foodItem);
+                }
+                foodItems.set(foodItem, amount);
+            }
+        });
+        return meal(mealTemplate, foodItems);
     }
 
     @Override
