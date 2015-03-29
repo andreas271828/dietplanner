@@ -47,15 +47,4 @@ public abstract class Optimization {
 
         return population.get(0);
     }
-
-    private static <T> ArrayList<Evaluation<T>> createPopulation(final int populationSize,
-                                                                 final Supplier<Evaluation<T>> individualCreator,
-                                                                 final Supplier<Boolean> abortCondition) {
-        final ArrayList<Evaluation<T>> population = new ArrayList<Evaluation<T>>(populationSize);
-        for (int i = 0; i < populationSize && !abortCondition.get(); ++i) {
-            final Evaluation<T> individual = individualCreator.get();
-            population.add(individual);
-        }
-        return population;
-    }
 }
