@@ -14,11 +14,11 @@ import static util.Limits2.limits2;
 
 public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
-    private static final double DEFAULT_MEAL_PROPERTY_WEIGHT = 0.1;
-    private static final double CARBOHYDRATES_WEIGHT = 10.0;
-    private static final double FAT_WEIGHT = 5.0;
-    private static final double ENERGY_WEIGHT = 20.0;
-    private static final double PROTEIN_WEIGHT = 10.0;
+    private static final double DEFAULT_MEAL_PROPERTY_WEIGHT = 1.0;
+    private static final double CARBOHYDRATES_WEIGHT = 1.0;
+    private static final double FAT_WEIGHT = 1.0;
+    private static final double ENERGY_WEIGHT = 1.0;
+    private static final double PROTEIN_WEIGHT = 1.0;
 
     private static final double DEFAULT_TOLERANCE = 0.05;
 
@@ -153,7 +153,7 @@ public class Requirements {
      * @return AUD
      */
     private Optional<ScoreParams> getCostsParams() {
-        return Optional.of(scoreParamsUORUC(13.0 * days, 0.5, DEFAULT_WEIGHT));
+        return Optional.of(scoreParamsUORUC(15.0 * days, 0.3, DEFAULT_WEIGHT));
     }
 
     /**

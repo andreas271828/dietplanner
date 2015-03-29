@@ -60,8 +60,16 @@ public class Evaluation<T> {
         return scores.get();
     }
 
+    public Score getScore(final Requirement requirement, final int index) {
+        return getScores().getScore(requirement, index);
+    }
+
     public Score getScore(final Pair<Requirement, Integer> scoreId) {
         return getScores().getScore(scoreId);
+    }
+
+    public Score getScore(final Requirement requirement) {
+        return getScores().getScore(requirement);
     }
 
     public double getTotalScore() {

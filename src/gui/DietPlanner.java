@@ -71,6 +71,7 @@ public class DietPlanner extends JFrame {
     }
 
     private SwingWorker<Evaluation<DietPlan>, Evaluation<DietPlan>> createOptimizationThread() {
+        final DietPlan startDietPlan = createStartDietPlan();
         final Function<DietPlan, Scores> evaluationFunction = new Function<DietPlan, Scores>() {
             @Override
             public Scores apply(final DietPlan dietPlan) {
@@ -80,13 +81,13 @@ public class DietPlanner extends JFrame {
         return new SwingWorker<Evaluation<DietPlan>, Evaluation<DietPlan>>() {
             @Override
             protected Evaluation<DietPlan> doInBackground() throws Exception {
-                final int startPopulationSize = 100;
+                final int startPopulationSize = 10;
                 final int maxPopulationSize = 1000;
                 final Mutable<Pair<Integer, Integer>> startPopulationProgress = mutable(pair(0, startPopulationSize));
                 return optimize(startPopulationSize, maxPopulationSize, new Supplier<Evaluation<DietPlan>>() {
                     @Override
                     public Evaluation<DietPlan> get() {
-                        return createIndividual(evaluationFunction, startPopulationProgress);
+                        return createIndividual(startDietPlan, evaluationFunction, startPopulationProgress);
                     }
                 }, new Comparator<Evaluation<DietPlan>>() {
                     @Override
@@ -133,9 +134,9 @@ public class DietPlanner extends JFrame {
         return mealTemplates;
     }
 
-    private static Evaluation<DietPlan> createIndividual(final Function<DietPlan, Scores> evaluationFunction,
+    private static Evaluation<DietPlan> createIndividual(final DietPlan startDietPlan,
+                                                         final Function<DietPlan, Scores> evaluationFunction,
                                                          final Mutable<Pair<Integer, Integer>> startPopulationProgress) {
-        final DietPlan startDietPlan = createStartDietPlan();
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
         boolean continueAdding = true;
         while (continueAdding) {

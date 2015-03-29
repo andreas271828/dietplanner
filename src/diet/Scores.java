@@ -20,7 +20,11 @@ public class Scores {
     }
 
     public Score getScore(final Pair<Requirement, Integer> scoreId) {
-        return scores.get(scoreId.a()).get(scoreId.b());
+        return getScore(scoreId.a(), scoreId.b());
+    }
+
+    public Score getScore(final Requirement requirement) {
+        return getScore(requirement, 0);
     }
 
     public double getTotalScore() {
@@ -72,6 +76,10 @@ public class Scores {
                 addScore(requirement, score, scoreParams.getWeight());
             }
         });
+    }
+
+    public void forEach(final BiConsumer<Requirement, ArrayList<Score>> action) {
+        scores.forEach(action);
     }
 
     public List<Pair<Pair<Requirement, Integer>, Double>> getRelativeScores() {
