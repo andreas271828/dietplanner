@@ -14,14 +14,13 @@ import static util.Global.RANDOM;
 import static util.Pair.pair;
 
 public abstract class Optimization {
-    public static <T> Evaluation<T> optimize(final int startPopulationSize,
+    public static <T> Evaluation<T> optimize(final ArrayList<Evaluation<T>> startPopulation,
                                              final int maxPopulationSize,
-                                             final Supplier<Evaluation<T>> individualCreator,
                                              final Comparator<Evaluation<T>> evaluationComparator,
                                              final Consumer<Evaluation<T>> updateBestCallback,
                                              final Supplier<Boolean> abortCondition,
                                              final Function<Pair<Evaluation<T>, Evaluation<T>>, Evaluation<T>> mateFunction) {
-        final ArrayList<Evaluation<T>> population = createPopulation(startPopulationSize, individualCreator, abortCondition);
+        final ArrayList<Evaluation<T>> population = new ArrayList<Evaluation<T>>(startPopulation);
         Collections.sort(population, evaluationComparator);
         updateBestCallback.accept(population.get(0));
 

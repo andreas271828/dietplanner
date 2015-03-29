@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -71,25 +72,34 @@ public class DietPlanner extends JFrame {
     }
 
     private SwingWorker<Evaluation<DietPlan>, Evaluation<DietPlan>> createOptimizationThread() {
-        final DietPlan startDietPlan = createStartDietPlan();
-        final Function<DietPlan, Scores> evaluationFunction = new Function<DietPlan, Scores>() {
-            @Override
-            public Scores apply(final DietPlan dietPlan) {
-                return dietPlan.getScores(REQUIREMENTS);
-            }
-        };
         return new SwingWorker<Evaluation<DietPlan>, Evaluation<DietPlan>>() {
             @Override
             protected Evaluation<DietPlan> doInBackground() throws Exception {
-                final int startPopulationSize = 10;
-                final int maxPopulationSize = 1000;
-                final Mutable<Pair<Integer, Integer>> startPopulationProgress = mutable(pair(0, startPopulationSize));
-                return optimize(startPopulationSize, maxPopulationSize, new Supplier<Evaluation<DietPlan>>() {
+                final DietPlan startDietPlan = createStartDietPlan();
+                final Function<DietPlan, Scores> evaluationFunction = new Function<DietPlan, Scores>() {
                     @Override
-                    public Evaluation<DietPlan> get() {
-                        return createIndividual(startDietPlan, evaluationFunction, startPopulationProgress);
+                    public Scores apply(final DietPlan dietPlan) {
+                        return dietPlan.getScores(REQUIREMENTS);
                     }
-                }, new Comparator<Evaluation<DietPlan>>() {
+                };
+                final Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
+                final Scores scores = evaluation.getScores();
+                final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>();
+                final Mutable<Pair<Integer, Integer>> startPopulationProgress = mutable(pair(0, 0));
+                for (int i = 0; i < 10; ++i) {
+                    scores.forEach(new BiConsumer<Requirement, ArrayList<Score>>() {
+                        @Override
+                        public void accept(final Requirement requirement, final ArrayList<Score> scores) {
+                            final int scoresSize = scores.size();
+                            for (int i = 0; i < scoresSize && !isCancelled(); ++i) {
+                                final Pair<Requirement, Integer> scoreId = pair(requirement, i);
+                                startPopulation.add(createIndividual(startDietPlan, evaluationFunction, scoreId, startPopulationProgress));
+                            }
+                        }
+                    });
+                }
+                final int maxPopulationSize = 10000;
+                return optimize(startPopulation, maxPopulationSize, new Comparator<Evaluation<DietPlan>>() {
                     @Override
                     public int compare(final Evaluation<DietPlan> evaluation1, final Evaluation<DietPlan> evaluation2) {
                         return Double.compare(evaluation2.getTotalScore(), evaluation1.getTotalScore()); // Descending order
@@ -136,8 +146,10 @@ public class DietPlanner extends JFrame {
 
     private static Evaluation<DietPlan> createIndividual(final DietPlan startDietPlan,
                                                          final Function<DietPlan, Scores> evaluationFunction,
+                                                         final Pair<Requirement, Integer> optimizationScoreId,
                                                          final Mutable<Pair<Integer, Integer>> startPopulationProgress) {
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
+        double bestScore = evaluation.getScore(optimizationScoreId).getScore();
         boolean continueAdding = true;
         while (continueAdding) {
             final DietPlan dietPlan = evaluation.getObject();
@@ -149,8 +161,10 @@ public class DietPlanner extends JFrame {
                 final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
                 if (maybeNewDietPlan.isPresent()) {
                     final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
-                    if (newEvaluation.getTotalScore() > evaluation.getTotalScore()) {
+                    final double newScore = newEvaluation.getScore(optimizationScoreId).getScore();
+                    if (newScore > bestScore) {
                         evaluation = newEvaluation;
+                        bestScore = newScore;
                         continueAdding = true;
                     }
                 }
