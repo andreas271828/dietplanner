@@ -78,16 +78,32 @@ public class DietPlanner extends JFrame {
                         return dietPlan.getScores(REQUIREMENTS);
                     }
                 };
-                final int startPopulationSize = 10;
+                final int startPopulationSize = 100;
                 final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
                 for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
-                    startPopulation.add(createIndividual(startDietPlan, evaluationFunction, i));
+                    startPopulation.add(createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i));
                 }
                 final int maxPopulationSize = 1000;
                 return optimize(startPopulation, maxPopulationSize, new Comparator<Evaluation<DietPlan>>() {
                     @Override
                     public int compare(final Evaluation<DietPlan> evaluation1, final Evaluation<DietPlan> evaluation2) {
-                        return Double.compare(evaluation2.getTotalScore(), evaluation1.getTotalScore()); // Descending order
+                        if (RANDOM.nextBoolean()) {
+                            return Double.compare(evaluation2.getTotalScore(), evaluation1.getTotalScore()); // Descending order
+                        } else {
+                            final double worstScore1 = evaluation1.getWorstScore().map(new Function<Pair<Requirement, Integer>, Double>() {
+                                @Override
+                                public Double apply(final Pair<Requirement, Integer> scoreId) {
+                                    return evaluation1.getScore(scoreId).getScore();
+                                }
+                            }).orElse(0.0);
+                            final double worstScore2 = evaluation2.getWorstScore().map(new Function<Pair<Requirement, Integer>, Double>() {
+                                @Override
+                                public Double apply(final Pair<Requirement, Integer> scoreId) {
+                                    return evaluation2.getScore(scoreId).getScore();
+                                }
+                            }).orElse(0.0);
+                            return Double.compare(worstScore2, worstScore1); // Descending order
+                        }
                     }
                 }, new Consumer<Evaluation<DietPlan>>() {
                     @Override
@@ -129,11 +145,22 @@ public class DietPlanner extends JFrame {
         return mealTemplates;
     }
 
+    private static DietPlan createStartDietPlan() {
+        final int numberOfMeals = REQUIREMENTS.getNumberOfMeals();
+        final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
+        for (int i = 0; i < numberOfMeals; ++i) {
+            final int mealTemplateIndex = RANDOM.nextInt(MEAL_TEMPLATES.size());
+            meals.add(MEAL_TEMPLATES.get(mealTemplateIndex).getMinimalMeal());
+        }
+        return dietPlan(meals);
+    }
+
     private static Evaluation<DietPlan> createIndividual(final DietPlan startDietPlan,
                                                          final Function<DietPlan, Scores> evaluationFunction,
+                                                         final Optional<Pair<Requirement, Integer>> maybeScoreId,
                                                          final int index) {
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
-        double bestScore = evaluation.getTotalScore();
+        double bestScore = evaluation.getScore(maybeScoreId);
         boolean continueAdding = true;
         while (continueAdding) {
             final DietPlan dietPlan = evaluation.getObject();
@@ -145,7 +172,7 @@ public class DietPlanner extends JFrame {
                 final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
                 if (maybeNewDietPlan.isPresent()) {
                     final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
-                    final double newScore = newEvaluation.getTotalScore();
+                    final double newScore = newEvaluation.getScore(maybeScoreId);
                     if (newScore > bestScore) {
                         evaluation = newEvaluation;
                         bestScore = newScore;
@@ -157,18 +184,8 @@ public class DietPlanner extends JFrame {
                 }
             }
         }
-        System.out.println("Created candidate " + index + ".");
+        System.out.println("Created candidate " + (index + 1) + ".");
         return evaluation;
-    }
-
-    private static DietPlan createStartDietPlan() {
-        final int numberOfMeals = REQUIREMENTS.getNumberOfMeals();
-        final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
-        for (int i = 0; i < numberOfMeals; ++i) {
-            final int mealTemplateIndex = RANDOM.nextInt(MEAL_TEMPLATES.size());
-            meals.add(MEAL_TEMPLATES.get(mealTemplateIndex).getMinimalMeal());
-        }
-        return dietPlan(meals);
     }
 
     public static void main(final String[] args) {

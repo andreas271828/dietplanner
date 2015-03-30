@@ -5,6 +5,7 @@ import util.Pair;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static diet.Score.score;
 import static util.Pair.pair;
@@ -19,12 +20,21 @@ public class Scores {
         return scores.get(requirement).get(index);
     }
 
+    public Score getScore(final Requirement requirement) {
+        return getScore(requirement, 0);
+    }
+
     public Score getScore(final Pair<Requirement, Integer> scoreId) {
         return getScore(scoreId.a(), scoreId.b());
     }
 
-    public Score getScore(final Requirement requirement) {
-        return getScore(requirement, 0);
+    public double getScore(final Optional<Pair<Requirement, Integer>> maybeScoreId) {
+        return maybeScoreId.map(new Function<Pair<Requirement, Integer>, Double>() {
+            @Override
+            public Double apply(final Pair<Requirement, Integer> scoreId) {
+                return getScore(scoreId).getScore();
+            }
+        }).orElse(totalScore);
     }
 
     public double getTotalScore() {

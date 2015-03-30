@@ -64,12 +64,16 @@ public class Evaluation<T> {
         return getScores().getScore(requirement, index);
     }
 
+    public Score getScore(final Requirement requirement) {
+        return getScores().getScore(requirement);
+    }
+
     public Score getScore(final Pair<Requirement, Integer> scoreId) {
         return getScores().getScore(scoreId);
     }
 
-    public Score getScore(final Requirement requirement) {
-        return getScores().getScore(requirement);
+    public double getScore(final Optional<Pair<Requirement, Integer>> maybeScoreId) {
+        return getScores().getScore(maybeScoreId);
     }
 
     public double getTotalScore() {
