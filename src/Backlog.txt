@@ -1,10 +1,10 @@
 -   Make adjustments to meal templates, parameters, optimisation algorithm and printing until I get a useful diet plan for myself.
     Restrictions for fat, protein and sugar make it hard to get enough energy.
     Creating candidates for individual scores resulted in more diversity and I think produced scores > 111.07 quicker than using only the total score.
-        Probably, the start population needs a bit more diversity.
-    TRY: First, create individuals using only the total score. Then, create additional individuals that are optimised for the worst score.
-        Attention: Those new individuals and even combinations with existing ones might have a worse total score and problems to survive!
-        Work in phases and create a new start population by combining new individuals and existing ones at the beginning of each phase?
+        Probably, the start population needs a bit more diversity!!!
+    Remove batch to avoid calculating contribution potentials too often?
+        Is removing slowing down the process extremely, or is the algorithm actually not improving convergence?
+            Slowed down by about 10x?
 --- POC complete: Develop business.
 -   Refactor code; remove unused code; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

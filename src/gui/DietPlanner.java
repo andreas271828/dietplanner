@@ -78,7 +78,7 @@ public class DietPlanner extends JFrame {
                         return dietPlan.getScores(REQUIREMENTS);
                     }
                 };
-                final int startPopulationSize = 100;
+                final int startPopulationSize = 10;
                 final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
                 for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
                     startPopulation.add(createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i));
@@ -87,23 +87,7 @@ public class DietPlanner extends JFrame {
                 return optimize(startPopulation, maxPopulationSize, new Comparator<Evaluation<DietPlan>>() {
                     @Override
                     public int compare(final Evaluation<DietPlan> evaluation1, final Evaluation<DietPlan> evaluation2) {
-                        if (RANDOM.nextBoolean()) {
-                            return Double.compare(evaluation2.getTotalScore(), evaluation1.getTotalScore()); // Descending order
-                        } else {
-                            final double worstScore1 = evaluation1.getWorstScore().map(new Function<Pair<Requirement, Integer>, Double>() {
-                                @Override
-                                public Double apply(final Pair<Requirement, Integer> scoreId) {
-                                    return evaluation1.getScore(scoreId).getScore();
-                                }
-                            }).orElse(0.0);
-                            final double worstScore2 = evaluation2.getWorstScore().map(new Function<Pair<Requirement, Integer>, Double>() {
-                                @Override
-                                public Double apply(final Pair<Requirement, Integer> scoreId) {
-                                    return evaluation2.getScore(scoreId).getScore();
-                                }
-                            }).orElse(0.0);
-                            return Double.compare(worstScore2, worstScore1); // Descending order
-                        }
+                        return Double.compare(evaluation2.getTotalScore(), evaluation1.getTotalScore()); // Descending order
                     }
                 }, new Consumer<Evaluation<DietPlan>>() {
                     @Override
