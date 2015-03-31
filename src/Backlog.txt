@@ -5,6 +5,7 @@
     Remove batch to avoid calculating contribution potentials too often?
         Is removing slowing down the process extremely, or is the algorithm actually not improving convergence?
             Slowed down by about 10x?
+    Current record for total score: 111.07656656698126 of 112.0
 --- POC complete: Develop business.
 -   Refactor code; remove unused code; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
