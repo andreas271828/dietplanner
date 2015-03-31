@@ -146,7 +146,16 @@ public class DietPlan {
             final Meal meal = partner.getMeal(i);
             meals.add(meal.getWithMutations(Optional.<Meal>empty(), mutationRate));
         }
+        return dietPlan(meals);
+    }
 
+    public DietPlan mutate(final double mutationRate) {
+        final ArrayList<Meal> meals = new ArrayList<Meal>();
+        final int numberOfMeals = getNumberOfMeals();
+        for (int i = 0; i < numberOfMeals; ++i) {
+            final Meal meal = getMeal(i);
+            meals.add(meal.getWithMutations(Optional.<Meal>empty(), mutationRate));
+        }
         return dietPlan(meals);
     }
 

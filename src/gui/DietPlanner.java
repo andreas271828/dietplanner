@@ -78,10 +78,16 @@ public class DietPlanner extends JFrame {
                         return dietPlan.getScores(REQUIREMENTS);
                     }
                 };
-                final int startPopulationSize = 10;
+                final int startPopulationSize = 5;
                 final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
                 for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
-                    startPopulation.add(createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i));
+                    final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i);
+                    startPopulation.add(evaluation);
+                }
+                for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
+                    final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i);
+                    final DietPlan mutatedDietPlan = evaluation.getObject().mutate(0.1);
+                    startPopulation.add(evaluation(mutatedDietPlan, evaluationFunction));
                 }
                 final int maxPopulationSize = 1000;
                 return optimize(startPopulation, maxPopulationSize, new Comparator<Evaluation<DietPlan>>() {

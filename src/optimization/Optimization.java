@@ -1,17 +1,11 @@
 package optimization;
 
-import diet.Requirement;
-import diet.Score;
-import diet.Scores;
 import util.Evaluation;
-import util.Mutable;
 import util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -43,38 +37,7 @@ public abstract class Optimization {
                 population.add(insertionIndex, child);
                 final int newPopulationSize = population.size();
                 if (newPopulationSize > maxPopulationSize) {
-                    final Evaluation<T> best = population.get(0);
-                    Optional<Integer> maybeRemovalIndex = Optional.empty();
-                    double worstContributionPotential = 0.0;
-                    for (int i = newPopulationSize - 1; i > 0; --i) {
-                        final Evaluation<T> evaluation = population.get(i);
-                        final Scores scores = evaluation.getScores();
-                        final Mutable<Double> contributionPotential = Mutable.mutable(0.0);
-                        scores.forEach(new BiConsumer<Requirement, ArrayList<Score>>() {
-                            @Override
-                            public void accept(final Requirement requirement, final ArrayList<Score> scores) {
-                                final int scoresSize = scores.size();
-                                for (int i = 0; i < scoresSize; ++i) {
-                                    final double score = scores.get(i).getWeightedScore();
-                                    final double scoreOfBest = best.getScore(requirement, i).getWeightedScore();
-                                    final double scoreDiff = score - scoreOfBest;
-                                    if (scoreDiff > 0.0) {
-                                        contributionPotential.set(contributionPotential.get() + scoreDiff);
-                                    }
-                                }
-                            }
-                        });
-                        if (!maybeRemovalIndex.isPresent() || contributionPotential.get() < worstContributionPotential) {
-                            maybeRemovalIndex = Optional.of(i);
-                            worstContributionPotential = contributionPotential.get();
-                        }
-                    }
-                    maybeRemovalIndex.ifPresent(new Consumer<Integer>() {
-                        @Override
-                        public void accept(final Integer removalIndex) {
-                            population.remove(removalIndex.intValue());
-                        }
-                    });
+                    population.remove(newPopulationSize - 1);
                 }
                 if (insertionIndex == 0) {
                     updateBestCallback.accept(population.get(0));
