@@ -47,12 +47,34 @@ public class DietPlanner extends JFrame {
                         final DietPlan dietPlan = evaluation.getObject();
                         final Scores scores = evaluation.getScores();
                         final List<Pair<Pair<Requirement, Integer>, Double>> relScores = scores.getRelativeScores();
+
+                        System.out.println('\n');
                         System.out.println(dietPlan);
+
                         System.out.println("Scores:");
-                        System.out.println(scores);
-                        System.out.println("Sorted relative scores:");
-                        System.out.println(relScores);
-                        System.out.println("Total score: " + scores.getTotalScore() + " of " + scores.getWeightSum());
+                        System.out.println("=======");
+                        relScores.forEach(new Consumer<Pair<Pair<Requirement, Integer>, Double>>() {
+                            @Override
+                            public void accept(final Pair<Pair<Requirement, Integer>, Double> scoreInfo) {
+                                final StringBuilder scoreSb = new StringBuilder();
+                                final Pair<Requirement, Integer> scoreId = scoreInfo.a();
+                                scoreSb.append(scoreId.a().getName());
+                                scoreSb.append(" (");
+                                scoreSb.append(scoreId.b() + 1);
+                                scoreSb.append("): ");
+                                scoreSb.append(scoreInfo.b());
+                                System.out.println(scoreSb);
+                            }
+                        });
+                        System.out.println();
+
+                        final String totalScoreStr = "Total weighted score: " + scores.getTotalScore() + " of " + scores.getWeightSum();
+                        final StringBuilder totalScoreSb = new StringBuilder(totalScoreStr);
+                        totalScoreSb.append('\n');
+                        for (int i = 0; i < totalScoreStr.length(); ++i) {
+                            totalScoreSb.append('=');
+                        }
+                        System.out.println(totalScoreSb);
                         System.out.println();
                     }
                 });
@@ -78,7 +100,7 @@ public class DietPlanner extends JFrame {
                         return dietPlan.getScores(REQUIREMENTS);
                     }
                 };
-                final int startPopulationSize = 10;
+                final int startPopulationSize = 100;
                 final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
                 for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
                     final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i);

@@ -14,11 +14,11 @@ import static util.Limits2.limits2;
 
 public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
-    private static final double DEFAULT_MEAL_PROPERTY_WEIGHT = 1.0;
-    private static final double CARBOHYDRATES_WEIGHT = 1.0;
-    private static final double FAT_WEIGHT = 1.0;
-    private static final double ENERGY_WEIGHT = 1.0;
-    private static final double PROTEIN_WEIGHT = 1.0;
+    private static final double DEFAULT_MEAL_PROPERTY_WEIGHT = 0.2;
+    private static final double CARBOHYDRATES_WEIGHT = 0.5;
+    private static final double FAT_WEIGHT = 0.5;
+    private static final double ENERGY_WEIGHT = 10.0;
+    private static final double PROTEIN_WEIGHT = 0.5;
 
     private static final double DEFAULT_TOLERANCE = 0.05;
 

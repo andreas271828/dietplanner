@@ -214,7 +214,71 @@ public class DietPlan {
 
     @Override
     public String toString() {
-        return "Meals:" + '\n' + getMeals() + '\n' + "Food items:" + '\n' + getFoodItems() + '\n' + "Properties:" +
-                '\n' + getProperties() + '\n' + "Costs:" + '\n' + String.format("AUD %1$,.2f", getCosts());
+        final StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Meals:\n");
+        stringBuilder.append("======\n");
+        final ArrayList<Meal> meals = getMeals();
+        for (int i = 0; i < meals.size(); ++i) {
+            final Meal meal = meals.get(i);
+            stringBuilder.append("Meal ");
+            stringBuilder.append(i + 1);
+            stringBuilder.append(": ");
+            stringBuilder.append(meal.getName());
+            stringBuilder.append('\n');
+
+            final FoodItems ingredients = meal.getIngredients();
+            ingredients.forEach(new BiConsumer<FoodItem, Double>() {
+                @Override
+                public void accept(final FoodItem foodItem, final Double amount) {
+                    stringBuilder.append('\t');
+                    stringBuilder.append(foodItem.getName());
+                    stringBuilder.append(": ");
+                    stringBuilder.append(foodItem.toWeight(amount));
+                    stringBuilder.append("g\n");
+                }
+            });
+        }
+        stringBuilder.append('\n');
+
+        stringBuilder.append("Food items:\n");
+        stringBuilder.append("===========\n");
+        final FoodItems foodItems = getFoodItems();
+        foodItems.forEach(new BiConsumer<FoodItem, Double>() {
+            @Override
+            public void accept(final FoodItem foodItem, final Double amount) {
+                stringBuilder.append(foodItem.getName());
+                stringBuilder.append(": ");
+                stringBuilder.append(foodItem.toWeight(amount));
+                stringBuilder.append("g (");
+                stringBuilder.append(amount);
+                stringBuilder.append(")\n");
+            }
+        });
+        stringBuilder.append('\n');
+
+        stringBuilder.append("Properties:\n");
+        stringBuilder.append("===========\n");
+        final FoodProperties properties = getProperties();
+        properties.forEach(new BiConsumer<FoodProperty, Double>() {
+            @Override
+            public void accept(final FoodProperty foodProperty, final Double amount) {
+                stringBuilder.append(foodProperty.getName());
+                stringBuilder.append(": ");
+                stringBuilder.append(amount);
+                stringBuilder.append("\n");
+            }
+        });
+        stringBuilder.append('\n');
+
+        final String costsStr = "Costs: " + String.format("AUD %1$,.2f", getCosts());
+        stringBuilder.append(costsStr);
+        stringBuilder.append('\n');
+        for (int i = 0; i < costsStr.length(); ++i) {
+            stringBuilder.append('=');
+        }
+        stringBuilder.append('\n');
+
+        return stringBuilder.toString();
     }
 }

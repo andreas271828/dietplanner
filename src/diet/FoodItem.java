@@ -203,13 +203,17 @@ public enum FoodItem {
                 final double weightFactor = itemWeight / 100.0; // 100g to item weight
                 foodProperties.forEach(new BiConsumer<FoodProperty, Double>() {
                     @Override
-                    public void accept(FoodProperty foodProperty, Double amount) {
+                    public void accept(final FoodProperty foodProperty, final Double amount) {
                         properties.set(foodProperty, amount * weightFactor);
                     }
                 });
                 return properties;
             }
         };
+    }
+
+    public String getName() {
+        return food.getName();
     }
 
     public double getPrice() {
@@ -260,6 +264,6 @@ public enum FoodItem {
 
     @Override
     public String toString() {
-        return "<" + food.getName() + ", " + itemWeight + "g>";
+        return "<" + food.getName() + "; " + itemWeight + "g>";
     }
 }
