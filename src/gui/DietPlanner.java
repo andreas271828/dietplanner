@@ -2,6 +2,7 @@ package gui;
 
 import diet.*;
 import util.Evaluation;
+import util.Mutable;
 import util.Pair;
 
 import javax.swing.*;
@@ -20,6 +21,7 @@ import static diet.MealTemplate.*;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
+import static util.Mutable.mutable;
 
 public class DietPlanner extends JFrame {
     private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 21);
@@ -78,18 +80,14 @@ public class DietPlanner extends JFrame {
                         return dietPlan.getScores(REQUIREMENTS);
                     }
                 };
-                final int startPopulationSize = 5;
+                final int startPopulationSize = 10;
                 final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
                 for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
                     final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i);
                     startPopulation.add(evaluation);
                 }
-                for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
-                    final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i);
-                    final DietPlan mutatedDietPlan = evaluation.getObject().mutate(0.1);
-                    startPopulation.add(evaluation(mutatedDietPlan, evaluationFunction));
-                }
                 final int maxPopulationSize = 1000;
+                final Mutable<Integer> iterations = mutable(0);
                 return optimize(startPopulation, maxPopulationSize, new Comparator<Evaluation<DietPlan>>() {
                     @Override
                     public int compare(final Evaluation<DietPlan> evaluation1, final Evaluation<DietPlan> evaluation2) {
@@ -110,7 +108,10 @@ public class DietPlanner extends JFrame {
                     public Evaluation<DietPlan> apply(final Pair<Evaluation<DietPlan>, Evaluation<DietPlan>> parents) {
                         final DietPlan dietPlan1 = parents.a().getObject();
                         final DietPlan dietPlan2 = parents.b().getObject();
-                        return evaluation(dietPlan1.mate(dietPlan2, 0.001), evaluationFunction);
+                        final int i = iterations.get();
+                        iterations.set(i + 1);
+                        final double mutationRate = i % 20 == 0 ? 0.05 : 0.001;
+                        return evaluation(dietPlan1.mate(dietPlan2, mutationRate), evaluationFunction);
                     }
                 });
             }
