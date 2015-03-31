@@ -1,15 +1,10 @@
--   Make adjustments to meal templates, parameters, optimisation algorithm and printing until I get a useful diet plan for myself.
-    Restrictions for fat, protein and sugar make it hard to get enough energy.
-    Creating candidates for individual scores resulted in more diversity and I think produced scores > 111.07 quicker than using only the total score.
-        Probably, the start population needs a bit more diversity!!!
-    Remove batch to avoid calculating contribution potentials too often?
-        Is removing slowing down the process extremely, or is the algorithm actually not improving convergence?
-            Slowed down by about 10x?
-    Current record for total score: 111.07656656698126 of 112.0
+-   Make adjustments to meal templates, parameters and printing until I get a useful diet plan for myself.
 --- POC complete: Develop business.
 -   Refactor code; remove unused code; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
--   Improve optimisation algorithm (higher diversity? subpopulations / species [for different combinations of meal templates]? variable mutation rates? optimise individual scores?)
+-   Improve optimisation algorithm:
+    Most experiments haven't shown significant improvements of the scores or convergence speed.
+    What could be useful, is to optimise several subpopulations in parallel and to occasionally mix up the subpopulations.
 -   Create user interface
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.
 -   About, warnings and information (only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol)

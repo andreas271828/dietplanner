@@ -12,8 +12,34 @@ import static util.Limits2.limits2;
 
 public enum PersonalDetails {
     // If fat, protein and sugar are limited too much, it's difficult to get enough energy without violating other limits.
-    ANDREAS(Gender.MALE, "14/08/1982", 1.91, 80.0, 2.0, Optional.<Double>empty(), Optional.of(20.0), limits2(0.9, 1.2), Optional.of(limits2(3000.0, 5000.0)), false, false, false, false),
-    ANDREAS_LOW_CARB(Gender.MALE, "14/08/1982", 1.91, 80.0, 2.0, Optional.of(60.0), Optional.<Double>empty(), limits2(0.9, 1.1), Optional.of(limits2(3000.0, 5000.0)), false, false, false, false);
+    ANDREAS(Gender.MALE,
+            "14/08/1982",
+            1.91,
+            80.0,
+            2.0,
+            Optional.<Double>empty(),
+            90.0,
+            Optional.of(30.0),
+            limits2(0.9, 1.6),
+            Optional.of(limits2(3000.0, 5000.0)),
+            false,
+            false,
+            false,
+            false),
+    ANDREAS_LOW_CARB(Gender.MALE,
+            "14/08/1982",
+            1.91,
+            80.0,
+            2.0,
+            Optional.of(60.0),
+            30.0,
+            Optional.<Double>empty(),
+            limits2(0.9, 1.1),
+            Optional.of(limits2(3000.0, 5000.0)),
+            false,
+            false,
+            false,
+            false);
 
     public enum Gender {
         MALE,
@@ -27,6 +53,7 @@ public enum PersonalDetails {
     private final double idealBodyWeight; // kg
     private final double physicalActivityLevel; // http://www.nrv.gov.au/dietary-energy
     private final Optional<Double> maxCarbohydrates; // g per day
+    private final double maxSugars; // g per day
     private final Optional<Double> maxFat; // % of energy intake per day
     private final Limits2 proteinLimits; // g per kg of ideal body weight per day
     private final Optional<Limits2> sodiumLimits; // mg per day
@@ -42,6 +69,7 @@ public enum PersonalDetails {
      * @param idealBodyWeight       kg
      * @param physicalActivityLevel http://www.nrv.gov.au/dietary-energy
      * @param maxCarbohydrates      g per day
+     * @param maxSugars             g per day
      * @param maxFat                % of energy intake per day
      * @param proteinLimits         g per kg of ideal body weight per day
      * @param sodiumLimits          mg per day
@@ -56,6 +84,7 @@ public enum PersonalDetails {
                     final double idealBodyWeight,
                     final double physicalActivityLevel,
                     final Optional<Double> maxCarbohydrates,
+                    final double maxSugars,
                     final Optional<Double> maxFat,
                     final Limits2 proteinLimits,
                     final Optional<Limits2> sodiumLimits,
@@ -69,6 +98,7 @@ public enum PersonalDetails {
         this.idealBodyWeight = idealBodyWeight;
         this.physicalActivityLevel = physicalActivityLevel;
         this.maxCarbohydrates = maxCarbohydrates;
+        this.maxSugars = maxSugars;
         this.maxFat = maxFat;
         this.proteinLimits = proteinLimits;
         this.sodiumLimits = sodiumLimits;
@@ -120,6 +150,13 @@ public enum PersonalDetails {
      */
     public Optional<Double> getMaxCarbohydrates() {
         return maxCarbohydrates;
+    }
+
+    /**
+     * @return g per day
+     */
+    public double getMaxSugars() {
+        return maxSugars;
     }
 
     /**

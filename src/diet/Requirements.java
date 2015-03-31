@@ -788,8 +788,7 @@ public class Requirements {
      */
     private Optional<Double> getMaxSugarsPerDay() {
         // http://www.mydailyintake.net/nutrients/
-        // TODO: Consider age, etc.
-        return Optional.of(90.0);
+        return Optional.of(personalDetails.getMaxSugars());
     }
 
     /**
