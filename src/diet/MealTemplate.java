@@ -73,7 +73,7 @@ public enum MealTemplate {
         ingredients.add(COLES_CHEESE_HALOUMI, 0.0, 1.0);
         ingredients.add(COLES_CUCUMBER, 0.0, 1.0);
         ingredients.addByWeight(COLES_DILL, 0.0, 10.0);
-        ingredients.add(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 2.0);
+        ingredients.addByWeight(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 140.0);
         ingredients.addByWeight(COLES_GARLIC, 0.0, 10.0);
         ingredients.addByWeight(COLES_KALE, 0.0, 200.0);
         ingredients.addByWeight(COLES_LEEK, 0.0, 50.0);
@@ -110,7 +110,7 @@ public enum MealTemplate {
         ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
         ingredients.add(COLES_CARROT, 0.0, 2.0);
         ingredients.addByWeight(COLES_CELERY, 0.0, 100.0);
-        ingredients.add(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 2.0);
+        ingredients.addByWeight(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 140.0);
         ingredients.add(COLES_CUCUMBER, 0.0, 1.0);
         ingredients.addByWeight(COLES_GINGER, 0.0, 10.0);
         ingredients.addByWeight(COLES_HONEY, 0.0, 20.0);

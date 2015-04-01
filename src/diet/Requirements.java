@@ -535,7 +535,7 @@ public class Requirements {
         return maybeUpperOptimal.map(new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double upperOptimal) {
-                return scoreParamsUORUC(upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
+                return scoreParamsUORUC(0.5 * upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }

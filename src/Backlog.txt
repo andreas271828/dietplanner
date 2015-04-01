@@ -1,4 +1,8 @@
 -   Make adjustments until I get a useful diet plan for myself.
+    Review portion sizes (After how many meals should a unit be finished at the latest?). Continue with COLES_CABBAGE_RED.
+    Try diet plan.
+    Adjust weights and prices.
+    Adjust and add meal templates.
 --- POC complete: Develop business.
 -   Refactor code; remove unused code; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

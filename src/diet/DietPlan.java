@@ -235,7 +235,9 @@ public class DietPlan {
                     stringBuilder.append(foodItem.getName());
                     stringBuilder.append(": ");
                     stringBuilder.append(foodItem.toWeight(amount));
-                    stringBuilder.append("g\n");
+                    stringBuilder.append("g (");
+                    stringBuilder.append(amount);
+                    stringBuilder.append(")\n");
                 }
             });
         }
