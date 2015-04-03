@@ -16,7 +16,7 @@ public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
     private static final double DEFAULT_MEAL_PROPERTY_WEIGHT = 0.2;
     private static final double CARBOHYDRATES_WEIGHT = 0.5;
-    private static final double FAT_WEIGHT = 0.5;
+    private static final double FAT_WEIGHT = 2.0;
     private static final double ENERGY_WEIGHT = 10.0;
     private static final double PROTEIN_WEIGHT = 0.5;
 
@@ -153,7 +153,7 @@ public class Requirements {
      * @return AUD
      */
     private Optional<ScoreParams> getCostsParams() {
-        return Optional.of(scoreParamsUORUC(15.0 * days, 0.3, DEFAULT_WEIGHT));
+        return Optional.of(scoreParamsUORUC(15.0 * days, 0.2, DEFAULT_WEIGHT));
     }
 
     /**
@@ -535,7 +535,7 @@ public class Requirements {
         return maybeUpperOptimal.map(new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double upperOptimal) {
-                return scoreParamsUORUC(0.5 * upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
+                return scoreParamsUORUC(0.4 * upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }

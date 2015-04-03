@@ -100,13 +100,13 @@ public class DietPlanner extends JFrame {
                         return dietPlan.getScores(REQUIREMENTS);
                     }
                 };
-                final int startPopulationSize = 100;
+                final int startPopulationSize = 10;
                 final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
                 for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
                     final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i);
                     startPopulation.add(evaluation);
                 }
-                final int maxPopulationSize = 1000;
+                final int maxPopulationSize = 100;
                 return optimize(startPopulation, maxPopulationSize, new Comparator<Evaluation<DietPlan>>() {
                     @Override
                     public int compare(final Evaluation<DietPlan> evaluation1, final Evaluation<DietPlan> evaluation2) {
