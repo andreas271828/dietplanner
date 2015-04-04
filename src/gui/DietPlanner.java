@@ -35,7 +35,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Evaluation<DietPlan>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -89,10 +89,13 @@ public class DietPlanner extends JFrame {
         optimizationThread.execute();
     }
 
-    private SwingWorker<Evaluation<DietPlan>, Evaluation<DietPlan>> createOptimizationThread() {
-        return new SwingWorker<Evaluation<DietPlan>, Evaluation<DietPlan>>() {
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> createOptimizationThread() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>>() {
             @Override
-            protected Evaluation<DietPlan> doInBackground() throws Exception {
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                final int startPopulationSize = 10;
+                final int maxPopulationSize = 100;
+                final int numberOfPopulations = 5;
                 final DietPlan startDietPlan = createStartDietPlan();
                 final Function<DietPlan, Scores> evaluationFunction = new Function<DietPlan, Scores>() {
                     @Override
@@ -100,22 +103,25 @@ public class DietPlanner extends JFrame {
                         return dietPlan.getScores(REQUIREMENTS);
                     }
                 };
-                final int startPopulationSize = 10;
-                final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
-                for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
-                    final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i);
-                    startPopulation.add(evaluation);
-                }
-                final int maxPopulationSize = 100;
-                return optimize(startPopulation, maxPopulationSize, new Comparator<Evaluation<DietPlan>>() {
+                return optimize(new Supplier<ArrayList<Evaluation<DietPlan>>>() {
+                    @Override
+                    public ArrayList<Evaluation<DietPlan>> get() {
+                        final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
+                        for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
+                            final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i);
+                            startPopulation.add(evaluation);
+                        }
+                        return startPopulation;
+                    }
+                }, maxPopulationSize, numberOfPopulations, new Comparator<Evaluation<DietPlan>>() {
                     @Override
                     public int compare(final Evaluation<DietPlan> evaluation1, final Evaluation<DietPlan> evaluation2) {
                         return Double.compare(evaluation2.getTotalScore(), evaluation1.getTotalScore()); // Descending order
                     }
-                }, new Consumer<Evaluation<DietPlan>>() {
+                }, new Consumer<Optional<Evaluation<DietPlan>>>() {
                     @Override
-                    public void accept(final Evaluation<DietPlan> evaluation) {
-                        publish(evaluation);
+                    public void accept(final Optional<Evaluation<DietPlan>> maybeEvaluation) {
+                        publish(maybeEvaluation);
                     }
                 }, new Supplier<Boolean>() {
                     @Override
@@ -133,10 +139,14 @@ public class DietPlanner extends JFrame {
             }
 
             @Override
-            protected void process(final List<Evaluation<DietPlan>> chunks) {
-                final Evaluation<DietPlan> lastChunk = chunks.get(chunks.size() - 1);
-                best = Optional.of(lastChunk);
-                System.out.println("Best score: " + lastChunk.getTotalScore());
+            protected void process(final List<Optional<Evaluation<DietPlan>>> chunks) {
+                best = chunks.get(chunks.size() - 1);
+                best.ifPresent(new Consumer<Evaluation<DietPlan>>() {
+                    @Override
+                    public void accept(final Evaluation<DietPlan> evaluation) {
+                        System.out.println("Best score: " + evaluation.getTotalScore());
+                    }
+                });
             }
         };
     }
