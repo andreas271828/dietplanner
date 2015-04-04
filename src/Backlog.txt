@@ -1,4 +1,5 @@
--   Improve standard score function - S-edges instead of linear decline (after optimum first slow decline, increasing speed; after critical limit first fast decline, then decreasing speed)
+-   Update and run tests for standard score function.
+    Include cases where lower optimal or/and upper optimal are equal to their critical values. Test values smaller than, equal to and greater than the critical value.
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
     Adjust weights and prices.

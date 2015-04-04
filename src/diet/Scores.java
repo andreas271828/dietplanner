@@ -82,7 +82,7 @@ public class Scores {
         requirements.getParams(requirement).ifPresent(new Consumer<ScoreParams>() {
             @Override
             public void accept(final ScoreParams scoreParams) {
-                final double score = ScoreFunctions.standard(value, scoreParams, 1000 * scoreParams.getUpperCritical());
+                final double score = ScoreFunctions.standard(value, scoreParams);
                 addScore(requirement, score, scoreParams.getWeight());
             }
         });
