@@ -81,6 +81,7 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_LETTUCE, 0.0, 200.0);
         ingredients.addByWeight(COLES_MAYONNAISE, 0.0, 300.0);
         ingredients.addByWeight(COLES_MUSHROOM, 0.0, 100.0);
+        ingredients.add(COLES_MUSSEL_DRAINED, 0.0, 1.0);
         ingredients.addByWeight(COLES_OIL_OLIVE, 1.0, 100.0);
         ingredients.addByWeight(COLES_OLIVE_GREEN, 0.0, 50.0);
         ingredients.add(COLES_ONION, 0.0, 0.5);
@@ -145,10 +146,13 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 100.0);
         ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 100.0);
         ingredients.addByWeight(COLES_NUT_MACADAMIA, 0.0, 100.0);
+        ingredients.add(COLES_MACKEREL, 0.0, 1.0);
         ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 100.0);
         ingredients.addByWeight(COLES_OLIVE_GREEN, 0.0, 100.0);
         ingredients.add(COLES_ORANGE, 0.0, 2.0);
         ingredients.addByWeight(COLES_SALMON_SMOKED, 0.0, 300.0);
+        ingredients.addByWeight(COLES_TEA_CHAMOMILE, 0.0, 2.0);
+        ingredients.addByWeight(COLES_TEA_MINT, 0.0, 2.0);
         ingredients.addByWeight(COLES_WATERCRESS, 0.0, 20.0);
         return ingredients;
     }
@@ -159,6 +163,8 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_BASIL_DRIED, 0.0, 5.0);
         ingredients.addByWeight(COLES_BASIL, 0.0, 10.0);
         ingredients.addByWeight(COLES_BEAN_GREEN, 0.0, 100.0);
+        ingredients.addByWeight(COLES_BEEF_HEART, 0.0, 300.0);
+        ingredients.addByWeight(COLES_BEEF_KIDNEY, 0.0, 300.0);
         ingredients.add(COLES_BEETROOT, 0.0, 1.0);
         ingredients.addByWeight(COLES_BOK_CHOY, 0.0, 200.0);
         ingredients.addByWeight(COLES_BROCCOLI, 0.0, 300.0);

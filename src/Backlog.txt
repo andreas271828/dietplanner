@@ -1,4 +1,3 @@
--   Experiment with subpopulations.
 -   Improve standard score function - S-edges instead of linear decline (after optimum first slow decline, increasing speed; after critical limit first fast decline, then decreasing speed)
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
@@ -9,7 +8,7 @@
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
 -   Improve optimisation algorithm:
     Most experiments haven't shown significant improvements of the scores or convergence speed.
-    What could be useful, is to optimise several subpopulations in parallel and to occasionally mix up the subpopulations.
+    What could be useful, is to focus on one score in each population, rather than on the total score in all of them.
 -   Create user interface
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.
 -   About, warnings and information (only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol)

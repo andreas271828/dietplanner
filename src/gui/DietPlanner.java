@@ -93,9 +93,10 @@ public class DietPlanner extends JFrame {
         return new SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>>() {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
-                final int startPopulationSize = 10;
-                final int maxPopulationSize = 100;
+                final int startPopulationSize = 20;
+                final int maxPopulationSize = 500;
                 final int numberOfPopulations = 5;
+                final double populationMixRate = 0.01;
                 final DietPlan startDietPlan = createStartDietPlan();
                 final Function<DietPlan, Scores> evaluationFunction = new Function<DietPlan, Scores>() {
                     @Override
@@ -135,7 +136,7 @@ public class DietPlanner extends JFrame {
                         final DietPlan dietPlan2 = parents.b().getObject();
                         return evaluation(dietPlan1.mate(dietPlan2, 0.001), evaluationFunction);
                     }
-                });
+                }, populationMixRate);
             }
 
             @Override

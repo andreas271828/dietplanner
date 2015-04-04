@@ -21,7 +21,8 @@ public abstract class Optimization {
                                                        final Comparator<Evaluation<T>> evaluationComparator,
                                                        final Consumer<Optional<Evaluation<T>>> updateBestCallback,
                                                        final Supplier<Boolean> abortCondition,
-                                                       final Function<Pair<Evaluation<T>, Evaluation<T>>, Evaluation<T>> mateFunction) {
+                                                       final Function<Pair<Evaluation<T>, Evaluation<T>>, Evaluation<T>> mateFunction,
+                                                       final double populationMixRate) {
         Optional<Evaluation<T>> maybeBest = Optional.empty();
         final ArrayList<ArrayList<Evaluation<T>>> populations = new ArrayList<ArrayList<Evaluation<T>>>(numberOfPopulations);
         for (int i = 0; i < numberOfPopulations; ++i) {
@@ -31,17 +32,13 @@ public abstract class Optimization {
             maybeBest = updateBest(maybeBest, population.get(0), evaluationComparator, updateBestCallback);
         }
 
-        // TODO: Mix populations
         while (!abortCondition.get()) {
             for (int i = 0; i < numberOfPopulations && !abortCondition.get(); ++i) {
-                final ArrayList<Evaluation<T>> population = populations.get(i);
-                final int populationSize = population.size();
-                final int parentIndex1 = RANDOM.nextInt(populationSize);
-                final int parentIndex2 = RANDOM.nextInt(populationSize);
-                if (parentIndex1 != parentIndex2) {
-                    final Evaluation<T> parent1 = population.get(parentIndex1);
-                    final Evaluation<T> parent2 = population.get(parentIndex2);
+                final Evaluation<T> parent1 = getRandomParent(populations, i, 0.0);
+                final Evaluation<T> parent2 = getRandomParent(populations, i, populationMixRate);
+                if (parent1 != parent2) {
                     final Evaluation<T> child = mateFunction.apply(pair(parent1, parent2));
+                    final ArrayList<Evaluation<T>> population = populations.get(i);
                     final int index = Collections.binarySearch(population, child, evaluationComparator);
                     final int insertionIndex = index < 0 ? -index - 1 : index;
                     population.add(insertionIndex, child);
@@ -71,5 +68,16 @@ public abstract class Optimization {
             newMaybeBest = maybeBest;
         }
         return newMaybeBest;
+    }
+
+    private static <T> Evaluation<T> getRandomParent(final ArrayList<ArrayList<Evaluation<T>>> populations,
+                                                     final int populationIndex,
+                                                     final double populationMixRate) {
+        final int parentPopulationIndex = RANDOM.nextDouble() < populationMixRate ?
+                RANDOM.nextInt(populations.size()) :
+                populationIndex;
+        final ArrayList<Evaluation<T>> population = populations.get(parentPopulationIndex);
+        final int parentIndex = RANDOM.nextInt(population.size());
+        return population.get(parentIndex);
     }
 }
