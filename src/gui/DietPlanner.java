@@ -35,7 +35,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread3();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -95,7 +95,7 @@ public class DietPlanner extends JFrame {
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
                 final int startPopulationSize = 20;
                 final int maxPopulationSize = 500;
-                final int numberOfPopulations = 5;
+                final int numberOfPopulations = 1;
                 final double populationMixRate = 0.01;
                 final DietPlan startDietPlan = createStartDietPlan();
                 final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
@@ -104,7 +104,7 @@ public class DietPlanner extends JFrame {
                     public ArrayList<Evaluation<DietPlan>> get() {
                         final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
                         for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
-                            final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction, Optional.<Pair<Requirement, Integer>>empty(), i);
+                            final Evaluation<DietPlan> evaluation = createIndividual2(startDietPlan, evaluationFunction, i);
                             startPopulation.add(evaluation);
                         }
                         return startPopulation;
@@ -165,7 +165,7 @@ public class DietPlanner extends JFrame {
                     final int populationSize = population.size();
                     if (populationSize < maxPopulationSize) {
                         final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction,
-                                maybeScoreId, populationSize);
+                                populationSize);
                         population.add(evaluation);
                         if (!best.isPresent() || evaluation.getTotalScore() > best.get().getTotalScore()) {
                             best = Optional.of(evaluation);
@@ -344,10 +344,9 @@ public class DietPlanner extends JFrame {
 
     private static Evaluation<DietPlan> createIndividual(final DietPlan startDietPlan,
                                                          final Function<DietPlan, Scores> evaluationFunction,
-                                                         final Optional<Pair<Requirement, Integer>> maybeScoreId,
                                                          final int index) {
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
-        double bestScore = evaluation.getScore(maybeScoreId);
+        double bestScore = evaluation.getTotalScore();
         boolean continueAdding = true;
         while (continueAdding) {
             final DietPlan dietPlan = evaluation.getObject();
@@ -359,11 +358,43 @@ public class DietPlanner extends JFrame {
                 final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
                 if (maybeNewDietPlan.isPresent()) {
                     final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
-                    final double newScore = newEvaluation.getScore(maybeScoreId);
+                    final double newScore = newEvaluation.getTotalScore();
                     if (newScore > bestScore) {
                         evaluation = newEvaluation;
                         bestScore = newScore;
                         continueAdding = true;
+                    }
+                }
+                if (!continueAdding) {
+                    variableIngredients.remove(ingredientIndex);
+                }
+            }
+        }
+        System.out.println("Created candidate " + (index + 1) + ".");
+        return evaluation;
+    }
+
+    private static Evaluation<DietPlan> createIndividual2(final DietPlan startDietPlan,
+                                                          final Function<DietPlan, Scores> evaluationFunction,
+                                                          final int index) {
+        final ArrayList<Pair<Requirement, Integer>> scoreIds = REQUIREMENTS.getScoreIds();
+        Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
+        boolean continueAdding = true;
+        while (continueAdding) {
+            final DietPlan dietPlan = evaluation.getObject();
+            final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+            continueAdding = false;
+            while (!continueAdding && !variableIngredients.isEmpty()) {
+                final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
+                if (maybeNewDietPlan.isPresent()) {
+                    final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
+                    for (final Pair<Requirement, Integer> scoreId : scoreIds) {
+                        if (newEvaluation.getScore(scoreId).getScore() > evaluation.getScore(scoreId).getScore()) {
+                            evaluation = newEvaluation;
+                            continueAdding = true;
+                        }
                     }
                 }
                 if (!continueAdding) {
