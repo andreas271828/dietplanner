@@ -198,7 +198,7 @@ public enum MealTemplate {
         ingredients.add(COLES_POTATO, 0.0, 4.0);
         ingredients.addByWeight(COLES_PUMPKIN, 0.0, 200.0);
         ingredients.addByWeight(COLES_QUINOA_ORGANIC, 0.0, 500.0);
-        ingredients.add(COLES_SALMON, 0.0, 500.0);
+        ingredients.addByWeight(COLES_SALMON, 0.0, 500.0);
         ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
         ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 300.0);
         ingredients.add(COLES_SQUASH, 0.0, 2.0);
