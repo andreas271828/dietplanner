@@ -109,7 +109,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getAlphaLinolenicAcidAIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParams(0.8 * total, 0.9 * total, Double.MAX_VALUE, Double.MAX_VALUE, DEFAULT_WEIGHT);
+                return scoreParamsL(0.8 * total, 0.9 * total, DEFAULT_WEIGHT);
             }
         });
     }
@@ -122,7 +122,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getCalciumRDIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -135,7 +135,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getMaxCarbohydratesPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParams(0, 0, 0.9 * total, total, CARBOHYDRATES_WEIGHT);
+                return scoreParamsU(0.95 * total, total, CARBOHYDRATES_WEIGHT);
             }
         });
     }
@@ -153,7 +153,7 @@ public class Requirements {
      * @return AUD
      */
     private Optional<ScoreParams> getCostsParams() {
-        return Optional.of(scoreParamsUORUC(15.0 * days, 0.2, DEFAULT_WEIGHT));
+        return Optional.of(scoreParamsUT(15.0 * days, 0.2, DEFAULT_WEIGHT));
     }
 
     /**
@@ -164,7 +164,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getDietaryFibreAIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParams(0.8 * total, 0.9 * total, Double.MAX_VALUE, Double.MAX_VALUE, DEFAULT_WEIGHT);
+                return scoreParamsL(0.8 * total, 0.9 * total, DEFAULT_WEIGHT);
             }
         });
     }
@@ -177,7 +177,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getEnergyDemandPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsORC(total, DEFAULT_TOLERANCE, ENERGY_WEIGHT);
+                return scoreParamsT(total, total, DEFAULT_TOLERANCE, ENERGY_WEIGHT);
             }
         });
     }
@@ -191,7 +191,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getMaxFatPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParams(0, 0, 0.9 * total, total, FAT_WEIGHT);
+                return scoreParamsU(0.95 * total, total, FAT_WEIGHT);
             }
         });
     }
@@ -204,7 +204,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getFolatesRDIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsLORLC(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsLT(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -217,7 +217,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getIodineRDIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsLORLC(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsLT(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -230,7 +230,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getIronRDIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -243,7 +243,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getLinoleicAcidAIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParams(0.8 * total, 0.9 * total, Double.MAX_VALUE, Double.MAX_VALUE, DEFAULT_WEIGHT);
+                return scoreParamsL(0.8 * total, 0.9 * total, DEFAULT_WEIGHT);
             }
         });
     }
@@ -256,7 +256,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getMagnesiumRDIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsLORLC(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsLT(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -269,7 +269,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getNiacinDerivedEquivalentsRDIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -282,8 +282,10 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getOmega3FattyAcidsAIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParams(0.8 * totalLimits.getMin(), 0.9 * totalLimits.getMin(),
-                        totalLimits.getMax(), (1 + DEFAULT_TOLERANCE) * totalLimits.getMax(), DEFAULT_WEIGHT);
+                final double lowerLimit = totalLimits.getMin();
+                final double upperLimit = totalLimits.getMax();
+                return scoreParams(0.8 * lowerLimit, 0.9 * lowerLimit, upperLimit,
+                        upperCritical(upperLimit, DEFAULT_TOLERANCE), DEFAULT_WEIGHT);
             }
         });
     }
@@ -296,7 +298,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getPhosphorusRDIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -309,7 +311,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getPotassiumAIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParams(0.8 * total, 0.9 * total, Double.MAX_VALUE, Double.MAX_VALUE, DEFAULT_WEIGHT);
+                return scoreParamsL(0.8 * total, 0.9 * total, DEFAULT_WEIGHT);
             }
         });
     }
@@ -324,7 +326,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getProteinLimitsPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, PROTEIN_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, PROTEIN_WEIGHT);
             }
         });
     }
@@ -337,7 +339,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getRiboflavinRDIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsLORLC(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsLT(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -350,7 +352,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getSeleniumRDIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -363,8 +365,10 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getSodiumAIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParams(0.8 * totalLimits.getMin(), 0.9 * totalLimits.getMin(),
-                        totalLimits.getMax(), (1 + DEFAULT_TOLERANCE) * totalLimits.getMax(), DEFAULT_WEIGHT);
+                final double lowerLimit = totalLimits.getMin();
+                final double upperLimit = totalLimits.getMax();
+                return scoreParams(0.8 * lowerLimit, 0.9 * lowerLimit, upperLimit,
+                        upperCritical(upperLimit, DEFAULT_TOLERANCE), DEFAULT_WEIGHT);
             }
         });
     }
@@ -377,7 +381,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getMaxSugarsPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParams(0, 0, 0.5 * total, total, DEFAULT_WEIGHT);
+                return scoreParamsU(0.0, total, DEFAULT_WEIGHT);
             }
         });
     }
@@ -390,7 +394,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getThiaminRDIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsLORLC(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsLT(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -412,7 +416,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getTryptophanRDIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsLORLC(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsLT(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -425,7 +429,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getVitaminARetinolEquivalentsRDIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -438,7 +442,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getVitaminB12RDIPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsLORLC(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsLT(total, DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -451,7 +455,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getVitaminB6RDIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -464,7 +468,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getVitaminCRDIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -477,8 +481,10 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getVitaminEAIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParams(0.8 * totalLimits.getMin(), 0.9 * totalLimits.getMin(),
-                        totalLimits.getMax(), (1 + DEFAULT_TOLERANCE) * totalLimits.getMax(), DEFAULT_WEIGHT);
+                final double lowerLimit = totalLimits.getMin();
+                final double upperLimit = totalLimits.getMax();
+                return scoreParams(0.8 * lowerLimit, 0.9 * lowerLimit, upperLimit,
+                        upperCritical(upperLimit, DEFAULT_TOLERANCE), DEFAULT_WEIGHT);
             }
         });
     }
@@ -491,7 +497,7 @@ public class Requirements {
         return getParamsFromLimitsPerDay(getZincRDIAndULPerDay(), new Function<Limits2, ScoreParams>() {
             @Override
             public ScoreParams apply(final Limits2 totalLimits) {
-                return scoreParamsLOUORC(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
+                return scoreParamsT(totalLimits.getMin(), totalLimits.getMax(), DEFAULT_TOLERANCE, DEFAULT_WEIGHT);
             }
         });
     }
@@ -500,14 +506,14 @@ public class Requirements {
      * @return g
      */
     private Optional<ScoreParams> getMealAlcoholParams() {
-        return Optional.of(scoreParamsUC(0.5, DEFAULT_MEAL_PROPERTY_WEIGHT));
+        return Optional.of(scoreParamsU(0.0, 0.5, DEFAULT_MEAL_PROPERTY_WEIGHT));
     }
 
     /**
      * @return mg
      */
     private Optional<ScoreParams> getMealCaffeineParams() {
-        return Optional.of(scoreParamsUC(10, DEFAULT_MEAL_PROPERTY_WEIGHT));
+        return Optional.of(scoreParamsU(0.0, 10.0, DEFAULT_MEAL_PROPERTY_WEIGHT));
     }
 
     /**
@@ -515,12 +521,10 @@ public class Requirements {
      */
     private Optional<ScoreParams> getMealCarbohydratesParams() {
         // Jimmy Moore (2014) Keto Clarity: Your Definitive Guide to the Benefits of a Low-Carb, High-Fat Diet.
-        // Limit carbohydrates per meal to maximum carbohydrates per day.
-        final Optional<Double> maybeUpperOptimal = getMaxCarbohydratesPerDay();
-        return maybeUpperOptimal.map(new Function<Double, ScoreParams>() {
+        return getMaxCarbohydratesPerDay().map(new Function<Double, ScoreParams>() {
             @Override
-            public ScoreParams apply(final Double upperOptimal) {
-                return scoreParamsUORUC(upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
+            public ScoreParams apply(final Double maxPerDay) {
+                return scoreParamsUT(0.6 * maxPerDay, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }
@@ -531,11 +535,10 @@ public class Requirements {
     private Optional<ScoreParams> getMealEnergyParams() {
         // http://www.nrv.gov.au/dietary-energy
         // Limit energy intake per meal to energy demand per day.
-        final Optional<Double> maybeUpperOptimal = getEnergyDemandPerDay();
-        return maybeUpperOptimal.map(new Function<Double, ScoreParams>() {
+        return getEnergyDemandPerDay().map(new Function<Double, ScoreParams>() {
             @Override
-            public ScoreParams apply(final Double upperOptimal) {
-                return scoreParamsUORUC(0.4 * upperOptimal, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
+            public ScoreParams apply(final Double targetPerDay) {
+                return scoreParamsT(0.2 * targetPerDay, 0.4 * targetPerDay, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }
@@ -559,8 +562,8 @@ public class Requirements {
         // Limit protein per meal to protein target per day.
         return getProteinLimitsPerDay().map(new Function<Limits2, ScoreParams>() {
             @Override
-            public ScoreParams apply(final Limits2 limits) {
-                return scoreParamsUORUC(limits.getMax(), DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
+            public ScoreParams apply(final Limits2 limitsPerDay) {
+                return scoreParamsUT(limitsPerDay.getMax(), DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }

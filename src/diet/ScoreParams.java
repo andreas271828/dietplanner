@@ -15,43 +15,37 @@ public class ScoreParams {
         return new ScoreParams(lowerCritical, lowerOptimal, upperOptimal, upperCritical, weight);
     }
 
-    public static ScoreParams scoreParamsORC(final double optimal,
-                                             final double relCritical,
-                                             final double weight) {
-        return scoreParams((1 - relCritical) * optimal, optimal, optimal, (1 + relCritical) * optimal, weight);
+    public static ScoreParams scoreParamsL(final double lowerCritical,
+                                           final double lowerOptimal,
+                                           final double weight) {
+        return scoreParams(lowerCritical, lowerOptimal, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, weight);
     }
 
-    public static ScoreParams scoreParamsRORC(final double optimalCentre,
-                                              final double relOptimal,
-                                              final double relCritical,
-                                              final double weight) {
-        return scoreParams((1 - relCritical) * optimalCentre, (1 - relOptimal) * optimalCentre,
-                (1 + relOptimal) * optimalCentre, (1 + relCritical) * optimalCentre, weight);
+    public static ScoreParams scoreParamsU(final double upperOptimal,
+                                           final double upperCritical,
+                                           final double weight) {
+        return scoreParams(0.0, 0.0, upperOptimal, upperCritical, weight);
     }
 
-    public static ScoreParams scoreParamsLOUORC(final double lowerOptimal,
-                                                final double upperOptimal,
-                                                final double relCritical,
-                                                final double weight) {
-        return scoreParams((1 - relCritical) * lowerOptimal, lowerOptimal, upperOptimal,
-                (1 + relCritical) * upperOptimal, weight);
+    public static ScoreParams scoreParamsT(final double lowerOptimal,
+                                           final double upperOptimal,
+                                           final double tolerance,
+                                           final double weight) {
+        return scoreParams(lowerCritical(lowerOptimal, tolerance), lowerOptimal,
+                upperOptimal, upperCritical(upperOptimal, tolerance), weight);
     }
 
-    public static ScoreParams scoreParamsUC(final double upperCritical,
+    public static ScoreParams scoreParamsLT(final double lowerOptimal,
+                                            final double tolerance,
                                             final double weight) {
-        return scoreParams(0, 0, 0, upperCritical, weight);
+        return scoreParams(lowerCritical(lowerOptimal, tolerance), lowerOptimal,
+                Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, weight);
     }
 
-    public static ScoreParams scoreParamsLORLC(final double lowerOptimal,
-                                               final double relLowerCritical,
-                                               final double weight) {
-        return scoreParams((1 - relLowerCritical) * lowerOptimal, lowerOptimal, Double.MAX_VALUE, Double.MAX_VALUE, weight);
-    }
-
-    public static ScoreParams scoreParamsUORUC(final double upperOptimal,
-                                               final double relUpperCritical,
-                                               final double weight) {
-        return scoreParams(0.0, 0.0, upperOptimal, (1.0 + relUpperCritical) * upperOptimal, weight);
+    public static ScoreParams scoreParamsUT(final double upperOptimal,
+                                            final double tolerance,
+                                            final double weight) {
+        return scoreParams(0.0, 0.0, upperOptimal, upperCritical(upperOptimal, tolerance), weight);
     }
 
     private ScoreParams(final double lowerCritical,
@@ -84,5 +78,13 @@ public class ScoreParams {
 
     public double getWeight() {
         return weight;
+    }
+
+    public static double lowerCritical(final double lowerOptimal, final double tolerance) {
+        return (1.0 - tolerance) * lowerOptimal;
+    }
+
+    public static double upperCritical(final double upperOptimal, final double tolerance) {
+        return (1.0 + tolerance) * upperOptimal;
     }
 }
