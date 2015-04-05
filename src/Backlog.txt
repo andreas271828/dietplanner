@@ -1,3 +1,6 @@
+-   Score ID selected for optimisation could be selected probabilistically.
+    Those with worse scores (best? the one in total best?) are selected more often.
+    Use direct search during optimisation and not just at the beginning?
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
     Adjust weights and prices.

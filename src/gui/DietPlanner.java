@@ -35,7 +35,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread2();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -137,6 +137,100 @@ public class DietPlanner extends JFrame {
                         return evaluation(dietPlan1.mate(dietPlan2, 0.001), evaluationFunction);
                     }
                 }, populationMixRate);
+            }
+
+            @Override
+            protected void process(final List<Optional<Evaluation<DietPlan>>> chunks) {
+                best = chunks.get(chunks.size() - 1);
+                best.ifPresent(new Consumer<Evaluation<DietPlan>>() {
+                    @Override
+                    public void accept(final Evaluation<DietPlan> evaluation) {
+                        System.out.println("Best score: " + evaluation.getTotalScore());
+                    }
+                });
+            }
+        };
+    }
+
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> createOptimizationThread2() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                final int maxPopulationSize = 100;
+                final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>(maxPopulationSize);
+                final ArrayList<Pair<Requirement, Integer>> scoreIds = REQUIREMENTS.getScoreIds();
+                final DietPlan startDietPlan = createStartDietPlan();
+                final Function<DietPlan, Scores> evaluationFunction = new Function<DietPlan, Scores>() {
+                    @Override
+                    public Scores apply(final DietPlan dietPlan) {
+                        return dietPlan.getScores(REQUIREMENTS);
+                    }
+                };
+                while (!isCancelled()) {
+                    final int scoreIdsSize = scoreIds.size();
+                    final int scoreIdIndex = RANDOM.nextInt(scoreIdsSize + 1);
+                    final Optional<Pair<Requirement, Integer>> maybeScoreId = scoreIdIndex < scoreIdsSize ?
+                            Optional.of(scoreIds.get(scoreIdIndex)) :
+                            Optional.<Pair<Requirement, Integer>>empty();
+                    final int populationSize = population.size();
+                    if (populationSize < maxPopulationSize) {
+                        final Evaluation<DietPlan> evaluation = createIndividual(startDietPlan, evaluationFunction,
+                                maybeScoreId, populationSize);
+                        population.add(evaluation);
+                        if (!best.isPresent() || evaluation.getTotalScore() > best.get().getTotalScore()) {
+                            best = Optional.of(evaluation);
+                            publish(best);
+                        }
+                    } else {
+                        final int parentIndex1 = RANDOM.nextInt(populationSize);
+                        final int parentIndex2 = RANDOM.nextInt(populationSize);
+                        if (parentIndex1 != parentIndex2) {
+                            final DietPlan parent1 = population.get(parentIndex1).getObject();
+                            final DietPlan parent2 = population.get(parentIndex2).getObject();
+                            final DietPlan offspring = parent1.mate(parent2, 0.001);
+                            final Evaluation<DietPlan> evaluation = evaluation(offspring, evaluationFunction);
+                            Evaluation<DietPlan> worst = evaluation;
+                            for (final Evaluation<DietPlan> cur : population) {
+                                final Evaluation<DietPlan> curWorst = worst;
+                                final Boolean curIsWorst = maybeScoreId.map(new Function<Pair<Requirement, Integer>, Boolean>() {
+                                    @Override
+                                    public Boolean apply(final Pair<Requirement, Integer> scoreId) {
+                                        final double curScore = cur.getScore(scoreId).getScore();
+                                        final double worstScore = curWorst.getScore(scoreId).getScore();
+                                        if (curScore == worstScore) {
+                                            final double curTotalScore = cur.getTotalScore();
+                                            final double worstTotalScore = curWorst.getTotalScore();
+                                            return curTotalScore == worstTotalScore ?
+                                                    RANDOM.nextBoolean() :
+                                                    curTotalScore < worstTotalScore;
+                                        } else {
+                                            return curScore < worstScore;
+                                        }
+                                    }
+                                }).orElseGet(new Supplier<Boolean>() {
+                                    @Override
+                                    public Boolean get() {
+                                        final double curScore = cur.getTotalScore();
+                                        final double worstScore = curWorst.getTotalScore();
+                                        return curScore == worstScore ? RANDOM.nextBoolean() : curScore < worstScore;
+                                    }
+                                });
+                                if (curIsWorst) {
+                                    worst = cur;
+                                }
+                            }
+                            if (evaluation != worst) {
+                                population.remove(worst);
+                                population.add(evaluation);
+                                if (!best.isPresent() || evaluation.getTotalScore() > best.get().getTotalScore()) {
+                                    best = Optional.of(evaluation);
+                                    publish(best);
+                                }
+                            }
+                        }
+                    }
+                }
+                return best;
             }
 
             @Override

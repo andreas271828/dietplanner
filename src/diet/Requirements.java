@@ -1,9 +1,12 @@
 package diet;
 
 import util.Limits2;
+import util.Pair;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static diet.FoodProperty.FAT_ENERGY;
@@ -11,6 +14,7 @@ import static diet.PersonalDetails.Gender.FEMALE;
 import static diet.PersonalDetails.Gender.MALE;
 import static diet.ScoreParams.*;
 import static util.Limits2.limits2;
+import static util.Pair.pair;
 
 public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
@@ -75,6 +79,22 @@ public class Requirements {
 
     public int getNumberOfMeals() {
         return numberOfMeals;
+    }
+
+    public ArrayList<Pair<Requirement, Integer>> getScoreIds() {
+        final ArrayList<Pair<Requirement, Integer>> scoreIds = new ArrayList<Pair<Requirement, Integer>>();
+        requirements.forEach(new BiConsumer<Requirement, Optional<ScoreParams>>() {
+            @Override
+            public void accept(final Requirement requirement, final Optional<ScoreParams> scoreParams) {
+                if (scoreParams.isPresent()) {
+                    final int numberOfScoreIds = requirement.isMealRequirement() ? numberOfMeals : 1;
+                    for (int i = 0; i < numberOfScoreIds; ++i) {
+                        scoreIds.add(pair(requirement, i));
+                    }
+                }
+            }
+        });
+        return scoreIds;
     }
 
     public Optional<ScoreParams> getParams(final Requirement requirement) {
