@@ -102,22 +102,22 @@ public class DietPlan {
         return variableIngredients;
     }
 
-    public DietPlan getWithChange(final int mealIndex, final FoodItem ingredient, final double change) {
+    public DietPlan getWithChange(final int mealIndex, final FoodItem ingredient, final double newAmount) {
         // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
         final int numberOfMeals = meals.size();
         final ArrayList<Meal> changedMeals = new ArrayList<Meal>(numberOfMeals);
         changedMeals.addAll(meals.subList(0, mealIndex));
-        changedMeals.add(meals.get(mealIndex).getWithChange(ingredient, change));
+        changedMeals.add(meals.get(mealIndex).getWithChange(ingredient, newAmount));
         changedMeals.addAll(meals.subList(mealIndex + 1, numberOfMeals));
         return new DietPlan(changedMeals);
     }
 
     public Optional<DietPlan> addPortion(final int mealIndex, final FoodItem ingredient) {
         final Meal meal = meals.get(mealIndex);
-        final double curAmount = meal.getAmount(ingredient);
-        final double maxAmount = meal.getTemplate().getRoundedMaxAmount(ingredient);
-        if (curAmount < maxAmount) {
-            final DietPlan dietPlan = getWithChange(mealIndex, ingredient, ingredient.getPortionAmount());
+        final double newAmount = meal.getAmount(ingredient) + ingredient.getPortionAmount();
+        final double maxAmount = meal.getTemplate().getMaxAmount(ingredient);
+        if (newAmount <= maxAmount) {
+            final DietPlan dietPlan = getWithChange(mealIndex, ingredient, newAmount);
             return Optional.of(dietPlan);
         } else {
             return Optional.empty();
@@ -126,6 +126,22 @@ public class DietPlan {
 
     public Optional<DietPlan> addPortion(final Pair<Integer, FoodItem> ingredientId) {
         return addPortion(ingredientId.a(), ingredientId.b());
+    }
+
+    public Optional<DietPlan> removePortion(final int mealIndex, final FoodItem ingredient) {
+        final Meal meal = meals.get(mealIndex);
+        final double newAmount = meal.getAmount(ingredient) - ingredient.getPortionAmount();
+        final double minAmount = meal.getTemplate().getMinAmount(ingredient);
+        if (newAmount >= minAmount) {
+            final DietPlan dietPlan = getWithChange(mealIndex, ingredient, newAmount);
+            return Optional.of(dietPlan);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<DietPlan> removePortion(final Pair<Integer, FoodItem> ingredientId) {
+        return removePortion(ingredientId.a(), ingredientId.b());
     }
 
     public DietPlan mate(final DietPlan partner, final double mutationRate) {

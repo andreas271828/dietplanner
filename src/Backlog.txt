@@ -1,3 +1,4 @@
+-   See handwritten notes.
 -   Score ID selected for optimisation could be selected probabilistically.
     Those with worse scores (best? the one in total best?) are selected more often.
     Use direct search during optimisation and not just at the beginning?

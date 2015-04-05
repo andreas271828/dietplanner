@@ -11,9 +11,9 @@ public class ItemList<K extends Enum<K>> {
         this.items = new EnumMap<K, Double>(itemType);
     }
 
-    public ItemList(final ItemList<K> itemList, final K item, double change) {
+    public ItemList(final ItemList<K> itemList, final K item, double newAmount) {
         items = itemList.items.clone();
-        set(item, get(item) + change);
+        set(item, newAmount);
     }
 
     public double get(final K item) {

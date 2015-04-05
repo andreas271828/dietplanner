@@ -35,7 +35,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread2();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread3();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -98,12 +98,7 @@ public class DietPlanner extends JFrame {
                 final int numberOfPopulations = 5;
                 final double populationMixRate = 0.01;
                 final DietPlan startDietPlan = createStartDietPlan();
-                final Function<DietPlan, Scores> evaluationFunction = new Function<DietPlan, Scores>() {
-                    @Override
-                    public Scores apply(final DietPlan dietPlan) {
-                        return dietPlan.getScores(REQUIREMENTS);
-                    }
-                };
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
                 return optimize(new Supplier<ArrayList<Evaluation<DietPlan>>>() {
                     @Override
                     public ArrayList<Evaluation<DietPlan>> get() {
@@ -160,12 +155,7 @@ public class DietPlanner extends JFrame {
                 final ArrayList<Evaluation<DietPlan>> population = new ArrayList<Evaluation<DietPlan>>(maxPopulationSize);
                 final ArrayList<Pair<Requirement, Integer>> scoreIds = REQUIREMENTS.getScoreIds();
                 final DietPlan startDietPlan = createStartDietPlan();
-                final Function<DietPlan, Scores> evaluationFunction = new Function<DietPlan, Scores>() {
-                    @Override
-                    public Scores apply(final DietPlan dietPlan) {
-                        return dietPlan.getScores(REQUIREMENTS);
-                    }
-                };
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
                 while (!isCancelled()) {
                     final int scoreIdsSize = scoreIds.size();
                     final int scoreIdIndex = RANDOM.nextInt(scoreIdsSize + 1);
@@ -246,6 +236,82 @@ public class DietPlanner extends JFrame {
         };
     }
 
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> createOptimizationThread3() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                final ArrayList<Pair<Requirement, Integer>> scoreIds = REQUIREMENTS.getScoreIds();
+                final DietPlan startDietPlan = createStartDietPlan();
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
+                Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
+                boolean continueAdding = true;
+                while (continueAdding) {
+                    final DietPlan dietPlan = evaluation.getObject();
+                    final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+                    continueAdding = false;
+                    while (!continueAdding && !variableIngredients.isEmpty()) {
+                        final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                        final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                        final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
+                        if (maybeNewDietPlan.isPresent()) {
+                            final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
+                            for (final Pair<Requirement, Integer> scoreId : scoreIds) {
+                                if (newEvaluation.getScore(scoreId).getScore() > evaluation.getScore(scoreId).getScore()) {
+                                    System.out.println("Found better (+): " + scoreId);
+                                    evaluation = newEvaluation;
+                                    continueAdding = true;
+                                }
+                            }
+                        }
+                        if (!continueAdding) {
+                            variableIngredients.remove(ingredientIndex);
+                        }
+                    }
+                }
+                best = Optional.of(evaluation);
+                publish(best);
+
+                boolean continueRemoving = true;
+                while (continueRemoving) {
+                    final DietPlan dietPlan = evaluation.getObject();
+                    final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+                    continueRemoving = false;
+                    while (!continueRemoving && !variableIngredients.isEmpty()) {
+                        final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                        final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                        final Optional<DietPlan> maybeNewDietPlan = dietPlan.removePortion(ingredientId);
+                        if (maybeNewDietPlan.isPresent()) {
+                            final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
+                            if (newEvaluation.getTotalScore() > evaluation.getTotalScore()) {
+                                System.out.println("Found better (-): " + evaluation.getTotalScore());
+                                evaluation = newEvaluation;
+                                continueRemoving = true;
+                            }
+                        }
+                        if (!continueRemoving) {
+                            variableIngredients.remove(ingredientIndex);
+                        }
+                    }
+                }
+                best = Optional.of(evaluation);
+                publish(best);
+
+                return best;
+            }
+
+            @Override
+            protected void process(final List<Optional<Evaluation<DietPlan>>> chunks) {
+                best = chunks.get(chunks.size() - 1);
+                best.ifPresent(new Consumer<Evaluation<DietPlan>>() {
+                    @Override
+                    public void accept(final Evaluation<DietPlan> evaluation) {
+                        System.out.println("Best score: " + evaluation.getTotalScore());
+                    }
+                });
+            }
+        };
+    }
+
     private static ArrayList<MealTemplate> getMealTemplates() {
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
         mealTemplates.add(MUESLI);
@@ -265,6 +331,15 @@ public class DietPlanner extends JFrame {
             meals.add(MEAL_TEMPLATES.get(mealTemplateIndex).getMinimalMeal());
         }
         return dietPlan(meals);
+    }
+
+    private Function<DietPlan, Scores> getEvaluationFunction() {
+        return new Function<DietPlan, Scores>() {
+            @Override
+            public Scores apply(final DietPlan dietPlan) {
+                return dietPlan.getScores(REQUIREMENTS);
+            }
+        };
     }
 
     private static Evaluation<DietPlan> createIndividual(final DietPlan startDietPlan,

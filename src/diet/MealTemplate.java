@@ -30,12 +30,12 @@ public enum MealTemplate {
         return ingredients;
     }
 
-    public double getRoundedMinAmount(final FoodItem ingredient) {
-        return ingredients.getRoundedMinAmount(ingredient);
+    public double getMinAmount(final FoodItem ingredient) {
+        return ingredients.getMinAmount(ingredient);
     }
 
-    public double getRoundedMaxAmount(final FoodItem ingredient) {
-        return ingredients.getRoundedMaxAmount(ingredient);
+    public double getMaxAmount(final FoodItem ingredient) {
+        return ingredients.getMaxAmount(ingredient);
     }
 
     public Meal getMinimalMeal() {

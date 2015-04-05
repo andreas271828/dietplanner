@@ -63,9 +63,9 @@ public class Meal {
         return costs.get();
     }
 
-    public Meal getWithChange(final FoodItem ingredient, final double change) {
+    public Meal getWithChange(final FoodItem ingredient, final double newAmount) {
         // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
-        final FoodItems ingredients = getIngredients().getWithChange(ingredient, change);
+        final FoodItems ingredients = getIngredients().getWithChange(ingredient, newAmount);
         return new Meal(getTemplate(), ingredients);
     }
 
