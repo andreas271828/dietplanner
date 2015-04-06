@@ -237,32 +237,44 @@ public class DietPlanner extends JFrame {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
                 // TODO: It might not be a good idea to manipulate a member variable (best) here.
+                // TODO: Maybe save evaluation of startDietPlan and pass it to createIndividual2. That might save us from evaluating the diet plan more often than necessary.
                 final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
                 DietPlan startDietPlan = createStartDietPlan();
                 while (!isCancelled()) {
-                    final Evaluation<DietPlan> evaluation = createIndividual2(startDietPlan, evaluationFunction, 0);
-                    if (!best.isPresent() || evaluation.getTotalScore() > best.get().getTotalScore()) {
-                        best = Optional.of(evaluation);
-                        publish(evaluation);
+                    final Evaluation<DietPlan> evaluation1 = createIndividual2(startDietPlan, evaluationFunction, 0);
+                    if (!best.isPresent() || evaluation1.getTotalScore() > best.get().getTotalScore()) {
+                        best = Optional.of(evaluation1);
+                        publish(evaluation1);
                     }
 
                     // Determine new startDietPlan
-                    final ArrayList<Meal> newMeals = new ArrayList<Meal>();
-                    final ArrayList<Meal> bestMeals = best.get().getObject().getMeals();
-                    for (final Meal meal : bestMeals) {
-                        final FoodItems foodItems = new FoodItems();
-                        final MealTemplate mealTemplate = meal.getTemplate();
-                        meal.getIngredients().forEach(new BiConsumer<FoodItem, Double>() {
-                            @Override
-                            public void accept(final FoodItem foodItem, final Double amount) {
-                                final double minAmount = mealTemplate.getMinAmount(foodItem);
-                                final double newAmount = foodItem.getRandomAmount(minAmount, amount);
-                                foodItems.set(foodItem, newAmount);
+                    // TODO: Loop over actual ingredients, not the whole list of possible ingrdients.
+                    // TODO: Update and publish best during this process.
+                    Evaluation<DietPlan> evaluation2 = evaluation1;
+                    boolean continueRemoving = true;
+                    while (continueRemoving) {
+                        final DietPlan dietPlan = evaluation2.getObject();
+                        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+                        final double totalScore = evaluation2.getTotalScore();
+                        continueRemoving = false;
+                        while (!continueRemoving && !variableIngredients.isEmpty()) {
+                            final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                            final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                            final Optional<DietPlan> maybeNewDietPlan = dietPlan.removePortion(ingredientId);
+                            if (maybeNewDietPlan.isPresent()) {
+                                final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
+                                final double newScore = newEvaluation.getTotalScore();
+                                if (newScore > totalScore) {
+                                    evaluation2 = newEvaluation;
+                                    continueRemoving = true;
+                                }
                             }
-                        });
-                        newMeals.add(meal(mealTemplate, foodItems));
+                            if (!continueRemoving) {
+                                variableIngredients.remove(ingredientIndex);
+                            }
+                        }
                     }
-                    startDietPlan = dietPlan(newMeals);
+                    startDietPlan = evaluation2.getObject();
                 }
 
                 return best;
