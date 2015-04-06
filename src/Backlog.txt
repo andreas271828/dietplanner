@@ -1,6 +1,8 @@
 -   With new algorithm:
+    For new start diet plan, remove random ingredients (try all variable ingredients) while total score is improving.
     Vary how much of a diet plan I change. Fine-tune in local maximum, find better local maximum in region, ..., even change whole meals to different meal templates.
     Several optimisations can be run in parallel and the more successful ones get more processing power (create new ones randomly or with mating -> evolutionary algorithm).
+    At the end I could remove ingredients to increase the total score at the cost of individual scores.
 -   Use different star diet plans / replace whole meals during optimisation.
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
