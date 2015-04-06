@@ -20,6 +20,7 @@ import static diet.MealTemplate.*;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
+import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
     private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 21);
@@ -35,7 +36,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread3();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -243,59 +244,48 @@ public class DietPlanner extends JFrame {
                 final ArrayList<Pair<Requirement, Integer>> scoreIds = REQUIREMENTS.getScoreIds();
                 final DietPlan startDietPlan = createStartDietPlan();
                 final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
-                Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
-                boolean continueAdding = true;
-                while (continueAdding) {
-                    final DietPlan dietPlan = evaluation.getObject();
-                    final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
-                    continueAdding = false;
-                    while (!continueAdding && !variableIngredients.isEmpty()) {
+                Optional<Evaluation<DietPlan>> maybeImproved = Optional.of(evaluation(startDietPlan, evaluationFunction));
+                while (!isCancelled() && maybeImproved.isPresent()) {
+                    best = maybeImproved;
+                    publish(best);
+                    maybeImproved = Optional.empty();
+
+                    final Evaluation<DietPlan> bestEvaluation = best.get();
+                    final DietPlan bestDietPlan = bestEvaluation.getObject();
+                    final ArrayList<Pair<Integer, FoodItem>> variableIngredients = bestDietPlan.getVariableIngredients();
+                    while (!maybeImproved.isPresent() && !variableIngredients.isEmpty()) {
                         final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
                         final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
-                        final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
-                        if (maybeNewDietPlan.isPresent()) {
-                            final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
-                            for (final Pair<Requirement, Integer> scoreId : scoreIds) {
-                                if (newEvaluation.getScore(scoreId).getScore() > evaluation.getScore(scoreId).getScore()) {
-                                    System.out.println("Found better (+): " + scoreId);
-                                    evaluation = newEvaluation;
-                                    continueAdding = true;
+                        final Optional<DietPlan> maybeNewDietPlan1 = bestDietPlan.addPortion(ingredientId);
+                        final Optional<Pair<Evaluation<DietPlan>, Double>> maybeImprovement1 =
+                                getImprovement(maybeNewDietPlan1, bestEvaluation, evaluationFunction, scoreIds);
+                        final Optional<DietPlan> maybeNewDietPlan2 = bestDietPlan.removePortion(ingredientId);
+                        final Optional<Pair<Evaluation<DietPlan>, Double>> maybeImprovement2 =
+                                getImprovement(maybeNewDietPlan2, bestEvaluation, evaluationFunction, scoreIds);
+                        maybeImproved = maybeImprovement1.map(new Function<Pair<Evaluation<DietPlan>, Double>, Evaluation<DietPlan>>() {
+                            @Override
+                            public Evaluation<DietPlan> apply(final Pair<Evaluation<DietPlan>, Double> improvement1) {
+                                return maybeImprovement2.map(new Function<Pair<Evaluation<DietPlan>, Double>, Evaluation<DietPlan>>() {
+                                    @Override
+                                    public Evaluation<DietPlan> apply(final Pair<Evaluation<DietPlan>, Double> improvement2) {
+                                        return improvement1.b() >= improvement2.b() ? improvement1.a() : improvement2.a();
+                                    }
+                                }).orElse(improvement1.a());
+                            }
+                        });
+                        if (!maybeImproved.isPresent()) {
+                            maybeImproved = maybeImprovement2.map(new Function<Pair<Evaluation<DietPlan>, Double>, Evaluation<DietPlan>>() {
+                                @Override
+                                public Evaluation<DietPlan> apply(final Pair<Evaluation<DietPlan>, Double> improvement2) {
+                                    return improvement2.a();
                                 }
-                            }
+                            });
                         }
-                        if (!continueAdding) {
+                        if (!maybeImproved.isPresent()) {
                             variableIngredients.remove(ingredientIndex);
                         }
                     }
                 }
-                best = Optional.of(evaluation);
-                publish(best);
-
-                boolean continueRemoving = true;
-                while (continueRemoving) {
-                    final DietPlan dietPlan = evaluation.getObject();
-                    final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
-                    continueRemoving = false;
-                    while (!continueRemoving && !variableIngredients.isEmpty()) {
-                        final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
-                        final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
-                        final Optional<DietPlan> maybeNewDietPlan = dietPlan.removePortion(ingredientId);
-                        if (maybeNewDietPlan.isPresent()) {
-                            final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
-                            if (newEvaluation.getTotalScore() > evaluation.getTotalScore()) {
-                                System.out.println("Found better (-): " + evaluation.getTotalScore());
-                                evaluation = newEvaluation;
-                                continueRemoving = true;
-                            }
-                        }
-                        if (!continueRemoving) {
-                            variableIngredients.remove(ingredientIndex);
-                        }
-                    }
-                }
-                best = Optional.of(evaluation);
-                publish(best);
-
                 return best;
             }
 
@@ -310,6 +300,31 @@ public class DietPlanner extends JFrame {
                 });
             }
         };
+    }
+
+    private static Optional<Pair<Evaluation<DietPlan>, Double>> getImprovement(
+            final Optional<DietPlan> maybeNewDietPlan,
+            final Evaluation<DietPlan> originalDietPlan,
+            final Function<DietPlan, Scores> evaluationFunction,
+            final ArrayList<Pair<Requirement, Integer>> scoreIds) {
+        return maybeNewDietPlan.flatMap(new Function<DietPlan, Optional<Pair<Evaluation<DietPlan>, Double>>>() {
+            @Override
+            public Optional<Pair<Evaluation<DietPlan>, Double>> apply(final DietPlan newDietPlan) {
+                final Evaluation<DietPlan> newEvaluation = evaluation(newDietPlan, evaluationFunction);
+                double maxImprovement = 0.0;
+                for (final Pair<Requirement, Integer> scoreId : scoreIds) {
+                    final double score = originalDietPlan.getScore(scoreId).getScore();
+                    final double newScore = newEvaluation.getScore(scoreId).getScore();
+                    final double improvement = newScore - score;
+                    if (improvement > maxImprovement) {
+                        maxImprovement = improvement;
+                    }
+                }
+                return maxImprovement > 0.0 ?
+                        Optional.of(pair(newEvaluation, maxImprovement)) :
+                        Optional.<Pair<Evaluation<DietPlan>, Double>>empty();
+            }
+        });
     }
 
     private static ArrayList<MealTemplate> getMealTemplates() {
@@ -378,6 +393,7 @@ public class DietPlanner extends JFrame {
                                                           final Function<DietPlan, Scores> evaluationFunction,
                                                           final int index) {
         final ArrayList<Pair<Requirement, Integer>> scoreIds = REQUIREMENTS.getScoreIds();
+        final int scoreIdsSize = scoreIds.size();
         Evaluation<DietPlan> evaluation = evaluation(startDietPlan, evaluationFunction);
         boolean continueAdding = true;
         while (continueAdding) {
@@ -390,7 +406,8 @@ public class DietPlanner extends JFrame {
                 final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
                 if (maybeNewDietPlan.isPresent()) {
                     final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
-                    for (final Pair<Requirement, Integer> scoreId : scoreIds) {
+                    for (int i = 0; !continueAdding && i < scoreIdsSize; ++i) {
+                        final Pair<Requirement, Integer> scoreId = scoreIds.get(i);
                         if (newEvaluation.getScore(scoreId).getScore() > evaluation.getScore(scoreId).getScore()) {
                             evaluation = newEvaluation;
                             continueAdding = true;
