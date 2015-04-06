@@ -11,16 +11,17 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static diet.DietPlan.dietPlan;
+import static diet.Meal.meal;
 import static diet.MealTemplate.*;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
-import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
     private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 21);
@@ -36,7 +37,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> optimizationThread = createOptimizationThread3();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread3();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -90,8 +91,8 @@ public class DietPlanner extends JFrame {
         optimizationThread.execute();
     }
 
-    private SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> createOptimizationThread() {
-        return new SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>>() {
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
                 final int startPopulationSize = 20;
@@ -115,10 +116,10 @@ public class DietPlanner extends JFrame {
                     public int compare(final Evaluation<DietPlan> evaluation1, final Evaluation<DietPlan> evaluation2) {
                         return Double.compare(evaluation2.getTotalScore(), evaluation1.getTotalScore()); // Descending order
                     }
-                }, new Consumer<Optional<Evaluation<DietPlan>>>() {
+                }, new Consumer<Evaluation<DietPlan>>() {
                     @Override
-                    public void accept(final Optional<Evaluation<DietPlan>> maybeEvaluation) {
-                        publish(maybeEvaluation);
+                    public void accept(final Evaluation<DietPlan> evaluation) {
+                        publish(evaluation);
                     }
                 }, new Supplier<Boolean>() {
                     @Override
@@ -136,20 +137,17 @@ public class DietPlanner extends JFrame {
             }
 
             @Override
-            protected void process(final List<Optional<Evaluation<DietPlan>>> chunks) {
-                best = chunks.get(chunks.size() - 1);
-                best.ifPresent(new Consumer<Evaluation<DietPlan>>() {
-                    @Override
-                    public void accept(final Evaluation<DietPlan> evaluation) {
-                        System.out.println("Best score: " + evaluation.getTotalScore());
-                    }
-                });
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                best = Optional.of(chunks.get(chunks.size() - 1));
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    System.out.println("Best score: " + evaluation.getTotalScore());
+                }
             }
         };
     }
 
-    private SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> createOptimizationThread2() {
-        return new SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>>() {
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread2() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
                 final int maxPopulationSize = 100;
@@ -170,7 +168,7 @@ public class DietPlanner extends JFrame {
                         population.add(evaluation);
                         if (!best.isPresent() || evaluation.getTotalScore() > best.get().getTotalScore()) {
                             best = Optional.of(evaluation);
-                            publish(best);
+                            publish(evaluation);
                         }
                     } else {
                         final int parentIndex1 = RANDOM.nextInt(populationSize);
@@ -215,7 +213,7 @@ public class DietPlanner extends JFrame {
                                 population.add(evaluation);
                                 if (!best.isPresent() || evaluation.getTotalScore() > best.get().getTotalScore()) {
                                     best = Optional.of(evaluation);
-                                    publish(best);
+                                    publish(evaluation);
                                 }
                             }
                         }
@@ -225,106 +223,58 @@ public class DietPlanner extends JFrame {
             }
 
             @Override
-            protected void process(final List<Optional<Evaluation<DietPlan>>> chunks) {
-                best = chunks.get(chunks.size() - 1);
-                best.ifPresent(new Consumer<Evaluation<DietPlan>>() {
-                    @Override
-                    public void accept(final Evaluation<DietPlan> evaluation) {
-                        System.out.println("Best score: " + evaluation.getTotalScore());
-                    }
-                });
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                best = Optional.of(chunks.get(chunks.size() - 1));
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    System.out.println("Best score: " + evaluation.getTotalScore());
+                }
             }
         };
     }
 
-    private SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>> createOptimizationThread3() {
-        return new SwingWorker<Optional<Evaluation<DietPlan>>, Optional<Evaluation<DietPlan>>>() {
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread3() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
-                final ArrayList<Pair<Requirement, Integer>> scoreIds = REQUIREMENTS.getScoreIds();
-                final DietPlan startDietPlan = createStartDietPlan();
+                // TODO: It might not be a good idea to manipulate a member variable (best) here.
                 final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
-                Optional<Evaluation<DietPlan>> maybeImproved = Optional.of(evaluation(startDietPlan, evaluationFunction));
-                while (!isCancelled() && maybeImproved.isPresent()) {
-                    best = maybeImproved;
-                    publish(best);
-                    maybeImproved = Optional.empty();
+                DietPlan startDietPlan = createStartDietPlan();
+                while (!isCancelled()) {
+                    final Evaluation<DietPlan> evaluation = createIndividual2(startDietPlan, evaluationFunction, 0);
+                    if (!best.isPresent() || evaluation.getTotalScore() > best.get().getTotalScore()) {
+                        best = Optional.of(evaluation);
+                        publish(evaluation);
+                    }
 
-                    final Evaluation<DietPlan> bestEvaluation = best.get();
-                    final DietPlan bestDietPlan = bestEvaluation.getObject();
-                    final ArrayList<Pair<Integer, FoodItem>> variableIngredients = bestDietPlan.getVariableIngredients();
-                    while (!maybeImproved.isPresent() && !variableIngredients.isEmpty()) {
-                        final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
-                        final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
-                        final Optional<DietPlan> maybeNewDietPlan1 = bestDietPlan.addPortion(ingredientId);
-                        final Optional<Pair<Evaluation<DietPlan>, Double>> maybeImprovement1 =
-                                getImprovement(maybeNewDietPlan1, bestEvaluation, evaluationFunction, scoreIds);
-                        final Optional<DietPlan> maybeNewDietPlan2 = bestDietPlan.removePortion(ingredientId);
-                        final Optional<Pair<Evaluation<DietPlan>, Double>> maybeImprovement2 =
-                                getImprovement(maybeNewDietPlan2, bestEvaluation, evaluationFunction, scoreIds);
-                        maybeImproved = maybeImprovement1.map(new Function<Pair<Evaluation<DietPlan>, Double>, Evaluation<DietPlan>>() {
+                    // Determine new startDietPlan
+                    final ArrayList<Meal> newMeals = new ArrayList<Meal>();
+                    final ArrayList<Meal> bestMeals = best.get().getObject().getMeals();
+                    for (final Meal meal : bestMeals) {
+                        final FoodItems foodItems = new FoodItems();
+                        final MealTemplate mealTemplate = meal.getTemplate();
+                        meal.getIngredients().forEach(new BiConsumer<FoodItem, Double>() {
                             @Override
-                            public Evaluation<DietPlan> apply(final Pair<Evaluation<DietPlan>, Double> improvement1) {
-                                return maybeImprovement2.map(new Function<Pair<Evaluation<DietPlan>, Double>, Evaluation<DietPlan>>() {
-                                    @Override
-                                    public Evaluation<DietPlan> apply(final Pair<Evaluation<DietPlan>, Double> improvement2) {
-                                        return improvement1.b() >= improvement2.b() ? improvement1.a() : improvement2.a();
-                                    }
-                                }).orElse(improvement1.a());
+                            public void accept(final FoodItem foodItem, final Double amount) {
+                                final double minAmount = mealTemplate.getMinAmount(foodItem);
+                                final double newAmount = foodItem.getRandomAmount(minAmount, amount);
+                                foodItems.set(foodItem, newAmount);
                             }
                         });
-                        if (!maybeImproved.isPresent()) {
-                            maybeImproved = maybeImprovement2.map(new Function<Pair<Evaluation<DietPlan>, Double>, Evaluation<DietPlan>>() {
-                                @Override
-                                public Evaluation<DietPlan> apply(final Pair<Evaluation<DietPlan>, Double> improvement2) {
-                                    return improvement2.a();
-                                }
-                            });
-                        }
-                        if (!maybeImproved.isPresent()) {
-                            variableIngredients.remove(ingredientIndex);
-                        }
+                        newMeals.add(meal(mealTemplate, foodItems));
                     }
+                    startDietPlan = dietPlan(newMeals);
                 }
+
                 return best;
             }
 
             @Override
-            protected void process(final List<Optional<Evaluation<DietPlan>>> chunks) {
-                best = chunks.get(chunks.size() - 1);
-                best.ifPresent(new Consumer<Evaluation<DietPlan>>() {
-                    @Override
-                    public void accept(final Evaluation<DietPlan> evaluation) {
-                        System.out.println("Best score: " + evaluation.getTotalScore());
-                    }
-                });
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    System.out.println("Best score: " + evaluation.getTotalScore());
+                }
             }
         };
-    }
-
-    private static Optional<Pair<Evaluation<DietPlan>, Double>> getImprovement(
-            final Optional<DietPlan> maybeNewDietPlan,
-            final Evaluation<DietPlan> originalDietPlan,
-            final Function<DietPlan, Scores> evaluationFunction,
-            final ArrayList<Pair<Requirement, Integer>> scoreIds) {
-        return maybeNewDietPlan.flatMap(new Function<DietPlan, Optional<Pair<Evaluation<DietPlan>, Double>>>() {
-            @Override
-            public Optional<Pair<Evaluation<DietPlan>, Double>> apply(final DietPlan newDietPlan) {
-                final Evaluation<DietPlan> newEvaluation = evaluation(newDietPlan, evaluationFunction);
-                double maxImprovement = 0.0;
-                for (final Pair<Requirement, Integer> scoreId : scoreIds) {
-                    final double score = originalDietPlan.getScore(scoreId).getScore();
-                    final double newScore = newEvaluation.getScore(scoreId).getScore();
-                    final double improvement = newScore - score;
-                    if (improvement > maxImprovement) {
-                        maxImprovement = improvement;
-                    }
-                }
-                return maxImprovement > 0.0 ?
-                        Optional.of(pair(newEvaluation, maxImprovement)) :
-                        Optional.<Pair<Evaluation<DietPlan>, Double>>empty();
-            }
-        });
     }
 
     private static ArrayList<MealTemplate> getMealTemplates() {
@@ -419,7 +369,7 @@ public class DietPlanner extends JFrame {
                 }
             }
         }
-        System.out.println("Created candidate " + (index + 1) + ".");
+//        System.out.println("Created candidate " + (index + 1) + ".");
         return evaluation;
     }
 

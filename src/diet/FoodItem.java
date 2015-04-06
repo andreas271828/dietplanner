@@ -251,6 +251,7 @@ public enum FoodItem {
     public double getRandomAmount(final double minAmount, final double maxAmount) {
         final double relAmount = nextRandomDoubleInclOne();
         final double amount = minAmount + relAmount * (maxAmount - minAmount);
+        // TODO: Always round so that amount stays within the limits!
         return roundToPortions(amount);
     }
 

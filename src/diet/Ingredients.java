@@ -50,6 +50,7 @@ public class Ingredients {
         forEach(new BiConsumer<FoodItem, Limits2>() {
             @Override
             public void accept(final FoodItem foodItem, final Limits2 limits) {
+                // TODO: Always round up!
                 foodItems.set(foodItem, foodItem.roundToPortions(limits.getMin()));
             }
         });

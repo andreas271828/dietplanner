@@ -1,7 +1,7 @@
--   See handwritten notes.
--   Score ID selected for optimisation could be selected probabilistically.
-    Those with worse scores (best? the one in total best?) are selected more often.
-    Use direct search during optimisation and not just at the beginning?
+-   With new algorithm:
+    Vary how much of a diet plan I change. Fine-tune in local maximum, find better local maximum in region, ..., even change whole meals to different meal templates.
+    Several optimisations can be run in parallel and the more successful ones get more processing power (create new ones randomly or with mating -> evolutionary algorithm).
+-   Use different star diet plans / replace whole meals during optimisation.
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
     Adjust weights and prices.

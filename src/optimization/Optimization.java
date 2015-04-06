@@ -19,7 +19,7 @@ public abstract class Optimization {
                                                        final int maxPopulationSize,
                                                        final int numberOfPopulations,
                                                        final Comparator<Evaluation<T>> evaluationComparator,
-                                                       final Consumer<Optional<Evaluation<T>>> updateBestCallback,
+                                                       final Consumer<Evaluation<T>> updateBestCallback,
                                                        final Supplier<Boolean> abortCondition,
                                                        final Function<Pair<Evaluation<T>, Evaluation<T>>, Evaluation<T>> mateFunction,
                                                        final double populationMixRate) {
@@ -59,11 +59,11 @@ public abstract class Optimization {
     private static <T> Optional<Evaluation<T>> updateBest(final Optional<Evaluation<T>> maybeBest,
                                                           final Evaluation<T> curBest,
                                                           final Comparator<Evaluation<T>> evaluationComparator,
-                                                          final Consumer<Optional<Evaluation<T>>> updateBestCallback) {
+                                                          final Consumer<Evaluation<T>> updateBestCallback) {
         final Optional<Evaluation<T>> newMaybeBest;
         if (!maybeBest.isPresent() || evaluationComparator.compare(maybeBest.get(), curBest) > 0) {
             newMaybeBest = Optional.of(curBest);
-            updateBestCallback.accept(newMaybeBest);
+            updateBestCallback.accept(curBest);
         } else {
             newMaybeBest = maybeBest;
         }

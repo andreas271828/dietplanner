@@ -88,9 +88,7 @@ public class Meal {
 
                 final double amount;
                 if (RANDOM.nextDouble() < mutationRate) {
-                    final double minAmount = foodItem.roundToPortions(limits.getMin());
-                    final double maxAmount = foodItem.roundToPortions(limits.getMax());
-                    amount = foodItem.getRandomAmount(minAmount, maxAmount);
+                    amount = foodItem.getRandomAmount(limits);
                 } else {
                     final Meal meal = i < crossoverIngredientIndex ? maybeCrossoverMeal.get() : Meal.this;
                     amount = meal.getAmount(foodItem);
