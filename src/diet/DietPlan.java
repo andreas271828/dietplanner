@@ -86,12 +86,30 @@ public class DietPlan {
         return costs.get();
     }
 
+    public ArrayList<Pair<Integer, FoodItem>> getIngredientIds() {
+        // TODO: Should be lazy value
+        final ArrayList<Pair<Integer, FoodItem>> ingredientIds = new ArrayList<Pair<Integer, FoodItem>>();
+        final int numberOfMeals = getNumberOfMeals();
+        for (int i = 0; i < numberOfMeals; ++i) {
+            final int mealIndex = i;
+            final FoodItems ingredients = getMeal(mealIndex).getIngredients();
+            ingredients.forEach(new BiConsumer<FoodItem, Double>() {
+                @Override
+                public void accept(final FoodItem foodItem, final Double amount) {
+                    ingredientIds.add(pair(mealIndex, foodItem));
+                }
+            });
+        }
+        return ingredientIds;
+    }
+
     public ArrayList<Pair<Integer, FoodItem>> getVariableIngredients() {
+        // TODO: Should be lazy value
         final ArrayList<Pair<Integer, FoodItem>> variableIngredients = new ArrayList<Pair<Integer, FoodItem>>();
         final int numberOfMeals = getNumberOfMeals();
         for (int i = 0; i < numberOfMeals; ++i) {
             final int mealIndex = i;
-            final Ingredients ingredients = getMeal(i).getTemplate().getIngredients();
+            final Ingredients ingredients = getMeal(mealIndex).getTemplate().getIngredients();
             ingredients.forEach(new BiConsumer<FoodItem, Limits2>() {
                 @Override
                 public void accept(final FoodItem foodItem, final Limits2 limits) {

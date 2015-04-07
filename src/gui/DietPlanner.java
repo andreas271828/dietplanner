@@ -11,13 +11,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static diet.DietPlan.dietPlan;
-import static diet.Meal.meal;
 import static diet.MealTemplate.*;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
@@ -237,29 +235,27 @@ public class DietPlanner extends JFrame {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
                 // TODO: It might not be a good idea to manipulate a member variable (best) here.
-                // TODO: Maybe save evaluation of startDietPlan and pass it to createIndividual2. That might save us from evaluating the diet plan more often than necessary.
                 final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
-                DietPlan startDietPlan = createStartDietPlan();
+                Evaluation<DietPlan> base = evaluation(createStartDietPlan(), evaluationFunction);
                 while (!isCancelled()) {
-                    final Evaluation<DietPlan> evaluation1 = createIndividual2(startDietPlan, evaluationFunction, 0);
+                    final Evaluation<DietPlan> evaluation1 = createIndividual3(base);
                     if (!best.isPresent() || evaluation1.getTotalScore() > best.get().getTotalScore()) {
                         best = Optional.of(evaluation1);
-                        publish(evaluation1);
+//                        publish(evaluation1);
+                        System.out.println("Best score after adding ingredients: " + evaluation1.getTotalScore());
                     }
 
                     // Determine new startDietPlan
-                    // TODO: Loop over actual ingredients, not the whole list of possible ingrdients.
-                    // TODO: Update and publish best during this process.
                     Evaluation<DietPlan> evaluation2 = evaluation1;
                     boolean continueRemoving = true;
                     while (continueRemoving) {
                         final DietPlan dietPlan = evaluation2.getObject();
-                        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+                        final ArrayList<Pair<Integer, FoodItem>> ingredientIds = dietPlan.getIngredientIds();
                         final double totalScore = evaluation2.getTotalScore();
                         continueRemoving = false;
-                        while (!continueRemoving && !variableIngredients.isEmpty()) {
-                            final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
-                            final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                        while (!continueRemoving && !ingredientIds.isEmpty()) {
+                            final int ingredientIndex = RANDOM.nextInt(ingredientIds.size());
+                            final Pair<Integer, FoodItem> ingredientId = ingredientIds.get(ingredientIndex);
                             final Optional<DietPlan> maybeNewDietPlan = dietPlan.removePortion(ingredientId);
                             if (maybeNewDietPlan.isPresent()) {
                                 final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
@@ -270,11 +266,16 @@ public class DietPlanner extends JFrame {
                                 }
                             }
                             if (!continueRemoving) {
-                                variableIngredients.remove(ingredientIndex);
+                                ingredientIds.remove(ingredientIndex);
                             }
                         }
                     }
-                    startDietPlan = evaluation2.getObject();
+                    base = evaluation2;
+                    if (evaluation2.getTotalScore() > best.get().getTotalScore()) {
+                        best = Optional.of(evaluation2);
+//                        publish(evaluation2);
+                        System.out.println("Best score after removing ingredients: " + evaluation2.getTotalScore());
+                    }
                 }
 
                 return best;
@@ -382,6 +383,38 @@ public class DietPlanner extends JFrame {
             }
         }
 //        System.out.println("Created candidate " + (index + 1) + ".");
+        return evaluation;
+    }
+
+    private static Evaluation<DietPlan> createIndividual3(final Evaluation<DietPlan> base) {
+        final ArrayList<Pair<Requirement, Integer>> scoreIds = REQUIREMENTS.getScoreIds();
+        final int scoreIdsSize = scoreIds.size();
+        final Function<DietPlan, Scores> evaluationFunction = base.getEvaluationFunction();
+        Evaluation<DietPlan> evaluation = base;
+        boolean continueAdding = true;
+        while (continueAdding) {
+            final DietPlan dietPlan = evaluation.getObject();
+            final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+            continueAdding = false;
+            while (!continueAdding && !variableIngredients.isEmpty()) {
+                final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
+                if (maybeNewDietPlan.isPresent()) {
+                    final Evaluation<DietPlan> newEvaluation = evaluation(maybeNewDietPlan.get(), evaluationFunction);
+                    for (int i = 0; !continueAdding && i < scoreIdsSize; ++i) {
+                        final Pair<Requirement, Integer> scoreId = scoreIds.get(i);
+                        if (newEvaluation.getScore(scoreId).getScore() > evaluation.getScore(scoreId).getScore()) {
+                            evaluation = newEvaluation;
+                            continueAdding = true;
+                        }
+                    }
+                }
+                if (!continueAdding) {
+                    variableIngredients.remove(ingredientIndex);
+                }
+            }
+        }
         return evaluation;
     }
 
