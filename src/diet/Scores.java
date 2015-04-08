@@ -1,5 +1,6 @@
 package diet;
 
+import util.Mutable;
 import util.Pair;
 
 import java.util.*;
@@ -8,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static diet.Score.score;
+import static util.Mutable.mutable;
 import static util.Pair.pair;
 
 public class Scores {
@@ -90,6 +92,27 @@ public class Scores {
 
     public void forEach(final BiConsumer<Requirement, ArrayList<Score>> action) {
         scores.forEach(action);
+    }
+
+    public Optional<Pair<Requirement, Integer>> selectScoreByDiff(final double sel) {
+        final Mutable<Optional<Pair<Requirement, Integer>>> maybeScoreId = mutable(Optional.<Pair<Requirement, Integer>>empty());
+        final Mutable<Double> sum = mutable(0.0);
+        scores.forEach(new BiConsumer<Requirement, ArrayList<Score>>() {
+            @Override
+            public void accept(Requirement requirement, ArrayList<Score> scores) {
+                final int scoresSize = scores.size();
+                for (int i = 0; i < scoresSize && !maybeScoreId.get().isPresent(); ++i) {
+                    final double diff = scores.get(i).getDiffFromWeight();
+                    final double newSum = sum.get() + diff;
+                    if (sel < newSum) {
+                        maybeScoreId.set(Optional.of(Pair.pair(requirement, i)));
+                    } else {
+                        sum.set(newSum);
+                    }
+                }
+            }
+        });
+        return maybeScoreId.get();
     }
 
     public List<Pair<Pair<Requirement, Integer>, Double>> getRelativeScores() {
