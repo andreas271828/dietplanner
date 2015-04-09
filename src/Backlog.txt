@@ -1,9 +1,13 @@
--   With new algorithm:
-    See handwritten notes.
-    For new start diet plan, remove random ingredients (try all variable ingredients) while total score is improving.
+-   Fine-tune latest optimisation algorithm and combine with evolution.
+    Do I actually want to maximise individual scores, not the total score?
+    What is better:
+        a. A total score of 9.0, where 9 scores are 1.0 and 1 score is 0.0?
+        b. A total score of 8.0, where all 10 scores are 0.8?
+    Although in this case it's more important to improve the worst scores, other scores (the total score?) shouldn't be neglected.
+    What is better:
+        a. A total score of 1.2, where 1 score is 1.0 and the other score is 0.2?
+        b. A total score of 0.43, where 1 score is 0.22 and the other score is 0.21?
     Vary how much of a diet plan I change. Fine-tune in local maximum, find better local maximum in region, ..., even change whole meals to different meal templates.
-    Several optimisations can be run in parallel and the more successful ones get more processing power (create new ones randomly or with mating -> evolutionary algorithm).
-    At the end I could remove ingredients to increase the total score at the cost of individual scores.
 -   Use different star diet plans / replace whole meals during optimisation.
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
