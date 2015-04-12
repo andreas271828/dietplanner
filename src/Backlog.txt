@@ -1,4 +1,12 @@
--   See handwritten notes.
+-   New algorithm:
+    Select score probabilistically (difference to weight).
+    Add random ingredient.
+    If the selected score is increased and the total score is not decreased continue with a new score.
+    Otherwise remove ingredient from list and try another one.
+    Stop when no ingredients are left.
+    Create a population of diet plans with this algorithm.
+    Create a population of populations by using different start diet plans (meal templates).
+    Run evolutionary algorithms on two levels and use the total score divided by the standard deviation of scores as fitness.
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
     Adjust weights and prices.
