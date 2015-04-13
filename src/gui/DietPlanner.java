@@ -37,7 +37,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread4();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread5();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -306,8 +306,7 @@ public class DietPlanner extends JFrame {
                     final Scores scores = curEvaluation.getScores();
                     final double totalDiff = scores.getWeightSum() - scores.getTotalScore();
                     if (totalDiff > 0.0) {
-                        final double sel = RANDOM.nextDouble() * totalDiff;
-                        final Optional<Pair<Requirement, Integer>> maybeScoreId = scores.selectScoreByDiff(sel);
+                        final Optional<Pair<Requirement, Integer>> maybeScoreId = scores.selectScoreByDiff(RANDOM.nextDouble());
                         maybeScoreId.ifPresent(new Consumer<Pair<Requirement, Integer>>() {
                             @Override
                             public void accept(final Pair<Requirement, Integer> scoreId) {
@@ -374,6 +373,67 @@ public class DietPlanner extends JFrame {
                             }
                         });
                     }
+                }
+
+                return best;
+            }
+
+            @Override
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    System.out.println("Best score: " + evaluation.getTotalScore());
+                }
+            }
+        };
+    }
+
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread5() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                // TODO: It might not be a good idea to manipulate a member variable (best) here.
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
+                final DietPlan startDietPlan = createStartDietPlan();
+                final Evaluation<DietPlan> startEvaluation = evaluation(startDietPlan, evaluationFunction);
+                final Scores startScores = startEvaluation.getScores();
+                Evaluation<DietPlan> evaluation = startEvaluation;
+                best = Optional.of(evaluation);
+                Optional<Pair<Requirement, Integer>> maybeScoreId = startScores.selectScoreByDiff(RANDOM.nextDouble());
+                while (!isCancelled() && maybeScoreId.isPresent()) {
+                    final Pair<Requirement, Integer> scoreId = maybeScoreId.get();
+                    final double score = evaluation.getScore(scoreId).getScore();
+                    final double totalScore = evaluation.getTotalScore();
+                    final DietPlan dietPlan = evaluation.getObject();
+                    final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+                    while (!variableIngredients.isEmpty()) {
+                        final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                        final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                        final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
+                        final Optional<Evaluation<DietPlan>> maybeNewEvaluation = maybeNewDietPlan.flatMap(
+                                new Function<DietPlan, Optional<Evaluation<DietPlan>>>() {
+                                    @Override
+                                    public Optional<Evaluation<DietPlan>> apply(final DietPlan newDietPlan) {
+                                        final Evaluation<DietPlan> newEvalution = evaluation(newDietPlan, evaluationFunction);
+                                        final double newScore = newEvalution.getScore(scoreId).getScore();
+                                        final double newTotalScore = newEvalution.getTotalScore();
+                                        if (newScore > score && newTotalScore >= totalScore) {
+                                            return Optional.of(newEvalution);
+                                        } else {
+                                            return Optional.empty();
+                                        }
+                                    }
+                                });
+                        if (maybeNewEvaluation.isPresent()) {
+                            evaluation = maybeNewEvaluation.get();
+                            best = Optional.of(evaluation);
+                            publish(evaluation);
+                            variableIngredients.clear();
+                        } else {
+                            variableIngredients.remove(ingredientIndex);
+                        }
+                    }
+                    final Scores scores = evaluation.getScores();
+                    maybeScoreId = scores.selectScoreByDiff(RANDOM.nextDouble());
                 }
 
                 return best;

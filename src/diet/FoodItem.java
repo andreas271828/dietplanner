@@ -230,7 +230,7 @@ public enum FoodItem {
 
     /**
      * @param weight Weight in g
-     * @return Amount
+     * @return amount
      */
     public double toAmount(final double weight) {
         return weight / itemWeight;
@@ -238,7 +238,7 @@ public enum FoodItem {
 
     /**
      * @param amount Amount
-     * @return Weight in g
+     * @return weight in g
      */
     public double toWeight(final double amount) {
         return amount * itemWeight;
