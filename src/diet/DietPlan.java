@@ -52,7 +52,7 @@ public class DietPlan {
         costs = new LazyValue<Double>() {
             @Override
             protected Double compute() {
-                double costs = 0;
+                double costs = 0.0;
                 final ArrayList<Meal> meals = getMeals();
                 for (final Meal meal : meals) {
                     costs += meal.getCosts();
@@ -80,6 +80,10 @@ public class DietPlan {
 
     public FoodProperties getProperties() {
         return properties.get();
+    }
+
+    public double getEnergy() {
+        return getProperties().get(FoodProperty.ENERGY);
     }
 
     public double getCosts() {

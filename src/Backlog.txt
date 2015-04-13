@@ -1,4 +1,4 @@
--   New algorithm:
+-   New algorithm / combine ideas with latest evolutionary algorithm that uses createIndividual4():
     Remove score from list, if no new ingredient could improve the score - stop when list is empty.
     Create a population of diet plans with this algorithm.
     Create a population of populations by using different start diet plans (meal templates).

@@ -1,8 +1,11 @@
 package diet;
 
 import util.ItemList;
+import util.Mutable;
 
 import java.util.function.BiConsumer;
+
+import static util.Mutable.mutable;
 
 public class FoodItems extends ItemList<FoodItem> {
     public FoodItems() {
@@ -25,11 +28,11 @@ public class FoodItems extends ItemList<FoodItem> {
     }
 
     public double getCosts() {
-        final Costs costs = new Costs();
+        final Mutable<Double> costs = mutable(0.0);
         forEach(new BiConsumer<FoodItem, Double>() {
             @Override
             public void accept(final FoodItem foodItem, final Double amount) {
-                costs.add(foodItem.getPrice() * amount);
+                costs.set(costs.get() + foodItem.getPrice() * amount);
             }
         });
         return costs.get();
@@ -37,17 +40,5 @@ public class FoodItems extends ItemList<FoodItem> {
 
     public FoodItems getWithChange(final FoodItem foodItem, final double newAmount) {
         return new FoodItems(this, foodItem, newAmount);
-    }
-
-    private class Costs {
-        private double costs = 0;
-
-        public void add(final double costs) {
-            this.costs += costs;
-        }
-
-        public double get() {
-            return costs;
-        }
     }
 }

@@ -37,7 +37,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread5();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread6();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -448,6 +448,64 @@ public class DietPlanner extends JFrame {
         };
     }
 
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread6() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                // TODO: It might not be a good idea to manipulate a member variable (best) here.
+                final int startPopulationSize = 20;
+                final int maxPopulationSize = 500;
+                final int numberOfPopulations = 1;
+                final double populationMixRate = 0.01;
+                final DietPlan startDietPlan = createStartDietPlan();
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
+                final Evaluation<DietPlan> startEvaluation = evaluation(startDietPlan, evaluationFunction);
+                return optimize(new Supplier<ArrayList<Evaluation<DietPlan>>>() {
+                    @Override
+                    public ArrayList<Evaluation<DietPlan>> get() {
+                        final ArrayList<Evaluation<DietPlan>> startPopulation = new ArrayList<Evaluation<DietPlan>>(startPopulationSize);
+                        for (int i = 0; i < startPopulationSize && !isCancelled(); ++i) {
+                            final Evaluation<DietPlan> evaluation = createIndividual4(startEvaluation);
+                            startPopulation.add(evaluation);
+                        }
+                        return startPopulation;
+                    }
+                }, maxPopulationSize, numberOfPopulations, new Comparator<Evaluation<DietPlan>>() {
+                    @Override
+                    public int compare(final Evaluation<DietPlan> evaluation1, final Evaluation<DietPlan> evaluation2) {
+                        return Double.compare(evaluation2.getTotalScore(), evaluation1.getTotalScore()); // Descending order
+                    }
+                }, new Consumer<Evaluation<DietPlan>>() {
+                    @Override
+                    public void accept(final Evaluation<DietPlan> evaluation) {
+                        publish(evaluation);
+                    }
+                }, new Supplier<Boolean>() {
+                    @Override
+                    public Boolean get() {
+                        return isCancelled();
+                    }
+                }, new Function<Pair<Evaluation<DietPlan>, Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+                    @Override
+                    public Evaluation<DietPlan> apply(final Pair<Evaluation<DietPlan>, Evaluation<DietPlan>> parents) {
+                        final DietPlan dietPlan1 = parents.a().getObject();
+                        final DietPlan dietPlan2 = parents.b().getObject();
+                        return evaluation(dietPlan1.mate(dietPlan2, 0.001), evaluationFunction);
+                    }
+                }, populationMixRate);
+            }
+
+            @Override
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    // TODO: It might not be a good idea to manipulate a member variable (best) here.
+                    best = Optional.of(evaluation);
+                    System.out.println("Best score: " + evaluation.getTotalScore());
+                }
+            }
+        };
+    }
+
     private static ArrayList<MealTemplate> getMealTemplates() {
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
         mealTemplates.add(MUESLI);
@@ -574,6 +632,24 @@ public class DietPlanner extends JFrame {
             }
         }
         return evaluation;
+    }
+
+    private static Evaluation<DietPlan> createIndividual4(final Evaluation<DietPlan> base) {
+        final Mutable<DietPlan> dietPlan = mutable(base.getObject());
+        final double energyDemand = REQUIREMENTS.getEnergyDemand();
+        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = base.getObject().getVariableIngredients();
+        while (dietPlan.get().getEnergy() < energyDemand) {
+            final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+            final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+            final Optional<DietPlan> maybeNewDietPlan = dietPlan.get().addPortion(ingredientId);
+            maybeNewDietPlan.ifPresent(new Consumer<DietPlan>() {
+                @Override
+                public void accept(final DietPlan newDietPlan) {
+                    dietPlan.set(newDietPlan);
+                }
+            });
+        }
+        return evaluation(dietPlan.get(), base.getEvaluationFunction());
     }
 
     public static void main(final String[] args) {

@@ -81,6 +81,15 @@ public class Requirements {
         return numberOfMeals;
     }
 
+    public double getEnergyDemand() {
+        return getEnergyDemandPerDay().map(new Function<Double, Double>() {
+            @Override
+            public Double apply(final Double energyDemandPerDay) {
+                return energyDemandPerDay * days;
+            }
+        }).orElse(0.0);
+    }
+
     public ArrayList<Pair<Requirement, Integer>> getScoreIds() {
         final ArrayList<Pair<Requirement, Integer>> scoreIds = new ArrayList<Pair<Requirement, Integer>>();
         requirements.forEach(new BiConsumer<Requirement, Optional<ScoreParams>>() {
