@@ -27,6 +27,10 @@ public class FoodItems extends ItemList<FoodItem> {
         return properties;
     }
 
+    public double getEnergy() {
+        return getProperties().get(FoodProperty.ENERGY);
+    }
+
     public double getCosts() {
         final Mutable<Double> costs = mutable(0.0);
         forEach(new BiConsumer<FoodItem, Double>() {

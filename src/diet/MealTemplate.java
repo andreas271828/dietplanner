@@ -38,8 +38,12 @@ public enum MealTemplate {
         return ingredients.getMaxAmount(ingredient);
     }
 
+    public FoodItems getMinAmounts() {
+        return ingredients.getMinAmounts();
+    }
+
     public Meal getMinimalMeal() {
-        return meal(this, ingredients.getMinAmounts());
+        return meal(this, getMinAmounts());
     }
 
     @Override

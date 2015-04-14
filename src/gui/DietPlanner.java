@@ -2,6 +2,7 @@ package gui;
 
 import diet.*;
 import util.Evaluation;
+import util.Limits2;
 import util.Mutable;
 import util.Pair;
 
@@ -12,16 +13,19 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static diet.DietPlan.dietPlan;
+import static diet.Meal.meal;
 import static diet.MealTemplate.*;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
 import static util.Mutable.mutable;
+import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
     private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 21);
@@ -37,7 +41,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread6();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread7();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -506,6 +510,130 @@ public class DietPlanner extends JFrame {
         };
     }
 
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread7() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                Optional<Evaluation<DietPlan>> maybeBest = Optional.empty();
+
+                // Optimisation parameters
+                final int populationSizeL1 = 10;
+                final int populationSizeL2 = 100;
+                final double mutationRateL1 = 0.0;
+                final double mutationRateL2 = 0.0;
+
+                final int numberOfMeals = REQUIREMENTS.getNumberOfMeals();
+                final double energyDemand = REQUIREMENTS.getEnergyDemand();
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
+
+                // Initialization of population
+                final ArrayList<ArrayList<Evaluation<DietPlan>>> population =
+                        new ArrayList<ArrayList<Evaluation<DietPlan>>>(populationSizeL1);
+                for (int i = 0; !isCancelled() && i < populationSizeL1; ++i) {
+                    final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>(numberOfMeals);
+                    for (int j = 0; j < numberOfMeals; ++j) {
+                        final int mealTemplateIndex = RANDOM.nextInt(MEAL_TEMPLATES.size());
+                        mealTemplates.add(MEAL_TEMPLATES.get(mealTemplateIndex));
+                    }
+
+                    final ArrayList<Evaluation<DietPlan>> subpopulation =
+                            new ArrayList<Evaluation<DietPlan>>(populationSizeL2);
+                    for (int j = 0; !isCancelled() && j < populationSizeL2; ++j) {
+                        final ArrayList<FoodItems> allIngredients = new ArrayList<FoodItems>(numberOfMeals);
+                        final ArrayList<Pair<Integer, FoodItem>> allIngredientIds = new ArrayList<Pair<Integer, FoodItem>>();
+                        double energy = 0.0;
+                        for (int k = 0; k < numberOfMeals; ++k) {
+                            final int mealIndex = k;
+                            final MealTemplate mealTemplate = mealTemplates.get(mealIndex);
+                            final FoodItems foodItems = mealTemplate.getMinAmounts();
+                            allIngredients.add(foodItems);
+                            mealTemplate.getIngredients().forEach(new BiConsumer<FoodItem, Limits2>() {
+                                @Override
+                                public void accept(final FoodItem foodItem, final Limits2 limits) {
+                                    allIngredientIds.add(pair(mealIndex, foodItem));
+                                }
+                            });
+                            energy += foodItems.getEnergy();
+                        }
+                        while (energy < energyDemand && allIngredientIds.size() > 0) {
+                            // TODO: Avoid potential infinite loop - maybe there are no more ingredients that can be added.
+                            final int ingredientIndex = RANDOM.nextInt(allIngredientIds.size());
+                            final Pair<Integer, FoodItem> ingredientId = allIngredientIds.get(ingredientIndex);
+                            final int mealIndex = ingredientId.a();
+                            final FoodItem foodItem = ingredientId.b();
+                            final FoodItems ingredients = allIngredients.get(mealIndex);
+                            final double oldAmount = ingredients.get(foodItem);
+                            final double newAmount = oldAmount + foodItem.getPortionAmount();
+                            final double maxAmount = mealTemplates.get(mealIndex).getMaxAmount(foodItem);
+                            if (newAmount <= maxAmount) {
+                                ingredients.set(foodItem, newAmount);
+                                energy += foodItem.getProperty(FoodProperty.ENERGY) * (newAmount - oldAmount);
+                            }
+                        }
+                        final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
+                        for (int k = 0; k < numberOfMeals; ++k) {
+                            meals.add(meal(mealTemplates.get(k), allIngredients.get(k)));
+                        }
+                        final DietPlan dietPlan = dietPlan(meals);
+                        final Evaluation<DietPlan> member = evaluation(dietPlan, evaluationFunction);
+                        if (!maybeBest.isPresent() || member.getTotalScore() > maybeBest.get().getTotalScore()) {
+                            maybeBest = Optional.of(member);
+                            publish(member);
+                        }
+                        subpopulation.add(member);
+                    }
+                    population.add(subpopulation);
+                }
+
+                // Optimization
+                while (!isCancelled()) {
+                    // Compute new generation on level 2
+                    for (final ArrayList<Evaluation<DietPlan>> subpopulation : population) {
+                        final ArrayList<Evaluation<DietPlan>> oldL2 =
+                                new ArrayList<Evaluation<DietPlan>>(subpopulation);
+                        subpopulation.clear();
+                        for (int j = 0; j < populationSizeL2; ++j) {
+                            final int parentIndex1 = RANDOM.nextInt(oldL2.size()); // TODO: Probabilistic selection (total score; optional: divided by standard deviation)
+                            final int parentIndex2 = RANDOM.nextInt(oldL2.size()); // TODO: Probabilistic selection (total score; optional: divided by standard deviation)
+                            final DietPlan parent1 = oldL2.get(parentIndex1).getObject();
+                            final DietPlan parent2 = oldL2.get(parentIndex2).getObject();
+                            final DietPlan offspring = parent1.mate(parent2, mutationRateL2); // TODO: mateL2() = crossover anywhere; mutate only by one portion
+                            final Evaluation<DietPlan> member = evaluation(offspring, evaluationFunction);
+                            if (!maybeBest.isPresent() || member.getTotalScore() > maybeBest.get().getTotalScore()) {
+                                maybeBest = Optional.of(member);
+                                publish(member);
+                            }
+                            subpopulation.add(member);
+                        }
+                    }
+
+                    // Compute new generation on level 1
+                    final ArrayList<ArrayList<Evaluation<DietPlan>>> oldL1 =
+                            new ArrayList<ArrayList<Evaluation<DietPlan>>>(population);
+                    population.clear();
+                    for (int i = 0; i < populationSizeL1; ++i) {
+                        final int parentIndex1 = RANDOM.nextInt(oldL1.size()); // TODO: Probabilistic selection (best total score; optional: divided by standard deviation)
+                        final int parentIndex2 = RANDOM.nextInt(oldL1.size()); // TODO: Probabilistic selection (best total score; optional: divided by standard deviation)
+                        // TODO: Choose a crossover index (meal index) and create a new subpopulation where all members are crossed over at the crosover index.
+                        // TODO: Mutation: Change meal template for a meal and add random ingredients to that meal until energy of diet plan > energy demand.
+                        // TODO: Update maybeBest and publish as required.
+                        // TODO: Add subpopulation to population.
+                    }
+                }
+
+                return maybeBest;
+            }
+
+            @Override
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    best = Optional.of(evaluation);
+                    System.out.println("Best score: " + evaluation.getTotalScore());
+                }
+            }
+        };
+    }
+
     private static ArrayList<MealTemplate> getMealTemplates() {
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
         mealTemplates.add(MUESLI);
@@ -527,7 +655,7 @@ public class DietPlanner extends JFrame {
         return dietPlan(meals);
     }
 
-    private Function<DietPlan, Scores> getEvaluationFunction() {
+    private static Function<DietPlan, Scores> getEvaluationFunction() {
         return new Function<DietPlan, Scores>() {
             @Override
             public Scores apply(final DietPlan dietPlan) {
