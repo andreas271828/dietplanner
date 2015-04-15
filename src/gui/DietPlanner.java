@@ -24,6 +24,7 @@ import static diet.MealTemplate.*;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
+import static util.Global.selectElements;
 import static util.Mutable.mutable;
 import static util.Pair.pair;
 
@@ -520,7 +521,7 @@ public class DietPlanner extends JFrame {
                 final int populationSizeL1 = 10;
                 final int populationSizeL2 = 100;
                 final double mutationRateL1 = 0.0;
-                final double mutationRateL2 = 0.0;
+                final double mutationRateL2 = 0.001;
 
                 final int numberOfMeals = REQUIREMENTS.getNumberOfMeals();
                 final double energyDemand = REQUIREMENTS.getEnergyDemand();
@@ -586,24 +587,57 @@ public class DietPlanner extends JFrame {
                 }
 
                 // Optimization
+                final Function<Evaluation<DietPlan>, Double> memberValFunc =
+                        new Function<Evaluation<DietPlan>, Double>() {
+                            @Override
+                            public Double apply(final Evaluation<DietPlan> member) {
+                                // TODO: Prioritize members with balanced scores or those with higher values for scores that have been difficult to optimise so far?
+                                return member.getTotalScore();
+                            }
+                        };
+                final Function<ArrayList<Evaluation<DietPlan>>, Double> subpopulationValFunc =
+                        new Function<ArrayList<Evaluation<DietPlan>>, Double>() {
+                            @Override
+                            public Double apply(final ArrayList<Evaluation<DietPlan>> subpopulation) {
+                                // TODO: Prioritize members with balanced scores or those with higher values for scores that have been difficult to optimise so far?
+                                double maxScore = 0.0;
+                                for (final Evaluation<DietPlan> member : subpopulation) {
+                                    final double score = member.getTotalScore();
+                                    if (score > maxScore) {
+                                        maxScore = score;
+                                    }
+                                }
+                                return maxScore;
+                            }
+                        };
                 while (!isCancelled()) {
                     // Compute new generation on level 2
                     for (final ArrayList<Evaluation<DietPlan>> subpopulation : population) {
                         final ArrayList<Evaluation<DietPlan>> oldL2 =
                                 new ArrayList<Evaluation<DietPlan>>(subpopulation);
                         subpopulation.clear();
+                        final int numberOfParents = populationSizeL2 * 2;
+                        final ArrayList<Double> parentSelectors = new ArrayList<Double>(numberOfParents);
+                        for (int j = 0; j < numberOfParents; ++j) {
+                            parentSelectors.add(RANDOM.nextDouble());
+                        }
+                        final ArrayList<Integer> parentIndices = selectElements(oldL2, parentSelectors, memberValFunc);
                         for (int j = 0; j < populationSizeL2; ++j) {
-                            final int parentIndex1 = RANDOM.nextInt(oldL2.size()); // TODO: Probabilistic selection (total score; optional: divided by standard deviation)
-                            final int parentIndex2 = RANDOM.nextInt(oldL2.size()); // TODO: Probabilistic selection (total score; optional: divided by standard deviation)
-                            final DietPlan parent1 = oldL2.get(parentIndex1).getObject();
-                            final DietPlan parent2 = oldL2.get(parentIndex2).getObject();
-                            final DietPlan offspring = parent1.mate(parent2, mutationRateL2); // TODO: mateL2() = crossover anywhere; mutate only by one portion
-                            final Evaluation<DietPlan> member = evaluation(offspring, evaluationFunction);
-                            if (!maybeBest.isPresent() || member.getTotalScore() > maybeBest.get().getTotalScore()) {
-                                maybeBest = Optional.of(member);
-                                publish(member);
+                            final int parentIndex1 = parentIndices.get(j * 2);
+                            final int parentIndex2 = parentIndices.get(j * 2 + 1);
+                            if (parentIndex1 == parentIndex2) {
+                                subpopulation.add(oldL2.get(parentIndex1));
+                            } else {
+                                final DietPlan parent1 = oldL2.get(parentIndex1).getObject();
+                                final DietPlan parent2 = oldL2.get(parentIndex2).getObject();
+                                final DietPlan offspring = parent1.mate(parent2, mutationRateL2); // TODO: mateL2() = crossover anywhere; mutate only by one portion
+                                final Evaluation<DietPlan> member = evaluation(offspring, evaluationFunction);
+                                if (!maybeBest.isPresent() || member.getTotalScore() > maybeBest.get().getTotalScore()) {
+                                    maybeBest = Optional.of(member);
+                                    publish(member);
+                                }
+                                subpopulation.add(member);
                             }
-                            subpopulation.add(member);
                         }
                     }
 
@@ -611,13 +645,44 @@ public class DietPlanner extends JFrame {
                     final ArrayList<ArrayList<Evaluation<DietPlan>>> oldL1 =
                             new ArrayList<ArrayList<Evaluation<DietPlan>>>(population);
                     population.clear();
+                    final int numberOfParents = populationSizeL1 * 2;
+                    final ArrayList<Double> parentSelectors = new ArrayList<Double>(numberOfParents);
+                    for (int i = 0; i < numberOfParents; ++i) {
+                        parentSelectors.add(RANDOM.nextDouble());
+                    }
+                    final ArrayList<Integer> parentIndices = selectElements(oldL1, parentSelectors, subpopulationValFunc);
                     for (int i = 0; i < populationSizeL1; ++i) {
-                        final int parentIndex1 = RANDOM.nextInt(oldL1.size()); // TODO: Probabilistic selection (best total score; optional: divided by standard deviation)
-                        final int parentIndex2 = RANDOM.nextInt(oldL1.size()); // TODO: Probabilistic selection (best total score; optional: divided by standard deviation)
-                        // TODO: Choose a crossover index (meal index) and create a new subpopulation where all members are crossed over at the crosover index.
-                        // TODO: Mutation: Change meal template for a meal and add random ingredients to that meal until energy of diet plan > energy demand.
-                        // TODO: Update maybeBest and publish as required.
-                        // TODO: Add subpopulation to population.
+                        final int parentIndex1 = parentIndices.get(i * 2);
+                        final int parentIndex2 = parentIndices.get(i * 2 + 1);
+                        if (parentIndex1 == parentIndex2) {
+                            population.add(oldL1.get(parentIndex1));
+                        } else {
+                            final ArrayList<Evaluation<DietPlan>> subpopulation =
+                                    new ArrayList<Evaluation<DietPlan>>(populationSizeL2);
+                            final ArrayList<Evaluation<DietPlan>> parent1 = oldL1.get(parentIndex1);
+                            final ArrayList<Evaluation<DietPlan>> parent2 = oldL1.get(parentIndex2);
+                            final int crossoverIndex = RANDOM.nextInt(numberOfMeals);
+                            for (int j = 0; j < populationSizeL2; ++j) {
+                                // TODO: Mutation: Change meal template for a meal and add random ingredients to that meal until energy of diet plan > energy demand.
+                                final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
+                                final DietPlan dietPlan1 = parent1.get(j).getObject();
+                                final DietPlan dietPlan2 = parent2.get(j).getObject();
+                                for (int k = 0; k < crossoverIndex; ++k) {
+                                    meals.add(dietPlan1.getMeal(k));
+                                }
+                                for (int k = crossoverIndex; k < numberOfMeals; ++k) {
+                                    meals.add(dietPlan2.getMeal(k));
+                                }
+                                final DietPlan dietPlan = dietPlan(meals);
+                                final Evaluation<DietPlan> member = evaluation(dietPlan, evaluationFunction);
+                                if (!maybeBest.isPresent() || member.getTotalScore() > maybeBest.get().getTotalScore()) {
+                                    maybeBest = Optional.of(member);
+                                    publish(member);
+                                }
+                                subpopulation.add(member);
+                            }
+                            population.add(subpopulation);
+                        }
                     }
                 }
 
