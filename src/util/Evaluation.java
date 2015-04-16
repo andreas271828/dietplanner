@@ -83,4 +83,13 @@ public class Evaluation<T> {
     public Optional<Pair<Requirement, Integer>> getWorstScore() {
         return getScores().getWorstScore();
     }
+
+    public double getWorstScoreValue() {
+        return getScores().getWorstScore().map(new Function<Pair<Requirement, Integer>, Double>() {
+            @Override
+            public Double apply(final Pair<Requirement, Integer> scoreId) {
+                return getScore(scoreId).getScore();
+            }
+        }).orElse(0.0);
+    }
 }

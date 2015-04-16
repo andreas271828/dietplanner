@@ -520,8 +520,31 @@ public class DietPlanner extends JFrame {
                 // Optimisation parameters
                 final int populationSizeL1 = 10;
                 final int populationSizeL2 = 100;
-                final double mutationRateL1 = 0.0;
+                final double mutationRateL1 = 0.001;
                 final double mutationRateL2 = 0.001;
+
+                final Function<Evaluation<DietPlan>, Double> memberValFunc =
+                        new Function<Evaluation<DietPlan>, Double>() {
+                            @Override
+                            public Double apply(final Evaluation<DietPlan> member) {
+                                // TODO: Prioritize members with balanced scores or those with higher values for scores that have been difficult to optimise so far?
+                                return member.getTotalScore();
+                            }
+                        };
+                final Function<ArrayList<Evaluation<DietPlan>>, Double> subpopulationValFunc =
+                        new Function<ArrayList<Evaluation<DietPlan>>, Double>() {
+                            @Override
+                            public Double apply(final ArrayList<Evaluation<DietPlan>> subpopulation) {
+                                double maxVal = 0.0;
+                                for (final Evaluation<DietPlan> member : subpopulation) {
+                                    final double val = memberValFunc.apply(member);
+                                    if (val > maxVal) {
+                                        maxVal = val;
+                                    }
+                                }
+                                return maxVal;
+                            }
+                        };
 
                 final int numberOfMeals = REQUIREMENTS.getNumberOfMeals();
                 final double energyDemand = REQUIREMENTS.getEnergyDemand();
@@ -577,39 +600,13 @@ public class DietPlanner extends JFrame {
                         }
                         final DietPlan dietPlan = dietPlan(meals);
                         final Evaluation<DietPlan> member = evaluation(dietPlan, evaluationFunction);
-                        if (!maybeBest.isPresent() || member.getTotalScore() > maybeBest.get().getTotalScore()) {
-                            maybeBest = Optional.of(member);
-                            publish(member);
-                        }
                         subpopulation.add(member);
+                        maybeBest = getBest(maybeBest, member, memberValFunc);
                     }
                     population.add(subpopulation);
                 }
 
                 // Optimization
-                final Function<Evaluation<DietPlan>, Double> memberValFunc =
-                        new Function<Evaluation<DietPlan>, Double>() {
-                            @Override
-                            public Double apply(final Evaluation<DietPlan> member) {
-                                // TODO: Prioritize members with balanced scores or those with higher values for scores that have been difficult to optimise so far?
-                                return member.getTotalScore();
-                            }
-                        };
-                final Function<ArrayList<Evaluation<DietPlan>>, Double> subpopulationValFunc =
-                        new Function<ArrayList<Evaluation<DietPlan>>, Double>() {
-                            @Override
-                            public Double apply(final ArrayList<Evaluation<DietPlan>> subpopulation) {
-                                // TODO: Prioritize members with balanced scores or those with higher values for scores that have been difficult to optimise so far?
-                                double maxScore = 0.0;
-                                for (final Evaluation<DietPlan> member : subpopulation) {
-                                    final double score = member.getTotalScore();
-                                    if (score > maxScore) {
-                                        maxScore = score;
-                                    }
-                                }
-                                return maxScore;
-                            }
-                        };
                 while (!isCancelled()) {
                     // Compute new generation on level 2
                     for (final ArrayList<Evaluation<DietPlan>> subpopulation : population) {
@@ -632,11 +629,8 @@ public class DietPlanner extends JFrame {
                                 final DietPlan parent2 = oldL2.get(parentIndex2).getObject();
                                 final DietPlan offspring = parent1.mate(parent2, mutationRateL2); // TODO: mateL2() = crossover anywhere; mutate only by one portion
                                 final Evaluation<DietPlan> member = evaluation(offspring, evaluationFunction);
-                                if (!maybeBest.isPresent() || member.getTotalScore() > maybeBest.get().getTotalScore()) {
-                                    maybeBest = Optional.of(member);
-                                    publish(member);
-                                }
                                 subpopulation.add(member);
+                                maybeBest = getBest(maybeBest, member, memberValFunc);
                             }
                         }
                     }
@@ -675,11 +669,8 @@ public class DietPlanner extends JFrame {
                                 }
                                 final DietPlan dietPlan = dietPlan(meals);
                                 final Evaluation<DietPlan> member = evaluation(dietPlan, evaluationFunction);
-                                if (!maybeBest.isPresent() || member.getTotalScore() > maybeBest.get().getTotalScore()) {
-                                    maybeBest = Optional.of(member);
-                                    publish(member);
-                                }
                                 subpopulation.add(member);
+                                maybeBest = getBest(maybeBest, member, memberValFunc);
                             }
                             population.add(subpopulation);
                         }
@@ -689,11 +680,24 @@ public class DietPlanner extends JFrame {
                 return maybeBest;
             }
 
+            private Optional<Evaluation<DietPlan>> getBest(final Optional<Evaluation<DietPlan>> oldMaybeBest,
+                                                           final Evaluation<DietPlan> evaluation,
+                                                           final Function<Evaluation<DietPlan>, Double> valFunc) {
+                final Optional<Evaluation<DietPlan>> maybeBest;
+                if (!oldMaybeBest.isPresent() || valFunc.apply(evaluation) > valFunc.apply(oldMaybeBest.get())) {
+                    maybeBest = Optional.of(evaluation);
+                    publish(evaluation);
+                } else {
+                    maybeBest = oldMaybeBest;
+                }
+                return maybeBest;
+            }
+
             @Override
             protected void process(final List<Evaluation<DietPlan>> chunks) {
                 for (final Evaluation<DietPlan> evaluation : chunks) {
                     best = Optional.of(evaluation);
-                    System.out.println("Best score: " + evaluation.getTotalScore());
+                    System.out.println("Total score of best diet plan: " + evaluation.getTotalScore());
                 }
             }
         };
