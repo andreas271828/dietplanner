@@ -1,3 +1,5 @@
+-   Think about how ingredients can get different ratings depending on how often/much they have improved and degraded scores and how that rating can be used.
+    The goal is, for example, to prefer ingredients that increase energy but not fat.
 -   Try new algorithm for creating individuals: adding ingredients probabilistically until energy demand is reached, where probability depends on how much an additional portion makes scores worse.
 -   Finish createOptimizationThread7() (see TODO; refactor).
 -   Make adjustments until I get a useful diet plan for myself.
