@@ -16,7 +16,7 @@ public abstract class Global {
 
     /**
      * @param all       All elements
-     * @param selectors Value between 0.0 (incl.) and 1.0 (excl.)
+     * @param selectors Values between 0.0 (incl.) and 1.0 (excl.)
      * @param valFunc   Function for calculating the value of an element
      * @param <T>       Element type
      * @return indices of selected elements
@@ -80,5 +80,11 @@ public abstract class Global {
         }
 
         return indices;
+    }
+
+    public static <T> ArrayList<T> valueAsArrayList(final T value) {
+        final ArrayList<T> arrayList = new ArrayList<T>(1);
+        arrayList.add(value);
+        return arrayList;
     }
 }

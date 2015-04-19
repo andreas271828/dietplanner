@@ -1,18 +1,12 @@
 package gui;
 
 import diet.*;
-import util.Evaluation;
-import util.Limits2;
-import util.Mutable;
-import util.Pair;
+import util.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -23,8 +17,7 @@ import static diet.Meal.meal;
 import static diet.MealTemplate.*;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
-import static util.Global.RANDOM;
-import static util.Global.selectElements;
+import static util.Global.*;
 import static util.Mutable.mutable;
 import static util.Pair.pair;
 
@@ -42,7 +35,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread7();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread8();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -772,6 +765,28 @@ public class DietPlanner extends JFrame {
         };
     }
 
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread8() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                final DietPlan startDietPlan = createStartDietPlan();
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
+                final Evaluation<DietPlan> startEvaluation = evaluation(startDietPlan, evaluationFunction);
+                final Evaluation<DietPlan> evaluation = createIndividual5(startEvaluation);
+                publish(evaluation);
+                return Optional.of(evaluation);
+            }
+
+            @Override
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    best = Optional.of(evaluation);
+                    System.out.println("Total score of best diet plan: " + evaluation.getTotalScore());
+                }
+            }
+        };
+    }
+
     private static ArrayList<MealTemplate> getMealTemplates() {
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
         mealTemplates.add(MUESLI);
@@ -916,6 +931,45 @@ public class DietPlanner extends JFrame {
             });
         }
         return evaluation(dietPlan.get(), base.getEvaluationFunction());
+    }
+
+    private static Evaluation<DietPlan> createIndividual5(final Evaluation<DietPlan> base) {
+        final double energyDemand = REQUIREMENTS.getEnergyDemand();
+        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = base.getObject().getVariableIngredients();
+        Evaluation<DietPlan> result = base;
+        while (result.getObject().getEnergy() < energyDemand) {
+            final Evaluation<DietPlan> curEvaluation = result;
+            final Map<Evaluation<DietPlan>, Double> candidateMap = new HashMap<Evaluation<DietPlan>, Double>();
+            final Mutable<Optional<Double>> maybeMinValue = mutable(Optional.<Double>empty());
+            for (final Pair<Integer, FoodItem> ingredientId : variableIngredients) {
+                final Optional<DietPlan> maybeNewDietPlan = curEvaluation.getObject().addPortion(ingredientId);
+                maybeNewDietPlan.ifPresent(new Consumer<DietPlan>() {
+                    @Override
+                    public void accept(final DietPlan newDietPlan) {
+                        final Evaluation<DietPlan> newEvaluation = evaluation(newDietPlan, base.getEvaluationFunction());
+                        final double value = newEvaluation.getTotalScore(); // TODO: Sum up degradation (compare to curEvaluation)
+                        candidateMap.put(newEvaluation, value);
+                        if (!maybeMinValue.get().isPresent() || value < maybeMinValue.get().get()) {
+                            maybeMinValue.set(Optional.of(value));
+                        }
+                    }
+                });
+                // TODO: Remove ingredient from variableIngredients if adding a portion failed (use iterator?)
+            }
+
+            final ArrayList<Evaluation<DietPlan>> candidates = new ArrayList<Evaluation<DietPlan>>(candidateMap.keySet());
+            final double minValue = maybeMinValue.get().orElse(0.0);
+            final Function<Evaluation<DietPlan>, Double> valFunc = new Function<Evaluation<DietPlan>, Double>() {
+                @Override
+                public Double apply(final Evaluation<DietPlan> evaluation) {
+                    return candidateMap.get(evaluation) - minValue;
+                }
+            };
+            final int winnerIndex = Global.selectElements(candidates, valueAsArrayList(RANDOM.nextDouble()), valFunc).get(0);
+            result = candidates.get(winnerIndex);
+            System.out.println(result.getTotalScore());
+        }
+        return result;
     }
 
     public static void main(final String[] args) {
