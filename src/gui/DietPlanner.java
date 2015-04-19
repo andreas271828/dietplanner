@@ -588,6 +588,9 @@ public class DietPlanner extends JFrame {
                             final double newAmount = ingredients.get(foodItem) + addAmount;
                             final double maxAmount = mealTemplates.get(mealIndex).getMaxAmount(foodItem);
                             if (newAmount <= maxAmount) {
+                                // TODO: Only add if (certain) scores don't get worse? Try with fat and protein.
+                                // TODO: Think of a preference mechanism: select ingredient probabilistically, but prefer those that make things least worse.
+                                // TODO: Do something similar when creatig new meals during optimization.S
                                 ingredients.set(foodItem, newAmount);
                                 energy += foodItem.getProperty(FoodProperty.ENERGY) * addAmount;
                             } else {
