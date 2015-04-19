@@ -59,6 +59,10 @@ public class Meal {
         return properties.get();
     }
 
+    public double getEnergy() {
+        return getProperties().get(FoodProperty.ENERGY);
+    }
+
     public double getCosts() {
         return costs.get();
     }
@@ -86,14 +90,19 @@ public class Meal {
                 final int i = ingredientIndex.get();
                 ingredientIndex.set(i + 1);
 
-                final double amount;
+                final Meal meal = i < crossoverIngredientIndex ? maybeCrossoverMeal.get() : Meal.this;
+                final double oldAmount = meal.getAmount(foodItem);
                 if (RANDOM.nextDouble() < mutationRate) {
-                    amount = foodItem.getRandomAmount(limits);
+                    if (RANDOM.nextBoolean()) {
+                        final double newAmount = oldAmount + foodItem.getPortionAmount();
+                        foodItems.set(foodItem, newAmount <= limits.getMax() ? newAmount : oldAmount);
+                    } else {
+                        final double newAmount = oldAmount - foodItem.getPortionAmount();
+                        foodItems.set(foodItem, newAmount >= limits.getMin() ? newAmount : oldAmount);
+                    }
                 } else {
-                    final Meal meal = i < crossoverIngredientIndex ? maybeCrossoverMeal.get() : Meal.this;
-                    amount = meal.getAmount(foodItem);
+                    foodItems.set(foodItem, oldAmount);
                 }
-                foodItems.set(foodItem, amount);
             }
         });
         return meal(mealTemplate, foodItems);

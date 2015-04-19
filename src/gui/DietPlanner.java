@@ -503,7 +503,6 @@ public class DietPlanner extends JFrame {
             @Override
             protected void process(final List<Evaluation<DietPlan>> chunks) {
                 for (final Evaluation<DietPlan> evaluation : chunks) {
-                    // TODO: It might not be a good idea to manipulate a member variable (best) here.
                     best = Optional.of(evaluation);
                     System.out.println("Best score: " + evaluation.getTotalScore());
                 }
@@ -579,19 +578,20 @@ public class DietPlanner extends JFrame {
                             });
                             energy += foodItems.getEnergy();
                         }
-                        while (energy < energyDemand && allIngredientIds.size() > 0) {
-                            // TODO: Avoid potential infinite loop - maybe there are no more ingredients that can be added.
+                        while (energy < energyDemand && !allIngredientIds.isEmpty()) {
                             final int ingredientIndex = RANDOM.nextInt(allIngredientIds.size());
                             final Pair<Integer, FoodItem> ingredientId = allIngredientIds.get(ingredientIndex);
                             final int mealIndex = ingredientId.a();
                             final FoodItem foodItem = ingredientId.b();
                             final FoodItems ingredients = allIngredients.get(mealIndex);
-                            final double oldAmount = ingredients.get(foodItem);
-                            final double newAmount = oldAmount + foodItem.getPortionAmount();
+                            final double addAmount = foodItem.getPortionAmount();
+                            final double newAmount = ingredients.get(foodItem) + addAmount;
                             final double maxAmount = mealTemplates.get(mealIndex).getMaxAmount(foodItem);
                             if (newAmount <= maxAmount) {
                                 ingredients.set(foodItem, newAmount);
-                                energy += foodItem.getProperty(FoodProperty.ENERGY) * (newAmount - oldAmount);
+                                energy += foodItem.getProperty(FoodProperty.ENERGY) * addAmount;
+                            } else {
+                                allIngredientIds.remove(ingredientIndex);
                             }
                         }
                         final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
@@ -627,7 +627,7 @@ public class DietPlanner extends JFrame {
                             } else {
                                 final DietPlan parent1 = oldL2.get(parentIndex1).getObject();
                                 final DietPlan parent2 = oldL2.get(parentIndex2).getObject();
-                                final DietPlan offspring = parent1.mate(parent2, mutationRateL2); // TODO: mateL2() = crossover anywhere; mutate only by one portion
+                                final DietPlan offspring = parent1.mate(parent2, mutationRateL2);
                                 final Evaluation<DietPlan> member = evaluation(offspring, evaluationFunction);
                                 subpopulation.add(member);
                                 maybeBest = getBest(maybeBest, member, memberValFunc);
@@ -656,16 +656,82 @@ public class DietPlanner extends JFrame {
                             final ArrayList<Evaluation<DietPlan>> parent1 = oldL1.get(parentIndex1);
                             final ArrayList<Evaluation<DietPlan>> parent2 = oldL1.get(parentIndex2);
                             final int crossoverIndex = RANDOM.nextInt(numberOfMeals);
+                            final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>(numberOfMeals);
+                            for (int j = 0; j < crossoverIndex; ++j) {
+                                if (RANDOM.nextDouble() < mutationRateL1) {
+                                    final int mealTemplateIndex = RANDOM.nextInt(MEAL_TEMPLATES.size());
+                                    mealTemplates.add(MEAL_TEMPLATES.get(mealTemplateIndex));
+                                } else {
+                                    final DietPlan dietPlan = parent1.get(0).getObject();
+                                    final Meal meal = dietPlan.getMeal(j);
+                                    mealTemplates.add(meal.getTemplate());
+                                }
+                            }
+                            for (int j = crossoverIndex; j < numberOfMeals; ++j) {
+                                if (RANDOM.nextDouble() < mutationRateL1) {
+                                    final int mealTemplateIndex = RANDOM.nextInt(MEAL_TEMPLATES.size());
+                                    mealTemplates.add(MEAL_TEMPLATES.get(mealTemplateIndex));
+                                } else {
+                                    final DietPlan dietPlan = parent2.get(0).getObject();
+                                    final Meal meal = dietPlan.getMeal(j);
+                                    mealTemplates.add(meal.getTemplate());
+                                }
+                            }
                             for (int j = 0; j < populationSizeL2; ++j) {
-                                // TODO: Mutation: Change meal template for a meal and add random ingredients to that meal until energy of diet plan > energy demand.
                                 final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
                                 final DietPlan dietPlan1 = parent1.get(j).getObject();
                                 final DietPlan dietPlan2 = parent2.get(j).getObject();
                                 for (int k = 0; k < crossoverIndex; ++k) {
-                                    meals.add(dietPlan1.getMeal(k));
+                                    final Meal meal = dietPlan1.getMeal(k);
+                                    final MealTemplate mealTemplate = mealTemplates.get(k);
+                                    if (meal.getTemplate().equals(mealTemplate)) {
+                                        meals.add(meal);
+                                    } else {
+                                        final FoodItems ingredients = mealTemplate.getMinAmounts();
+                                        final ArrayList<FoodItem> foodItems = mealTemplate.getIngredients().getFoodItems();
+                                        final double targetEnergy = meal.getEnergy();
+                                        double energy = ingredients.getEnergy();
+                                        while (energy < targetEnergy && !foodItems.isEmpty()) {
+                                            final int foodItemIndex = RANDOM.nextInt(foodItems.size());
+                                            final FoodItem ingredient = foodItems.get(foodItemIndex);
+                                            final double addAmount = ingredient.getPortionAmount();
+                                            final double newAmount = ingredients.get(ingredient) + addAmount;
+                                            final double maxAmount = mealTemplate.getMaxAmount(ingredient);
+                                            if (newAmount <= maxAmount) {
+                                                ingredients.set(ingredient, newAmount);
+                                                energy += ingredient.getProperty(FoodProperty.ENERGY) * addAmount;
+                                            } else {
+                                                foodItems.remove(foodItemIndex);
+                                            }
+                                        }
+                                        meals.add(meal(mealTemplate, ingredients));
+                                    }
                                 }
                                 for (int k = crossoverIndex; k < numberOfMeals; ++k) {
-                                    meals.add(dietPlan2.getMeal(k));
+                                    final Meal meal = dietPlan2.getMeal(k);
+                                    final MealTemplate mealTemplate = mealTemplates.get(k);
+                                    if (meal.getTemplate().equals(mealTemplate)) {
+                                        meals.add(meal);
+                                    } else {
+                                        final FoodItems ingredients = mealTemplate.getMinAmounts();
+                                        final ArrayList<FoodItem> foodItems = mealTemplate.getIngredients().getFoodItems();
+                                        final double targetEnergy = meal.getEnergy();
+                                        double energy = ingredients.getEnergy();
+                                        while (energy < targetEnergy && !foodItems.isEmpty()) {
+                                            final int foodItemIndex = RANDOM.nextInt(foodItems.size());
+                                            final FoodItem ingredient = foodItems.get(foodItemIndex);
+                                            final double addAmount = ingredient.getPortionAmount();
+                                            final double newAmount = ingredients.get(ingredient) + addAmount;
+                                            final double maxAmount = mealTemplate.getMaxAmount(ingredient);
+                                            if (newAmount <= maxAmount) {
+                                                ingredients.set(ingredient, newAmount);
+                                                energy += ingredient.getProperty(FoodProperty.ENERGY) * addAmount;
+                                            } else {
+                                                foodItems.remove(foodItemIndex);
+                                            }
+                                        }
+                                        meals.add(meal(mealTemplate, ingredients));
+                                    }
                                 }
                                 final DietPlan dietPlan = dietPlan(meals);
                                 final Evaluation<DietPlan> member = evaluation(dietPlan, evaluationFunction);
