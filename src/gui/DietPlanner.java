@@ -35,7 +35,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread8();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread9();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -775,6 +775,137 @@ public class DietPlanner extends JFrame {
                 final Evaluation<DietPlan> evaluation = createIndividual5(startEvaluation);
                 publish(evaluation);
                 return Optional.of(evaluation);
+            }
+
+            @Override
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    best = Optional.of(evaluation);
+                    System.out.println("Total score of best diet plan: " + evaluation.getTotalScore());
+                }
+            }
+        };
+    }
+
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread9() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                // TODO: Maybe I only need / should change the value of the added food item.
+                // TODO: If one portion of a food item would be beneficial, but it's not added for a while, it would get a higher and higher value, even if a second portion would be detrimental.
+                final Map<FoodItem, Double> foodItemValues = new HashMap<FoodItem, Double>();
+                final FoodItems foodItems = new FoodItems();
+                final FoodItem[] allFoodItems = FoodItem.values();
+                boolean go = true;
+                while (go) {
+                    go = false;
+
+                    final Evaluation<FoodItems> foodItemsEvaluation = evaluation(foodItems, new Function<FoodItems, Scores>() {
+                        @Override
+                        public Scores apply(final FoodItems foodItems) {
+                            final Scores scores = new Scores();
+                            final FoodProperties foodProperties = foodItems.getProperties();
+                            scores.addStandardScore(Requirement.ALPHA_LINOLENIC_ACID, foodProperties.get(FoodProperty.ALPHA_LINOLENIC_ACID), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.CALCIUM, foodProperties.get(FoodProperty.CALCIUM), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.CARBOHYDRATES, foodProperties.get(FoodProperty.CARBOHYDRATES), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.CHOLESTEROL, foodProperties.get(FoodProperty.CHOLESTEROL), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.COSTS, foodItems.getCosts(), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.DIETARY_FIBRE, foodProperties.get(FoodProperty.DIETARY_FIBRE), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.ENERGY, foodProperties.get(FoodProperty.ENERGY), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.FAT, foodProperties.get(FoodProperty.FAT), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.FOLATES, foodProperties.get(FoodProperty.TOTAL_FOLATES), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.IODINE, foodProperties.get(FoodProperty.IODINE), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.IRON, foodProperties.get(FoodProperty.IRON), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.LINOLEIC_ACID, foodProperties.get(FoodProperty.LINOLEIC_ACID), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.MAGNESIUM, foodProperties.get(FoodProperty.MAGNESIUM), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.NIACIN_DERIVED_EQUIVALENTS, foodProperties.get(FoodProperty.NIACIN_DERIVED_EQUIVALENTS), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.OMEGA_3_FATTY_ACIDS, foodProperties.get(FoodProperty.OMEGA_3_FATTY_ACIDS), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.PHOSPHORUS, foodProperties.get(FoodProperty.PHOSPHORUS), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.POTASSIUM, foodProperties.get(FoodProperty.POTASSIUM), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.PROTEIN, foodProperties.get(FoodProperty.PROTEIN), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.RIBOFLAVIN, foodProperties.get(FoodProperty.RIBOFLAVIN), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.SELENIUM, foodProperties.get(FoodProperty.SELENIUM), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.SODIUM, foodProperties.get(FoodProperty.SODIUM), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.SUGARS, foodProperties.get(FoodProperty.SUGARS), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.THIAMIN, foodProperties.get(FoodProperty.THIAMIN), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.TRANS_FATTY_ACIDS, foodProperties.get(FoodProperty.TRANS_FATTY_ACIDS), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.TRYPTOPHAN, foodProperties.get(FoodProperty.TRYPTOPHAN), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.VITAMIN_A_RETINOL_EQUIVALENTS, foodProperties.get(FoodProperty.VITAMIN_A_RETINOL_EQUIVALENTS), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.VITAMIN_B12, foodProperties.get(FoodProperty.VITAMIN_B12), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.VITAMIN_B6, foodProperties.get(FoodProperty.VITAMIN_B6), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.VITAMIN_C, foodProperties.get(FoodProperty.VITAMIN_C), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.VITAMIN_E, foodProperties.get(FoodProperty.VITAMIN_E), REQUIREMENTS);
+                            scores.addStandardScore(Requirement.ZINC, foodProperties.get(FoodProperty.ZINC), REQUIREMENTS);
+                            return scores;
+                        }
+                    });
+                    for (final FoodItem foodItem : allFoodItems) {
+                        final Double valObj = foodItemValues.get(foodItem);
+                        final double value = valObj == null ? 0.0 : valObj;
+                        final Evaluation<FoodItems> newFoodItemsEvaluation = getNewEvaluation(foodItemsEvaluation, foodItem);
+                        final double change = newFoodItemsEvaluation.getTotalScore() - foodItemsEvaluation.getTotalScore();
+                        foodItemValues.put(foodItem, value + change);
+                        if (!go) {
+                            // TODO: Improve performance of code below (iterate through scores until go == true).
+                            final Scores oldScores = foodItemsEvaluation.getScores();
+                            final ArrayList<Double> oldScoreValues = new ArrayList<Double>();
+                            oldScores.forEach(new BiConsumer<Requirement, ArrayList<Score>>() {
+                                @Override
+                                public void accept(final Requirement requirement, final ArrayList<Score> scores) {
+                                    for (final Score score : scores) {
+                                        oldScoreValues.add(score.getScore());
+                                    }
+                                }
+                            });
+                            final Scores newScores = newFoodItemsEvaluation.getScores();
+                            final ArrayList<Double> newScoreValues = new ArrayList<Double>();
+                            newScores.forEach(new BiConsumer<Requirement, ArrayList<Score>>() {
+                                @Override
+                                public void accept(final Requirement requirement, final ArrayList<Score> scores) {
+                                    for (final Score score : scores) {
+                                        newScoreValues.add(score.getScore());
+                                    }
+                                }
+                            });
+                            for (int i = 0; !go & i < oldScoreValues.size() && i < newScoreValues.size(); ++i) {
+                                if (newScoreValues.get(i) > oldScoreValues.get(i)) {
+                                    go = true;
+                                }
+                            }
+                        }
+                    }
+
+                    final FoodItem foodItem = allFoodItems[RANDOM.nextInt(allFoodItems.length)];
+                    foodItems.add(foodItem, foodItem.getPortionAmount());
+                }
+                // TODO: Empty foodItems and continue updating values (while not cancelled)
+                final ArrayList<Pair<FoodItem, Double>> sortedFoodItemValues = new ArrayList<Pair<FoodItem, Double>>();
+                foodItemValues.forEach(new BiConsumer<FoodItem, Double>() {
+                    @Override
+                    public void accept(final FoodItem foodItem, final Double value) {
+                        sortedFoodItemValues.add(pair(foodItem, value));
+                    }
+                });
+                sortedFoodItemValues.sort(new Comparator<Pair<FoodItem, Double>>() {
+                    @Override
+                    public int compare(final Pair<FoodItem, Double> foodItemValue1,
+                                       final Pair<FoodItem, Double> foodItemValue2) {
+                        return foodItemValue2.b().compareTo(foodItemValue1.b()); // Sort by value in descending order
+                    }
+                });
+                for (final Pair<FoodItem, Double> foodItemValue : sortedFoodItemValues) {
+                    System.out.println(foodItemValue.a() + ": " + foodItemValue.b());
+                }
+                return Optional.empty();
+            }
+
+            private Evaluation<FoodItems> getNewEvaluation(final Evaluation<FoodItems> foodItemsEvaluation,
+                                                           final FoodItem foodItem) {
+                final FoodItems foodItems = foodItemsEvaluation.getObject();
+                final double oldAmount = foodItems.get(foodItem);
+                final double newAmount = oldAmount + foodItem.getPortionAmount();
+                final FoodItems newFoodItems = foodItems.getWithChange(foodItem, newAmount);
+                return evaluation(newFoodItems, foodItemsEvaluation.getEvaluationFunction());
             }
 
             @Override

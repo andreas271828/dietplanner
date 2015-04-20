@@ -1,5 +1,5 @@
--   Think about how ingredients can get different ratings depending on how often/much they have improved and degraded scores and how that rating can be used.
-    The goal is, for example, to prefer ingredients that increase energy but not fat.
+-   See createOptimizationThread9() and handwritten notes.
+    When selecting ingredients during later optimisation, use the food item ratings (probabilistic selection).
 -   Try new algorithm for creating individuals: adding ingredients probabilistically until energy demand is reached, where probability depends on how much an additional portion makes scores worse.
 -   Finish createOptimizationThread7() (see TODO; refactor).
 -   Make adjustments until I get a useful diet plan for myself.
@@ -14,5 +14,5 @@
     What could be useful, is to focus on one score in each population, rather than on the total score in all of them.
 -   Create user interface
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.
--   About, warnings and information (calculation of requirements / meaning of limits, only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol)
+-   About, warnings and information (calculation of requirements / meaning of limits, only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol, intermittent fasting [http://mysportsdconnect.com/category/sports-nutrition-podcast/])
 -   Parallel computation

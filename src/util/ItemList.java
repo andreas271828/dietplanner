@@ -28,6 +28,10 @@ public class ItemList<K extends Enum<K>> {
         }
     }
 
+    public void add(final K item, final double amount) {
+        set(item, get(item) + amount);
+    }
+
     public void add(final ItemList<K> toAdd) {
         for (final Map.Entry<K, Double> entry : toAdd.items.entrySet()) {
             final K item = entry.getKey();
