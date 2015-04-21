@@ -92,4 +92,8 @@ public class Evaluation<T> {
             }
         }).orElse(0.0);
     }
+
+    public void invalidate() {
+        scores.invalidate();
+    }
 }

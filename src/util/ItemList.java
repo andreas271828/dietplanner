@@ -17,7 +17,8 @@ public class ItemList<K extends Enum<K>> {
     }
 
     public double get(final K item) {
-        return items.containsKey(item) ? items.get(item) : 0.0;
+        final Double amount = items.get(item);
+        return amount == null ? 0.0 : amount;
     }
 
     public void set(final K item, final double amount) {
@@ -44,6 +45,10 @@ public class ItemList<K extends Enum<K>> {
             final K item = entry.getKey();
             set(item, get(item) + entry.getValue() * factor);
         }
+    }
+
+    public void clear() {
+        items.clear();
     }
 
     public void forEach(final BiConsumer<K, Double> action) {
