@@ -830,7 +830,8 @@ public class DietPlanner extends JFrame {
                 }
                 final Function<FoodItems, Scores> evaluationFunction = getEvaluationFunction();
                 final Evaluation<FoodItems> foodItemsEvaluation = evaluation(foodItems, evaluationFunction);
-                System.out.println("Total score: " + foodItemsEvaluation.getTotalScore());
+                System.out.println("Total score: " + foodItemsEvaluation.getTotalScore() +
+                        " of " + foodItemsEvaluation.getScores().getWeightSum());
 
                 return Optional.empty();
             }
@@ -854,7 +855,8 @@ public class DietPlanner extends JFrame {
                     foodItemValues.put(foodItem, value + newScore - oldScore);
 
                     if (foodItemsEvaluation.getObject().getEnergy() >= REQUIREMENTS.getEnergyDemand()) {
-                        System.out.println("Total score: " + foodItemsEvaluation.getTotalScore());
+                        System.out.println("Total score: " + foodItemsEvaluation.getTotalScore() +
+                                " of " + foodItemsEvaluation.getScores().getWeightSum());
                         foodItemsEvaluation.getObject().clear();
                         foodItemsEvaluation.invalidate();
                     }
