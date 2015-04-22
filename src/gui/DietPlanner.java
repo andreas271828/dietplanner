@@ -1,7 +1,10 @@
 package gui;
 
 import diet.*;
-import util.*;
+import util.Evaluation;
+import util.Limits2;
+import util.Mutable;
+import util.Pair;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -15,6 +18,7 @@ import java.util.function.Supplier;
 import static diet.DietPlan.dietPlan;
 import static diet.Meal.meal;
 import static diet.MealTemplate.*;
+import static java.util.Arrays.asList;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
 import static util.Global.*;
@@ -791,7 +795,96 @@ public class DietPlanner extends JFrame {
         return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
-                final Function<FoodItems, Scores> evaluationFunction = new Function<FoodItems, Scores>() {
+                final Map<FoodItem, Double> foodItemValues = getFoodItemValues(new Supplier<Boolean>() {
+                    private int i = 0;
+
+                    @Override
+                    public Boolean get() {
+                        return i++ < 100000;
+                    }
+                });
+
+                final ArrayList<Pair<FoodItem, Double>> sortedFoodItemValues = new ArrayList<Pair<FoodItem, Double>>();
+                foodItemValues.forEach(new BiConsumer<FoodItem, Double>() {
+                    @Override
+                    public void accept(final FoodItem foodItem, final Double value) {
+                        sortedFoodItemValues.add(pair(foodItem, value));
+                    }
+                });
+                sortedFoodItemValues.sort(new Comparator<Pair<FoodItem, Double>>() {
+                    @Override
+                    public int compare(final Pair<FoodItem, Double> foodItemValue1,
+                                       final Pair<FoodItem, Double> foodItemValue2) {
+                        return foodItemValue2.b().compareTo(foodItemValue1.b()); // Sort by value in descending order
+                    }
+                });
+                for (final Pair<FoodItem, Double> foodItemValue : sortedFoodItemValues) {
+                    System.out.println(foodItemValue.a() + ": " + foodItemValue.b());
+                }
+
+                final FoodItem[] allFoodItems = FoodItem.values();
+                final FoodItems foodItems = new FoodItems();
+                while (foodItems.getEnergy() < REQUIREMENTS.getEnergyDemand()) {
+                    final FoodItem foodItem = selectFoodItem(asList(allFoodItems), foodItemValues);
+                    foodItems.add(foodItem, foodItem.getPortionAmount());
+                }
+                final Function<FoodItems, Scores> evaluationFunction = getEvaluationFunction();
+                final Evaluation<FoodItems> foodItemsEvaluation = evaluation(foodItems, evaluationFunction);
+                System.out.println("Total score: " + foodItemsEvaluation.getTotalScore());
+
+                return Optional.empty();
+            }
+
+            private Map<FoodItem, Double> getFoodItemValues(final Supplier<Boolean> continueFunc) {
+                // The higher the value of a food item, the better was the score change when adding a portion of the
+                // food item at random times.
+                final Map<FoodItem, Double> foodItemValues = new HashMap<FoodItem, Double>();
+                final FoodItem[] allFoodItems = FoodItem.values();
+                final Function<FoodItems, Scores> evaluationFunction = getEvaluationFunction();
+                final Evaluation<FoodItems> foodItemsEvaluation = evaluation(new FoodItems(), evaluationFunction);
+                while (continueFunc.get()) {
+                    final double oldScore = foodItemsEvaluation.getTotalScore();
+                    final FoodItem foodItem = allFoodItems[RANDOM.nextInt(allFoodItems.length)];
+                    foodItemsEvaluation.getObject().add(foodItem, foodItem.getPortionAmount());
+                    foodItemsEvaluation.invalidate();
+                    final double newScore = foodItemsEvaluation.getTotalScore();
+
+                    final Double valObj = foodItemValues.get(foodItem);
+                    final double value = valObj == null ? 0.0 : valObj;
+                    foodItemValues.put(foodItem, value + newScore - oldScore);
+
+                    if (foodItemsEvaluation.getObject().getEnergy() >= REQUIREMENTS.getEnergyDemand()) {
+                        System.out.println("Total score: " + foodItemsEvaluation.getTotalScore());
+                        foodItemsEvaluation.getObject().clear();
+                        foodItemsEvaluation.invalidate();
+                    }
+                }
+
+                Optional<Double> maybeMinValue = Optional.empty();
+                Optional<Double> maybeMaxValue = Optional.empty();
+                for (final Map.Entry<FoodItem, Double> foodItemValue : foodItemValues.entrySet()) {
+                    final double value = foodItemValue.getValue();
+                    if (!maybeMinValue.isPresent() || value < maybeMinValue.get()) {
+                        maybeMinValue = Optional.of(value);
+                    }
+                    if (!maybeMaxValue.isPresent() || value > maybeMaxValue.get()) {
+                        maybeMaxValue = Optional.of(value);
+                    }
+                }
+                if (maybeMinValue.isPresent() && maybeMaxValue.isPresent()) {
+                    final double minValue = maybeMinValue.get();
+                    final double range = maybeMaxValue.get() - minValue;
+                    for (final Map.Entry<FoodItem, Double> foodItemValue : foodItemValues.entrySet()) {
+                        final double value = range == 0.0 ? 1.0 : (foodItemValue.getValue() - minValue) / range;
+                        foodItemValue.setValue(value);
+                    }
+                }
+
+                return foodItemValues;
+            }
+
+            private Function<FoodItems, Scores> getEvaluationFunction() {
+                return new Function<FoodItems, Scores>() {
                     @Override
                     public Scores apply(final FoodItems foodItems) {
                         final Scores scores = new Scores();
@@ -830,44 +923,18 @@ public class DietPlanner extends JFrame {
                         return scores;
                     }
                 };
+            }
 
-                final FoodItem[] allFoodItems = FoodItem.values();
-                final Map<FoodItem, Double> foodItemValues = new HashMap<FoodItem, Double>();
-                final Evaluation<FoodItems> foodItemsEvaluation = evaluation(new FoodItems(), evaluationFunction);
-                while (!isCancelled()) {
-                    final FoodItem foodItem = allFoodItems[RANDOM.nextInt(allFoodItems.length)];
-                    final Double valObj = foodItemValues.get(foodItem);
-                    final double value = valObj == null ? 0.0 : valObj;
-                    final double oldScore = foodItemsEvaluation.getTotalScore();
-                    foodItemsEvaluation.getObject().add(foodItem, foodItem.getPortionAmount());
-                    foodItemsEvaluation.invalidate();
-                    final double newScore = foodItemsEvaluation.getTotalScore();
-                    foodItemValues.put(foodItem, value + newScore - oldScore);
-
-                    if (foodItemsEvaluation.getObject().getEnergy() >= REQUIREMENTS.getEnergyDemand()) {
-                        foodItemsEvaluation.getObject().clear();
-                        foodItemsEvaluation.invalidate();
-                    }
-                }
-
-                final ArrayList<Pair<FoodItem, Double>> sortedFoodItemValues = new ArrayList<Pair<FoodItem, Double>>();
-                foodItemValues.forEach(new BiConsumer<FoodItem, Double>() {
-                    @Override
-                    public void accept(final FoodItem foodItem, final Double value) {
-                        sortedFoodItemValues.add(pair(foodItem, value));
-                    }
-                });
-                sortedFoodItemValues.sort(new Comparator<Pair<FoodItem, Double>>() {
-                    @Override
-                    public int compare(final Pair<FoodItem, Double> foodItemValue1,
-                                       final Pair<FoodItem, Double> foodItemValue2) {
-                        return foodItemValue2.b().compareTo(foodItemValue1.b()); // Sort by value in descending order
-                    }
-                });
-                for (final Pair<FoodItem, Double> foodItemValue : sortedFoodItemValues) {
-                    System.out.println(foodItemValue.a() + ": " + foodItemValue.b());
-                }
-                return Optional.empty();
+            private FoodItem selectFoodItem(final List<FoodItem> foodItems,
+                                            final Map<FoodItem, Double> foodItemValues) {
+                final int foodItemIndex = selectElement(foodItems, RANDOM.nextDouble(),
+                        new Function<FoodItem, Double>() {
+                            @Override
+                            public Double apply(final FoodItem foodItem) {
+                                return foodItemValues.get(foodItem);
+                            }
+                        });
+                return foodItems.get(foodItemIndex);
             }
 
             @Override
@@ -1058,7 +1125,7 @@ public class DietPlanner extends JFrame {
                     return candidateMap.get(evaluation) - minValue;
                 }
             };
-            final int winnerIndex = Global.selectElements(candidates, valueAsArrayList(RANDOM.nextDouble()), valFunc).get(0);
+            final int winnerIndex = selectElement(candidates, RANDOM.nextDouble(), valFunc);
             result = candidates.get(winnerIndex);
             System.out.println(result.getTotalScore());
         }

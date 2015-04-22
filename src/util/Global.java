@@ -1,10 +1,9 @@
 package util;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 
+import static java.util.Collections.singletonList;
 import static util.Limits2.limits2;
 
 public abstract class Global {
@@ -21,8 +20,8 @@ public abstract class Global {
      * @param <T>       Element type
      * @return indices of selected elements
      */
-    public static <T> ArrayList<Integer> selectElements(final ArrayList<T> all,
-                                                        final ArrayList<Double> selectors,
+    public static <T> ArrayList<Integer> selectElements(final List<T> all,
+                                                        final List<Double> selectors,
                                                         final Function<T, Double> valFunc) {
         final ArrayList<Integer> indices = new ArrayList<Integer>();
 
@@ -82,9 +81,9 @@ public abstract class Global {
         return indices;
     }
 
-    public static <T> ArrayList<T> valueAsArrayList(final T value) {
-        final ArrayList<T> arrayList = new ArrayList<T>(1);
-        arrayList.add(value);
-        return arrayList;
+    public static <T> int selectElement(final List<T> all,
+                                        final double selector,
+                                        final Function<T, Double> valFunc) {
+        return selectElements(all, singletonList(selector), valFunc).get(0);
     }
 }
