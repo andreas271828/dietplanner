@@ -39,7 +39,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread9();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread11();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -937,6 +937,124 @@ public class DietPlanner extends JFrame {
                             }
                         });
                 return foodItems.get(foodItemIndex);
+            }
+
+            @Override
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    best = Optional.of(evaluation);
+                    System.out.println("Total score of best diet plan: " + evaluation.getTotalScore());
+                }
+            }
+        };
+    }
+
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread10() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                // TODO: Get list of variable ingredients from template instead of diet plan and create initital diet
+                // plan using that list?
+                DietPlan dietPlan = createStartDietPlan();
+                final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+                while (dietPlan.getEnergy() < REQUIREMENTS.getEnergyDemand()) {
+                    final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                    final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                    final Optional<DietPlan> maybeNewDietPlan = dietPlan.addPortion(ingredientId);
+                    if (maybeNewDietPlan.isPresent()) {
+                        dietPlan = maybeNewDietPlan.get();
+                    }
+                }
+
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
+                final Evaluation<DietPlan> evaluation = evaluation(dietPlan, evaluationFunction);
+                for (final Pair<Integer, FoodItem> ingredientId : variableIngredients) {
+                    final Mutable<Double> ingredientDeficit = mutable(0.0);
+                    Optional<DietPlan> maybeDietPlan = dietPlan.removePortion(ingredientId);
+                    while (maybeDietPlan.isPresent()) {
+                        final DietPlan tmpDietPlan = maybeDietPlan.get();
+                        final Evaluation<DietPlan> tmpEvaluation = evaluation(tmpDietPlan, evaluationFunction);
+                        evaluation.getScores().forEach(new BiConsumer<Requirement, ArrayList<Score>>() {
+                            @Override
+                            public void accept(final Requirement requirement, final ArrayList<Score> scores) {
+                                for (int i = 0; i < scores.size(); ++i) {
+                                    final Score score = evaluation.getScore(requirement, i);
+                                    final Score tmpScore = tmpEvaluation.getScore(requirement, i);
+                                    final double deficit = score.getWeightedScore() - tmpScore.getWeightedScore();
+                                    if (deficit > 0.0) {
+                                        ingredientDeficit.set(ingredientDeficit.get() + deficit);
+                                    }
+                                }
+                            }
+                        });
+                        maybeDietPlan = tmpDietPlan.removePortion(ingredientId);
+                    }
+                    System.out.println("Meal " + (ingredientId.a() + 1) + ", " + ingredientId.b() + ": " + ingredientDeficit.get());
+                }
+
+                publish(evaluation);
+                return Optional.empty();
+            }
+
+            @Override
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    best = Optional.of(evaluation);
+                    System.out.println("Total score of best diet plan: " + evaluation.getTotalScore());
+                }
+            }
+        };
+    }
+
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread11() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                // TODO: Get list of variable ingredients from template instead of diet plan and create initital diet
+                // plan using that list?
+                final DietPlan startDietPlan = createStartDietPlan();
+                final ArrayList<Pair<Integer, FoodItem>> variableIngredients = startDietPlan.getVariableIngredients();
+                final ArrayList<Pair<Pair<Integer, FoodItem>, Double>> ingredientValues =
+                        new ArrayList<Pair<Pair<Integer, FoodItem>, Double>>(variableIngredients.size());
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
+                final double baseValue = evaluation(startDietPlan, evaluationFunction).getTotalScore();
+                for (final Pair<Integer, FoodItem> ingredientId : variableIngredients) {
+                    final Mutable<Optional<DietPlan>> maybeDietPlan = mutable(Optional.of(startDietPlan));
+                    final Mutable<Optional<Pair<Double, Double>>> maxValueInfo =
+                            mutable(Optional.<Pair<Double, Double>>empty());
+                    final Mutable<Double> portions = mutable(0.0);
+                    while (maybeDietPlan.get().isPresent()) {
+                        maybeDietPlan.set(maybeDietPlan.get().get().addPortion(ingredientId));
+                        maybeDietPlan.get().ifPresent(new Consumer<DietPlan>() {
+                            @Override
+                            public void accept(final DietPlan newDietPlan) {
+                                portions.set(portions.get() + 1.0);
+                                final Evaluation<DietPlan> evaluation = evaluation(newDietPlan, evaluationFunction);
+                                final double value = evaluation.getTotalScore() - baseValue;
+                                if (value > maxValueInfo.get().get().a()) {
+                                    final Pair<Double, Double> valueInfo = pair(value, portions.get());
+                                    maxValueInfo.set(Optional.of(valueInfo));
+                                }
+                            }
+                        });
+                    }
+
+                    final double ingredientValue = maxValueInfo.get().map(new Function<Pair<Double, Double>, Double>() {
+                        @Override
+                        public Double apply(final Pair<Double, Double> valueInfo) {
+                            // An ingredient that needs to be selected x times to reach its potential, will receive
+                            // x times its basic value.
+                            return valueInfo.a() * valueInfo.b();
+                        }
+                    }).orElse(0.0);
+                    ingredientValues.add(pair(ingredientId, ingredientValue));
+                }
+
+                for (final Pair<Pair<Integer, FoodItem>, Double> ingredientValue : ingredientValues) {
+                    System.out.println(ingredientValue.a() + ": " + ingredientValue.b());
+                }
+
+                return Optional.empty();
             }
 
             @Override
