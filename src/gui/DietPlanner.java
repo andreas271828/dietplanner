@@ -39,7 +39,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread11();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread7();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -587,7 +587,7 @@ public class DietPlanner extends JFrame {
                             if (newAmount <= maxAmount) {
                                 // TODO: Only add if (certain) scores don't get worse? Try with fat and protein.
                                 // TODO: Think of a preference mechanism: select ingredient probabilistically, but prefer those that make things least worse.
-                                // TODO: Do something similar when creatig new meals during optimization.S
+                                // TODO: Do something similar when creatig new meals during optimization.
                                 ingredients.set(foodItem, newAmount);
                                 energy += foodItem.getProperty(FoodProperty.ENERGY) * addAmount;
                             } else {
@@ -1069,12 +1069,13 @@ public class DietPlanner extends JFrame {
 
     private static ArrayList<MealTemplate> getMealTemplates() {
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
-        mealTemplates.add(MUESLI);
-        mealTemplates.add(SALAD);
-        mealTemplates.add(SMOOTHIE);
-        mealTemplates.add(SNACK);
-        mealTemplates.add(STIR_FRY_WITH_PASTA);
-        mealTemplates.add(STIR_FRY_WITH_RICE);
+//        mealTemplates.add(MUESLI);
+//        mealTemplates.add(SALAD);
+//        mealTemplates.add(SMOOTHIE);
+//        mealTemplates.add(SNACK);
+//        mealTemplates.add(STIR_FRY_WITH_PASTA);
+//        mealTemplates.add(STIR_FRY_WITH_RICE);
+        mealTemplates.add(TEST_MIX);
         return mealTemplates;
     }
 

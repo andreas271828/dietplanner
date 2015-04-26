@@ -56,7 +56,7 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_MUESLI_FRUIT, 0.0, 400.0);
         ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 200.0);
         ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 200.0);
-        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 300.0);
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 50.0, 400.0);
         return ingredients;
     }
 
@@ -219,14 +219,14 @@ public enum MealTemplate {
     private static Ingredients getStirFryWithPastaIngredients() {
         final Ingredients ingredients = new Ingredients();
         ingredients.addAll(getStirFryIngredients());
-        ingredients.addByWeight(COLES_PASTA_WHOLEMEAL, 0.0, 200.0);
+        ingredients.addByWeight(COLES_PASTA_WHOLEMEAL, 0.0, 500.0);
         return ingredients;
     }
 
     private static Ingredients getStirFryWithRiceIngredients() {
         final Ingredients ingredients = new Ingredients();
         ingredients.addAll(getStirFryIngredients());
-        ingredients.addByWeight(COLES_RICE_BROWN, 0.0, 200.0);
+        ingredients.addByWeight(COLES_RICE_BROWN, 0.0, 500.0);
         return ingredients;
     }
 

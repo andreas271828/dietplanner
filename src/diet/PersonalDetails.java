@@ -19,7 +19,7 @@ public enum PersonalDetails {
             2.0,
             Optional.<Double>empty(),
             90.0,
-            Optional.of(25.0),
+            Optional.of(20.0),
             limits2(0.9, 1.5),
             Optional.of(limits2(3000.0, 5000.0)),
             false,

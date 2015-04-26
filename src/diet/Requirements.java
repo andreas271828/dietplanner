@@ -20,9 +20,10 @@ public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
     private static final double DEFAULT_MEAL_PROPERTY_WEIGHT = 0.2;
     private static final double CARBOHYDRATES_WEIGHT = 1.0;
-    private static final double FAT_WEIGHT = 1.0;
-    private static final double ENERGY_WEIGHT = 1.0;
-    private static final double PROTEIN_WEIGHT = 1.0;
+    private static final double COSTS_WEIGHT = 10.0;
+    private static final double FAT_WEIGHT = 10.0;
+    private static final double ENERGY_WEIGHT = 5.0;
+    private static final double PROTEIN_WEIGHT = 10.0;
 
     private static final double DEFAULT_TOLERANCE = 0.05;
 
@@ -182,7 +183,7 @@ public class Requirements {
      * @return AUD
      */
     private Optional<ScoreParams> getCostsParams() {
-        return Optional.of(scoreParamsUT(15.0 * days, 0.2, DEFAULT_WEIGHT));
+        return Optional.of(scoreParamsUT(15.0 * days, 0.2, COSTS_WEIGHT));
     }
 
     /**
