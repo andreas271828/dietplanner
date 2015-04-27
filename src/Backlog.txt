@@ -1,7 +1,4 @@
--   Try new algorithm (test with TEST_MIX first):
-    Select score probabilistically (the higher difference to weight the higher the chance to be selected).
-    Create a set of N (e.g. 20) random actions (adding or removing ingredients or more radical actions).
-    Select the best possible action from those N actions (action produces change, action increases selected score [or at least doesn't decrease it]; for the remaining options, if there are some that increase the total score [or doesn't decrease it], select the one that increases the selected score most, otherwise select the one that decreases the total score least).
+-   Try new algorithm (see TODOs in createOptimizationThread12(); test with TEST_MIX first).
 -   Find better function to determine value of food items.
     See handwritten notes for gradient descent algorithm.
     Use that function to create diet plans that are then optimised (use existing algorithms; see notes below).

@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 
 import static diet.DietPlan.dietPlan;
 import static diet.Meal.meal;
-import static diet.MealTemplate.*;
+import static diet.MealTemplate.TEST_MIX;
 import static java.util.Arrays.asList;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
@@ -39,7 +39,7 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread7();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread12();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -1053,6 +1053,58 @@ public class DietPlanner extends JFrame {
                 for (final Pair<Pair<Integer, FoodItem>, Double> ingredientValue : ingredientValues) {
                     System.out.println(ingredientValue.a() + ": " + ingredientValue.b());
                 }
+
+                return Optional.empty();
+            }
+
+            @Override
+            protected void process(final List<Evaluation<DietPlan>> chunks) {
+                for (final Evaluation<DietPlan> evaluation : chunks) {
+                    best = Optional.of(evaluation);
+                    System.out.println("Total score of best diet plan: " + evaluation.getTotalScore());
+                }
+            }
+        };
+    }
+
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread12() {
+        return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
+            @Override
+            protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
+                final DietPlan dietPlan = createStartDietPlan();
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
+                final Evaluation<DietPlan> evaluation = evaluation(dietPlan, evaluationFunction);
+                final Scores scores = evaluation.getScores();
+                final Optional<Pair<Requirement, Integer>> maybeScoreId = scores.selectScoreByDiff(RANDOM.nextDouble());
+
+                final Mutable<Optional<Evaluation<DietPlan>>> maybeNewEvaluation =
+                        mutable(Optional.<Evaluation<DietPlan>>empty());
+                final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+                for (int i = 0; i < 20; ++i) { // TODO: constant
+                    final boolean add = RANDOM.nextBoolean();
+                    final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                    final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                    final Optional<DietPlan> maybeNewDietPlan = add ?
+                            dietPlan.addPortion(ingredientId) :
+                            dietPlan.removePortion(ingredientId);
+                    final double oldScore = evaluation.getScore(maybeScoreId);
+                    maybeNewDietPlan.ifPresent(new Consumer<DietPlan>() {
+                        @Override
+                        public void accept(final DietPlan newDietPlan) {
+                            final Evaluation<DietPlan> newEvaluation = evaluation(newDietPlan, evaluationFunction);
+                            final double newScore = newEvaluation.getScore(maybeScoreId);
+                            if (newScore > oldScore) {
+                                // TODO: If there is already a maybeNewEvaluation:
+                                // If both increase the total score (or at least don't decrease it), choose the one that improves the selected score more.
+                                // If one of them increases the total score (or at least doesn't decrease it), choose that one.
+                                // If both decrease the total score, choose the one that decreases the total score least.
+                                maybeNewEvaluation.set(Optional.of(newEvaluation));
+                                System.out.println(newScore - oldScore);
+                            }
+                        }
+                    });
+                }
+                // TODO: Loop
 
                 return Optional.empty();
             }
