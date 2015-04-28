@@ -1,9 +1,4 @@
--   Try new algorithm (see TODOs in createOptimizationThread12(); test with TEST_MIX first).
--   Find better function to determine value of food items.
-    See handwritten notes for gradient descent algorithm.
-    Use that function to create diet plans that are then optimised (use existing algorithms; see notes below).
--   Try new algorithm for creating individuals: adding ingredients probabilistically until energy demand is reached, where probability depends on how much an additional portion makes scores worse.
--   Finish createOptimizationThread7() (see TODO; refactor).
+-   Improve createOptimizationThread12(). Change combination of meals. Refactor (method, file, project).
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
     Adjust weights and prices.
