@@ -1088,18 +1088,34 @@ public class DietPlanner extends JFrame {
                             dietPlan.addPortion(ingredientId) :
                             dietPlan.removePortion(ingredientId);
                     final double oldScore = evaluation.getScore(maybeScoreId);
+                    final double oldTotalScore = evaluation.getTotalScore();
                     maybeNewDietPlan.ifPresent(new Consumer<DietPlan>() {
                         @Override
                         public void accept(final DietPlan newDietPlan) {
                             final Evaluation<DietPlan> newEvaluation = evaluation(newDietPlan, evaluationFunction);
                             final double newScore = newEvaluation.getScore(maybeScoreId);
                             if (newScore > oldScore) {
-                                // TODO: If there is already a maybeNewEvaluation:
-                                // If both increase the total score (or at least don't decrease it), choose the one that improves the selected score more.
-                                // If one of them increases the total score (or at least doesn't decrease it), choose that one.
-                                // If both decrease the total score, choose the one that decreases the total score least.
-                                maybeNewEvaluation.set(Optional.of(newEvaluation));
-                                System.out.println(newScore - oldScore);
+                                final boolean useNewEvaluation;
+                                if (!maybeNewEvaluation.get().isPresent()) {
+                                    useNewEvaluation = true;
+                                } else {
+                                    final double newTotalScore = newEvaluation.getTotalScore();
+
+                                    final Evaluation<DietPlan> otherEvaluation = maybeNewEvaluation.get().get();
+                                    final double otherScore = otherEvaluation.getScore(maybeScoreId);
+                                    final double otherTotalScore = otherEvaluation.getTotalScore();
+
+                                    if (newTotalScore >= oldTotalScore) {
+                                        useNewEvaluation = otherTotalScore < oldTotalScore || newScore > otherScore;
+                                    } else {
+                                        useNewEvaluation = otherTotalScore < oldTotalScore && newTotalScore > otherTotalScore;
+                                    }
+                                }
+
+                                if (useNewEvaluation) {
+                                    maybeNewEvaluation.set(Optional.of(newEvaluation));
+                                    System.out.println((newScore - oldScore) + "; " + (newEvaluation.getTotalScore() - evaluation.getTotalScore()));
+                                }
                             }
                         }
                     });
