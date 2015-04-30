@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.function.BiConsumer;
 
+import static java.lang.Math.ceil;
 import static util.Limits2.limits2;
 
 public class Ingredients {
@@ -21,7 +22,7 @@ public class Ingredients {
      * @param maxWeight Maximum weight in g
      */
     public void addByWeight(final FoodItem foodItem, final double minWeight, final double maxWeight) {
-        add(foodItem, foodItem.toAmount(minWeight), foodItem.toAmount(maxWeight));
+        add(foodItem, foodItem.weightToAmount(minWeight), foodItem.weightToAmount(maxWeight));
     }
 
     public void addAll(final Ingredients ingredients) {
@@ -50,13 +51,14 @@ public class Ingredients {
         return limits == null ? 0.0 : limits.getMax();
     }
 
-    public FoodItems getMinAmounts() {
+    public FoodItems getMinFoodItems() {
         final FoodItems foodItems = new FoodItems();
         forEach(new BiConsumer<FoodItem, Limits2>() {
             @Override
             public void accept(final FoodItem foodItem, final Limits2 limits) {
-                // TODO: Always round up!
-                foodItems.set(foodItem, foodItem.roundToPortions(limits.getMin()));
+                final int portionsPerItem = foodItem.amountToPortions(1.0);
+                final int minPortions = (int) ceil(limits.getMin() * portionsPerItem);
+                foodItems.set(foodItem, foodItem.portionsToAmount(minPortions));
             }
         });
         return foodItems;

@@ -564,7 +564,7 @@ public class DietPlanner extends JFrame {
                         for (int k = 0; k < numberOfMeals; ++k) {
                             final int mealIndex = k;
                             final MealTemplate mealTemplate = mealTemplates.get(mealIndex);
-                            final FoodItems foodItems = mealTemplate.getMinAmounts();
+                            final FoodItems foodItems = mealTemplate.getMinFoodItems();
                             allIngredients.add(foodItems);
                             mealTemplate.getIngredients().forEach(new BiConsumer<FoodItem, Limits2>() {
                                 @Override
@@ -580,15 +580,16 @@ public class DietPlanner extends JFrame {
                             final int mealIndex = ingredientId.a();
                             final FoodItem foodItem = ingredientId.b();
                             final FoodItems ingredients = allIngredients.get(mealIndex);
-                            final double addAmount = foodItem.getPortionAmount();
-                            final double newAmount = ingredients.get(foodItem) + addAmount;
+                            final double oldAmount = ingredients.get(foodItem);
+                            final int oldPortions = foodItem.amountToPortions(oldAmount);
+                            final double newAmount = foodItem.portionsToAmount(oldPortions + 1);
                             final double maxAmount = mealTemplates.get(mealIndex).getMaxAmount(foodItem);
                             if (newAmount <= maxAmount) {
                                 // TODO: Only add if (certain) scores don't get worse? Try with fat and protein.
                                 // TODO: Think of a preference mechanism: select ingredient probabilistically, but prefer those that make things least worse.
                                 // TODO: Do something similar when creatig new meals during optimization.
                                 ingredients.set(foodItem, newAmount);
-                                energy += foodItem.getProperty(FoodProperty.ENERGY) * addAmount;
+                                energy += foodItem.getProperty(FoodProperty.ENERGY) * (newAmount - oldAmount);
                             } else {
                                 allIngredientIds.remove(ingredientIndex);
                             }
@@ -686,19 +687,20 @@ public class DietPlanner extends JFrame {
                                     if (meal.getTemplate().equals(mealTemplate)) {
                                         meals.add(meal);
                                     } else {
-                                        final FoodItems ingredients = mealTemplate.getMinAmounts();
+                                        final FoodItems ingredients = mealTemplate.getMinFoodItems();
                                         final ArrayList<FoodItem> foodItems = mealTemplate.getIngredients().getFoodItems();
                                         final double targetEnergy = meal.getEnergy();
                                         double energy = ingredients.getEnergy();
                                         while (energy < targetEnergy && !foodItems.isEmpty()) {
                                             final int foodItemIndex = RANDOM.nextInt(foodItems.size());
                                             final FoodItem ingredient = foodItems.get(foodItemIndex);
-                                            final double addAmount = ingredient.getPortionAmount();
-                                            final double newAmount = ingredients.get(ingredient) + addAmount;
+                                            final double oldAmount = ingredients.get(ingredient);
+                                            final int oldPortions = ingredient.amountToPortions(oldAmount);
+                                            final double newAmount = ingredient.portionsToAmount(oldPortions + 1);
                                             final double maxAmount = mealTemplate.getMaxAmount(ingredient);
                                             if (newAmount <= maxAmount) {
                                                 ingredients.set(ingredient, newAmount);
-                                                energy += ingredient.getProperty(FoodProperty.ENERGY) * addAmount;
+                                                energy += ingredient.getProperty(FoodProperty.ENERGY) * (newAmount - oldAmount);
                                             } else {
                                                 foodItems.remove(foodItemIndex);
                                             }
@@ -712,19 +714,20 @@ public class DietPlanner extends JFrame {
                                     if (meal.getTemplate().equals(mealTemplate)) {
                                         meals.add(meal);
                                     } else {
-                                        final FoodItems ingredients = mealTemplate.getMinAmounts();
+                                        final FoodItems ingredients = mealTemplate.getMinFoodItems();
                                         final ArrayList<FoodItem> foodItems = mealTemplate.getIngredients().getFoodItems();
                                         final double targetEnergy = meal.getEnergy();
                                         double energy = ingredients.getEnergy();
                                         while (energy < targetEnergy && !foodItems.isEmpty()) {
                                             final int foodItemIndex = RANDOM.nextInt(foodItems.size());
                                             final FoodItem ingredient = foodItems.get(foodItemIndex);
-                                            final double addAmount = ingredient.getPortionAmount();
-                                            final double newAmount = ingredients.get(ingredient) + addAmount;
+                                            final double oldAmount = ingredients.get(ingredient);
+                                            final int oldPortions = ingredient.amountToPortions(oldAmount);
+                                            final double newAmount = ingredient.portionsToAmount(oldPortions + 1);
                                             final double maxAmount = mealTemplate.getMaxAmount(ingredient);
                                             if (newAmount <= maxAmount) {
                                                 ingredients.set(ingredient, newAmount);
-                                                energy += ingredient.getProperty(FoodProperty.ENERGY) * addAmount;
+                                                energy += ingredient.getProperty(FoodProperty.ENERGY) * (newAmount - oldAmount);
                                             } else {
                                                 foodItems.remove(foodItemIndex);
                                             }
@@ -825,7 +828,7 @@ public class DietPlanner extends JFrame {
                 final FoodItems foodItems = new FoodItems();
                 while (foodItems.getEnergy() < REQUIREMENTS.getEnergyDemand()) {
                     final FoodItem foodItem = selectFoodItem(asList(allFoodItems), foodItemValues);
-                    foodItems.add(foodItem, foodItem.getPortionAmount());
+                    foodItems.add(foodItem, foodItem.portionsToAmount(1));
                 }
                 final Function<FoodItems, Scores> evaluationFunction = getEvaluationFunction();
                 final Evaluation<FoodItems> foodItemsEvaluation = evaluation(foodItems, evaluationFunction);
@@ -845,7 +848,7 @@ public class DietPlanner extends JFrame {
                 while (continueFunc.get()) {
                     final double oldScore = foodItemsEvaluation.getTotalScore();
                     final FoodItem foodItem = allFoodItems[RANDOM.nextInt(allFoodItems.length)];
-                    foodItemsEvaluation.getObject().add(foodItem, foodItem.getPortionAmount());
+                    foodItemsEvaluation.getObject().add(foodItem, foodItem.portionsToAmount(1));
                     foodItemsEvaluation.invalidate();
                     final double newScore = foodItemsEvaluation.getTotalScore();
 

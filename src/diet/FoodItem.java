@@ -1,11 +1,10 @@
 package diet;
 
 import util.LazyValue;
-import util.Limits2;
 
 import java.util.function.BiConsumer;
 
-import static util.Global.nextRandomDoubleInclOne;
+import static java.lang.Math.round;
 
 public enum FoodItem {
     COLES_APPLE_RED_DELICIOUS(Food.APPLE_RED_DELICIOUS_UNPEELED_RAW, 180, 2, 0.99),
@@ -178,20 +177,20 @@ public enum FoodItem {
     TEST_PROTEIN(Food.TEST_PROTEIN, 1000, 1000, 0.0);
 
     private final Food food;
-    private final double itemWeight;
-    private final double portions;
+    private final double weight;
+    private final int portions;
     private final double price;
     private final LazyValue<FoodProperties> properties;
 
     /**
-     * @param food       Food
-     * @param itemWeight Item weight in g
-     * @param portions   Portions per item (After how many meals should an item be finished at the latest?)
-     * @param price      AUD
+     * @param food     Food
+     * @param weight   Item weight in g
+     * @param portions Portions per item (After how many meals should an item be finished at the latest?)
+     * @param price    AUD
      */
-    FoodItem(final Food food, final double itemWeight, final double portions, double price) {
+    FoodItem(final Food food, final double weight, final int portions, double price) {
         this.food = food;
-        this.itemWeight = itemWeight;
+        this.weight = weight;
         this.portions = portions;
         this.price = price;
 
@@ -200,7 +199,7 @@ public enum FoodItem {
             protected FoodProperties compute() {
                 final FoodProperties properties = new FoodProperties();
                 final FoodProperties foodProperties = food.getProperties();
-                final double weightFactor = itemWeight / 100.0; // 100g to item weight
+                final double weightFactor = weight / 100.0; // 100g to item weight
                 foodProperties.forEach(new BiConsumer<FoodProperty, Double>() {
                     @Override
                     public void accept(final FoodProperty foodProperty, final Double amount) {
@@ -230,41 +229,38 @@ public enum FoodItem {
 
     /**
      * @param weight Weight in g
-     * @return amount
+     * @return amount (number of items)
      */
-    public double toAmount(final double weight) {
-        return weight / itemWeight;
+    public double weightToAmount(final double weight) {
+        return weight / this.weight;
     }
 
     /**
-     * @param amount Amount
+     * @param amount Amount (number of items)
      * @return weight in g
      */
-    public double toWeight(final double amount) {
-        return amount * itemWeight;
+    public double amountToWeight(final double amount) {
+        return amount * weight;
     }
 
-    public double getRandomAmount(final Limits2 limits) {
-        return getRandomAmount(limits.getMin(), limits.getMax());
+    /**
+     * @param portions Portions
+     * @return amount (number of items)
+     */
+    public double portionsToAmount(final int portions) {
+        return (double) portions / this.portions;
     }
 
-    public double getRandomAmount(final double minAmount, final double maxAmount) {
-        final double relAmount = nextRandomDoubleInclOne();
-        final double amount = minAmount + relAmount * (maxAmount - minAmount);
-        // TODO: Always round so that amount stays within the limits!
-        return roundToPortions(amount);
-    }
-
-    public double getPortionAmount() {
-        return 1.0 / portions;
-    }
-
-    public double roundToPortions(final double amount) {
-        return Math.round(amount * portions) / portions;
+    /**
+     * @param amount Amount (number of items)
+     * @return portions
+     */
+    public int amountToPortions(final double amount) {
+        return (int) round(amount * portions);
     }
 
     @Override
     public String toString() {
-        return "<" + food.getName() + "; " + itemWeight + "g>";
+        return "<" + food.getName() + "; " + weight + "g>";
     }
 }

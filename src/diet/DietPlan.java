@@ -136,7 +136,8 @@ public class DietPlan {
 
     public Optional<DietPlan> addPortion(final int mealIndex, final FoodItem ingredient) {
         final Meal meal = meals.get(mealIndex);
-        final double newAmount = meal.getAmount(ingredient) + ingredient.getPortionAmount();
+        final int oldPortions = ingredient.amountToPortions(meal.getAmount(ingredient));
+        final double newAmount = ingredient.portionsToAmount(oldPortions + 1);
         final double maxAmount = meal.getTemplate().getMaxAmount(ingredient);
         if (newAmount <= maxAmount) {
             final DietPlan dietPlan = getWithChange(mealIndex, ingredient, newAmount);
@@ -152,11 +153,16 @@ public class DietPlan {
 
     public Optional<DietPlan> removePortion(final int mealIndex, final FoodItem ingredient) {
         final Meal meal = meals.get(mealIndex);
-        final double newAmount = meal.getAmount(ingredient) - ingredient.getPortionAmount();
-        final double minAmount = meal.getTemplate().getMinAmount(ingredient);
-        if (newAmount >= minAmount) {
-            final DietPlan dietPlan = getWithChange(mealIndex, ingredient, newAmount);
-            return Optional.of(dietPlan);
+        final int oldPortions = ingredient.amountToPortions(meal.getAmount(ingredient));
+        if (oldPortions > 0) {
+            final double newAmount = ingredient.portionsToAmount(oldPortions - 1);
+            final double minAmount = meal.getTemplate().getMinAmount(ingredient);
+            if (newAmount >= minAmount) {
+                final DietPlan dietPlan = getWithChange(mealIndex, ingredient, newAmount);
+                return Optional.of(dietPlan);
+            } else {
+                return Optional.empty();
+            }
         } else {
             return Optional.empty();
         }
@@ -272,7 +278,7 @@ public class DietPlan {
                     stringBuilder.append('\t');
                     stringBuilder.append(foodItem.getName());
                     stringBuilder.append(": ");
-                    stringBuilder.append(foodItem.toWeight(amount));
+                    stringBuilder.append(foodItem.amountToWeight(amount));
                     stringBuilder.append("g (");
                     stringBuilder.append(amount);
                     stringBuilder.append(")\n");
@@ -289,7 +295,7 @@ public class DietPlan {
             public void accept(final FoodItem foodItem, final Double amount) {
                 stringBuilder.append(foodItem.getName());
                 stringBuilder.append(": ");
-                stringBuilder.append(foodItem.toWeight(amount));
+                stringBuilder.append(foodItem.amountToWeight(amount));
                 stringBuilder.append("g (");
                 stringBuilder.append(amount);
                 stringBuilder.append(")\n");
