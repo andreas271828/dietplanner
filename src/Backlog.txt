@@ -3,6 +3,7 @@
     Try diet plan.
     Adjust weights and prices.
     Adjust and add meal templates.
+    Prefer diet plans with "nice" shopping lists (amounts of most items close to an integer?, items where it's less important [e.g. salt, rice]?)
 --- POC complete: Develop business.
 -   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
