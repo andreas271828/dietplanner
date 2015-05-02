@@ -108,7 +108,7 @@ public class DietPlan {
     }
 
     public ArrayList<Pair<Integer, FoodItem>> getVariableIngredients() {
-        // TODO: Should be lazy value
+        // TODO: Should be lazy value and probably part of a new class that has an ArrayList of MealTemplates where also the code of createStartDietPlan() belongs to.
         final ArrayList<Pair<Integer, FoodItem>> variableIngredients = new ArrayList<Pair<Integer, FoodItem>>();
         final int numberOfMeals = getNumberOfMeals();
         for (int i = 0; i < numberOfMeals; ++i) {

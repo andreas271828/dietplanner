@@ -1,4 +1,4 @@
--   Improve createOptimizationThread12(). Change combination of meals. Refactor (method, file, project).
+-   See TODO in DietPlan.getVariableIngredients().
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
     Adjust weights and prices.

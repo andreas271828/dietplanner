@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 
 import static diet.DietPlan.dietPlan;
 import static diet.Meal.meal;
+import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 import static optimization.Optimization.optimize;
 import static util.Evaluation.evaluation;
@@ -1073,63 +1074,92 @@ public class DietPlanner extends JFrame {
         return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
-                final DietPlan startDietPlan = createStartDietPlan();
-                final ArrayList<Pair<Integer, FoodItem>> variableIngredients = startDietPlan.getVariableIngredients();
-                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
-                final Evaluation<DietPlan> startEvaluation = evaluation(startDietPlan, evaluationFunction);
+                final int numberOfCandidates = 500;
                 final int numberOfActions = 20;
-                final Mutable<Optional<Evaluation<DietPlan>>> maybeEvaluation = mutable(Optional.of(startEvaluation));
+                final int eliminationInterval = 50;
+
+                final ArrayList<Pair<Evaluation<DietPlan>, Double>> candidates =
+                        new ArrayList<Pair<Evaluation<DietPlan>, Double>>(numberOfCandidates);
+                final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
+                for (int i = 0; i < numberOfCandidates; ++i) {
+                    final Evaluation<DietPlan> evaluation = evaluation(createStartDietPlan(), evaluationFunction);
+                    final double totalScore = evaluation.getTotalScore();
+                    candidates.add(pair(evaluation, totalScore));
+                }
+
+                int iterations = 0;
                 while (!isCancelled()) {
-                    final Evaluation<DietPlan> evaluation = maybeEvaluation.get().get();
-                    final DietPlan dietPlan = evaluation.getObject();
-                    final Scores scores = evaluation.getScores();
-                    final Optional<Pair<Requirement, Integer>> maybeScoreId = scores.selectScoreByDiff(RANDOM.nextDouble());
-                    final double oldScore = evaluation.getScore(maybeScoreId);
-                    final double oldTotalScore = evaluation.getTotalScore();
+                    final ArrayList<Pair<Evaluation<DietPlan>, Double>> oldCandidates =
+                            new ArrayList<Pair<Evaluation<DietPlan>, Double>>(candidates);
+                    candidates.clear();
+                    for (final Pair<Evaluation<DietPlan>, Double> oldCandidate : oldCandidates) {
+                        final Evaluation<DietPlan> evaluation = oldCandidate.a();
+                        final DietPlan dietPlan = evaluation.getObject();
+                        final ArrayList<Pair<Integer, FoodItem>> variableIngredients = dietPlan.getVariableIngredients();
+                        final Scores scores = evaluation.getScores();
+                        final Optional<Pair<Requirement, Integer>> maybeScoreId = scores.selectScoreByDiff(RANDOM.nextDouble());
+                        final double oldScore = evaluation.getScore(maybeScoreId);
+                        final double oldTotalScore = evaluation.getTotalScore();
 
-                    maybeEvaluation.set(Optional.<Evaluation<DietPlan>>empty());
-                    for (int i = 0; i < numberOfActions; ++i) {
-                        final boolean add = RANDOM.nextBoolean();
-                        final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
-                        final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
-                        final Optional<DietPlan> maybeNewDietPlan = add ?
-                                dietPlan.addPortion(ingredientId) :
-                                dietPlan.removePortion(ingredientId);
-                        maybeNewDietPlan.ifPresent(new Consumer<DietPlan>() {
-                            @Override
-                            public void accept(final DietPlan newDietPlan) {
-                                final Evaluation<DietPlan> newEvaluation = evaluation(newDietPlan, evaluationFunction);
-                                final double newScore = newEvaluation.getScore(maybeScoreId);
-                                if (newScore > oldScore) {
-                                    final boolean useNewEvaluation;
-                                    if (!maybeEvaluation.get().isPresent()) {
-                                        useNewEvaluation = true;
-                                    } else {
-                                        final double newTotalScore = newEvaluation.getTotalScore();
-
-                                        final Evaluation<DietPlan> otherEvaluation = maybeEvaluation.get().get();
-                                        final double otherScore = otherEvaluation.getScore(maybeScoreId);
-                                        final double otherTotalScore = otherEvaluation.getTotalScore();
-
-                                        if (newTotalScore >= oldTotalScore) {
-                                            useNewEvaluation = otherTotalScore < oldTotalScore || newScore > otherScore;
+                        final Mutable<Optional<Evaluation<DietPlan>>> maybeNewCandidate =
+                                mutable(Optional.<Evaluation<DietPlan>>empty());
+                        for (int i = 0; i < numberOfActions; ++i) {
+                            final boolean add = RANDOM.nextBoolean();
+                            final int ingredientIndex = RANDOM.nextInt(variableIngredients.size());
+                            final Pair<Integer, FoodItem> ingredientId = variableIngredients.get(ingredientIndex);
+                            final Optional<DietPlan> maybeNewDietPlan = add ?
+                                    dietPlan.addPortion(ingredientId) :
+                                    dietPlan.removePortion(ingredientId);
+                            maybeNewDietPlan.ifPresent(new Consumer<DietPlan>() {
+                                @Override
+                                public void accept(final DietPlan newDietPlan) {
+                                    final Evaluation<DietPlan> newCandidate = evaluation(newDietPlan, evaluationFunction);
+                                    final double newScore = newCandidate.getScore(maybeScoreId);
+                                    if (newScore > oldScore) {
+                                        final boolean useNewCandidate;
+                                        if (!maybeNewCandidate.get().isPresent()) {
+                                            useNewCandidate = true;
                                         } else {
-                                            useNewEvaluation = otherTotalScore < oldTotalScore && newTotalScore > otherTotalScore;
+                                            final double newTotalScore = newCandidate.getTotalScore();
+
+                                            final Evaluation<DietPlan> otherCandidate = maybeNewCandidate.get().get();
+                                            final double otherScore = otherCandidate.getScore(maybeScoreId);
+                                            final double otherTotalScore = otherCandidate.getTotalScore();
+
+                                            if (newTotalScore >= oldTotalScore) {
+                                                useNewCandidate = otherTotalScore < oldTotalScore || newScore > otherScore;
+                                            } else {
+                                                useNewCandidate = otherTotalScore < oldTotalScore && newTotalScore > otherTotalScore;
+                                            }
+                                        }
+
+                                        if (useNewCandidate) {
+                                            maybeNewCandidate.set(Optional.of(newCandidate));
+                                            publish(newCandidate);
                                         }
                                     }
-
-                                    if (useNewEvaluation) {
-                                        maybeEvaluation.set(Optional.of(newEvaluation));
-                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
+
+                        final Evaluation<DietPlan> newCandidate = maybeNewCandidate.get().orElse(evaluation);
+                        final double peakTotalScore = max(oldCandidate.b(), newCandidate.getTotalScore());
+                        candidates.add(pair(newCandidate, peakTotalScore));
                     }
 
-                    if (!maybeEvaluation.get().isPresent()) {
-                        maybeEvaluation.set(Optional.of(evaluation));
-                    } else {
-                        publish(maybeEvaluation.get().get());
+                    ++iterations;
+                    if (candidates.size() > 1 && iterations % eliminationInterval == 0) {
+                        int worstCandidateIndex = 0;
+                        double worstCandidateScore = candidates.get(0).b();
+                        for (int i = 1; i < candidates.size(); ++i) {
+                            final double candidateScore = candidates.get(i).b();
+                            if (candidateScore < worstCandidateScore) {
+                                worstCandidateIndex = i;
+                                worstCandidateScore = candidateScore;
+                            }
+                        }
+                        candidates.remove(worstCandidateIndex);
+                        System.out.println("Candidates left: " + candidates.size());
                     }
                 }
 
