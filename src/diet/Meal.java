@@ -1,14 +1,6 @@
 package diet;
 
 import util.LazyValue;
-import util.Limits2;
-import util.Mutable;
-
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-
-import static util.Global.RANDOM;
 
 public class Meal {
     private final MealTemplate template;
@@ -59,10 +51,6 @@ public class Meal {
         return properties.get();
     }
 
-    public double getEnergy() {
-        return getProperties().get(FoodProperty.ENERGY);
-    }
-
     public double getCosts() {
         return costs.get();
     }
@@ -71,42 +59,6 @@ public class Meal {
         // TODO: Lazy values can be set using a new private constructor - the modifications are easy to calculate here.
         final FoodItems ingredients = getIngredients().getWithChange(ingredient, newAmount);
         return new Meal(getTemplate(), ingredients);
-    }
-
-    public Meal getWithMutations(final Optional<Meal> maybeCrossoverMeal, final double mutationRate) {
-        final FoodItems foodItems = new FoodItems();
-        final MealTemplate mealTemplate = getTemplate();
-        final Ingredients ingredients = mealTemplate.getIngredients();
-        final int crossoverIngredientIndex = maybeCrossoverMeal.map(new Function<Meal, Integer>() {
-            @Override
-            public Integer apply(final Meal crossoverMeal) {
-                return mealTemplate.equals(crossoverMeal.getTemplate()) ? RANDOM.nextInt(ingredients.getCount() + 1) : 0;
-            }
-        }).orElse(0);
-        final Mutable<Integer> ingredientIndex = Mutable.mutable(0);
-        ingredients.forEach(new BiConsumer<FoodItem, Limits2>() {
-            @Override
-            public void accept(final FoodItem foodItem, final Limits2 limits) {
-                final int i = ingredientIndex.get();
-                ingredientIndex.set(i + 1);
-
-                final Meal meal = i < crossoverIngredientIndex ? maybeCrossoverMeal.get() : Meal.this;
-                final double oldAmount = meal.getAmount(foodItem);
-                if (RANDOM.nextDouble() < mutationRate) {
-                    final int oldPortions = foodItem.amountToPortions(oldAmount);
-                    if (RANDOM.nextBoolean()) {
-                        final double newAmount = foodItem.portionsToAmount(oldPortions + 1);
-                        foodItems.set(foodItem, newAmount <= limits.getMax() ? newAmount : oldAmount);
-                    } else {
-                        final double newAmount = foodItem.portionsToAmount(oldPortions - 1);
-                        foodItems.set(foodItem, newAmount >= limits.getMin() ? newAmount : oldAmount);
-                    }
-                } else {
-                    foodItems.set(foodItem, oldAmount);
-                }
-            }
-        });
-        return meal(mealTemplate, foodItems);
     }
 
     @Override

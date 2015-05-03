@@ -29,10 +29,6 @@ public class ItemList<K extends Enum<K>> {
         }
     }
 
-    public void add(final K item, final double amount) {
-        set(item, get(item) + amount);
-    }
-
     public void add(final ItemList<K> toAdd) {
         for (final Map.Entry<K, Double> entry : toAdd.items.entrySet()) {
             final K item = entry.getKey();
@@ -45,10 +41,6 @@ public class ItemList<K extends Enum<K>> {
             final K item = entry.getKey();
             set(item, get(item) + entry.getValue() * factor);
         }
-    }
-
-    public void clear() {
-        items.clear();
     }
 
     public void forEach(final BiConsumer<K, Double> action) {

@@ -2,7 +2,6 @@ package diet;
 
 import util.Limits2;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.function.BiConsumer;
 
@@ -31,10 +30,6 @@ public class Ingredients {
 
     public int getCount() {
         return ingredients.size();
-    }
-
-    public ArrayList<FoodItem> getFoodItems() {
-        return new ArrayList<FoodItem>(ingredients.keySet());
     }
 
     public void forEach(final BiConsumer<FoodItem, Limits2> action) {

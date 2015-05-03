@@ -25,7 +25,6 @@ public class Test {
     }
 
     private static void runTests() {
-        BinarySearchTest.runTests();
         ScoreFunctionsTest.runTests();
     }
 

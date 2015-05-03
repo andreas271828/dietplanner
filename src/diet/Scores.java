@@ -90,10 +90,6 @@ public class Scores {
         });
     }
 
-    public void forEach(final BiConsumer<Requirement, ArrayList<Score>> action) {
-        scores.forEach(action);
-    }
-
     /**
      * @param sel Selector; number between 0 (incl.) and 1 (excl.)
      * @return score

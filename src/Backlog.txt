@@ -1,4 +1,3 @@
--   Refactor (delete unused code).
 -   Make adjustments until I get a useful diet plan for myself.
     Try diet plan.
     Adjust weights and prices.
