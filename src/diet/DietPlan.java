@@ -13,16 +13,22 @@ import static util.Global.RANDOM;
 import static util.Pair.pair;
 
 public class DietPlan {
+    private final Optional<DietPlanTemplate> maybeTemplate;
     private final ArrayList<Meal> meals;
     private final LazyValue<FoodItems> foodItems;
     private final LazyValue<FoodProperties> properties;
     private final LazyValue<Double> costs;
 
     public static DietPlan dietPlan(final ArrayList<Meal> meals) {
-        return new DietPlan(meals);
+        return new DietPlan(Optional.<DietPlanTemplate>empty(), meals);
     }
 
-    private DietPlan(final ArrayList<Meal> meals) {
+    public static DietPlan dietPlan(final DietPlanTemplate template, final ArrayList<Meal> meals) {
+        return new DietPlan(Optional.of(template), meals);
+    }
+
+    private DietPlan(final Optional<DietPlanTemplate> maybeTemplate, final ArrayList<Meal> meals) {
+        this.maybeTemplate = maybeTemplate;
         this.meals = meals;
 
         foodItems = new LazyValue<FoodItems>() {
@@ -108,7 +114,10 @@ public class DietPlan {
     }
 
     public ArrayList<Pair<Integer, FoodItem>> getVariableIngredients() {
-        // TODO: Should be lazy value and probably part of a new class that has an ArrayList of MealTemplates where also the code of createStartDietPlan() belongs to.
+        if (maybeTemplate.isPresent()) {
+            return maybeTemplate.get().getVariableIngredients();
+        }
+
         final ArrayList<Pair<Integer, FoodItem>> variableIngredients = new ArrayList<Pair<Integer, FoodItem>>();
         final int numberOfMeals = getNumberOfMeals();
         for (int i = 0; i < numberOfMeals; ++i) {
@@ -131,7 +140,7 @@ public class DietPlan {
         changedMeals.addAll(meals.subList(0, mealIndex));
         changedMeals.add(meals.get(mealIndex).getWithChange(ingredient, newAmount));
         changedMeals.addAll(meals.subList(mealIndex + 1, numberOfMeals));
-        return new DietPlan(changedMeals);
+        return new DietPlan(maybeTemplate, changedMeals);
     }
 
     public Optional<DietPlan> addPortion(final int mealIndex, final FoodItem ingredient) {

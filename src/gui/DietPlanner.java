@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static diet.DietPlan.dietPlan;
+import static diet.DietPlanTemplate.dietPlanTemplate;
 import static diet.Meal.meal;
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
@@ -1192,12 +1193,8 @@ public class DietPlanner extends JFrame {
 
     private static DietPlan createStartDietPlan() {
         final int numberOfMeals = REQUIREMENTS.getNumberOfMeals();
-        final ArrayList<Meal> meals = new ArrayList<Meal>(numberOfMeals);
-        for (int i = 0; i < numberOfMeals; ++i) {
-            final int mealTemplateIndex = RANDOM.nextInt(MEAL_TEMPLATES.size());
-            meals.add(MEAL_TEMPLATES.get(mealTemplateIndex).getMinimalMeal());
-        }
-        return dietPlan(meals);
+        final DietPlanTemplate dietPlanTemplate = dietPlanTemplate(MEAL_TEMPLATES, numberOfMeals);
+        return dietPlanTemplate.getMinimalDietPlan();
     }
 
     private static Function<DietPlan, Scores> getEvaluationFunction() {
