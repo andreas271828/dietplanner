@@ -379,6 +379,7 @@ public class Requirements {
      */
     private Optional<ScoreParams> getSugarsParams() {
         // http://www.mydailyintake.net/nutrients/
+        // http://www.nal.usda.gov/fnic/DRI/DRI_Energy/265-338.pdf
         return getParamsFromValuePerDay(getMaxSugarsPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {

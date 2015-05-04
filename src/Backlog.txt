@@ -1,9 +1,5 @@
--   Make adjustments until I get a useful diet plan for myself.
-    Try diet plan.
-    Adjust weights and prices.
-    Adjust and add meal templates.
-    Prefer diet plans with "nice" shopping lists (amounts of most items close to an integer?, items where it's less important [e.g. salt, rice]?)
---- POC complete: Develop business.
+-   Amounts per week for food items: minimum, maximum, multiples of
+-   Try and adjust (prices, meal templates, ...).
 -   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
 -   Improve optimisation algorithm:
@@ -11,5 +7,5 @@
     What could be useful, is to focus on one score in each population, rather than on the total score in all of them.
 -   Create user interface
 -   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.
--   About, warnings and information (calculation of requirements / meaning of limits, only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol, intermittent fasting [http://mysportsdconnect.com/category/sports-nutrition-podcast/])
+-   About, warnings and information (calculation of requirements / meaning of limits, only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol, intermittent fasting [http://mysportsdconnect.com/category/sports-nutrition-podcast/], third-party information, names are from database - peel, cook etc. where appropriate)
 -   Parallel computation

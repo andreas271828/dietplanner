@@ -65,6 +65,7 @@ public enum MealTemplate {
         ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 2.0);
         ingredients.add(COLES_AVOCADO, 0.0, 1.0);
         ingredients.add(COLES_BEETROOT, 0.0, 1.0);
+        ingredients.addByWeight(COLES_BREAD_MIXED_GRAIN, 0.0, 400.0);
         ingredients.addByWeight(COLES_BROCCOLI, 0.0, 100.0);
         ingredients.add(COLES_CABBAGE_RED, 0.0, 1.0);
         ingredients.add(COLES_CABBAGE_WHITE, 0.0, 1.0);

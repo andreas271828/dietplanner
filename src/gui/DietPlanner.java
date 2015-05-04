@@ -26,6 +26,7 @@ public class DietPlanner extends JFrame {
     private static final ArrayList<MealTemplate> MEAL_TEMPLATES = getMealTemplates();
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();
+    private final long startTime;
 
     private JPanel panel;
     private JButton stopButton;
@@ -35,11 +36,16 @@ public class DietPlanner extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(panel);
 
-        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread12();
+        final SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> optimizationThread = createOptimizationThread();
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent event) {
                 optimizationThread.cancel(false);
+
+                final long endTime = System.nanoTime();
+                System.out.println();
+                System.out.println("Optimisation finished. Time elapsed: " + ((endTime - startTime) / 1e9) + " sec");
+                System.out.println();
 
                 best.ifPresent(new Consumer<Evaluation<DietPlan>>() {
                     @Override
@@ -86,10 +92,11 @@ public class DietPlanner extends JFrame {
         pack();
         setVisible(true);
 
+        startTime = System.nanoTime();
         optimizationThread.execute();
     }
 
-    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread12() {
+    private SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>> createOptimizationThread() {
         return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
@@ -190,7 +197,14 @@ public class DietPlanner extends JFrame {
                 for (final Evaluation<DietPlan> evaluation : chunks) {
                     if (!best.isPresent() || evaluation.getTotalScore() > best.get().getTotalScore()) {
                         best = Optional.of(evaluation);
-                        System.out.println("Total score of best diet plan: " + evaluation.getTotalScore());
+
+                        final Scores scores = evaluation.getScores();
+                        final double totalScore = scores.getTotalScore();
+                        final double weightSum = scores.getWeightSum();
+                        final long endTime = System.nanoTime();
+                        final double seconds = (endTime - startTime) / 1e9;
+                        System.out.println("Total score of best diet plan: " + totalScore + " / " + weightSum +
+                                " (" + (100.0 * totalScore / weightSum) + "%); Time elapsed: " + seconds + " sec");
                     }
                 }
             }
