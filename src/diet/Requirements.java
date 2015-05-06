@@ -1,7 +1,9 @@
 package diet;
 
 import util.Limits2;
+import util.Pair;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Optional;
 import java.util.function.Function;
@@ -11,6 +13,7 @@ import static diet.PersonalDetails.Gender.FEMALE;
 import static diet.PersonalDetails.Gender.MALE;
 import static diet.ScoreParams.*;
 import static util.Limits2.limits2;
+import static util.Pair.pair;
 
 public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
@@ -28,6 +31,9 @@ public class Requirements {
     private final int numberOfMeals;
 
     private final EnumMap<Requirement, Optional<ScoreParams>> requirements;
+
+    final ArrayList<Pair<FoodItem, Double>> lowerLimits;
+    final ArrayList<Pair<FoodItem, Double>> upperLimits;
 
     public Requirements(final PersonalDetails personalDetails, final double days, final int numberOfMeals) {
         this.personalDetails = personalDetails;
@@ -66,12 +72,25 @@ public class Requirements {
         requirements.put(Requirement.VITAMIN_C, getVitaminCParams());
         requirements.put(Requirement.VITAMIN_E, getVitaminEParams());
         requirements.put(Requirement.ZINC, getZincParams());
+
         requirements.put(Requirement.MEAL_ALCOHOL, getMealAlcoholParams());
         requirements.put(Requirement.MEAL_CAFFEINE, getMealCaffeineParams());
         requirements.put(Requirement.MEAL_CARBOHYDRATES, getMealCarbohydratesParams());
         requirements.put(Requirement.MEAL_ENERGY, getMealEnergyParams());
         requirements.put(Requirement.MEAL_FAT, getMealFatParams());
         requirements.put(Requirement.MEAL_PROTEIN, getMealProteinParams());
+
+        lowerLimits = new ArrayList<Pair<FoodItem, Double>>();
+        final ArrayList<Pair<FoodItem, Double>> lowerLimitsPerDay = personalDetails.getLowerLimits();
+        for (final Pair<FoodItem, Double> lowerLimitPerDay : lowerLimitsPerDay) {
+            lowerLimits.add(pair(lowerLimitPerDay.a(), lowerLimitPerDay.b() * days));
+        }
+
+        upperLimits = new ArrayList<Pair<FoodItem, Double>>();
+        final ArrayList<Pair<FoodItem, Double>> upperLimitsPerDay = personalDetails.getUpperLimits();
+        for (final Pair<FoodItem, Double> upperLimitPerDay : upperLimitsPerDay) {
+            upperLimits.add(pair(upperLimitPerDay.a(), upperLimitPerDay.b() * days));
+        }
     }
 
     public int getNumberOfMeals() {
@@ -80,6 +99,18 @@ public class Requirements {
 
     public Optional<ScoreParams> getParams(final Requirement requirement) {
         return requirements.containsKey(requirement) ? requirements.get(requirement) : Optional.<ScoreParams>empty();
+    }
+
+    public ArrayList<Pair<FoodItem, Double>> getLowerLimits() {
+        return lowerLimits;
+    }
+
+    public ArrayList<Pair<FoodItem, Double>> getUpperLimits() {
+        return upperLimits;
+    }
+
+    public ArrayList<Pair<FoodItem, Double>> getBatchAmounts() {
+        return personalDetails.getBatchAmounts();
     }
 
     private Optional<ScoreParams> getParamsFromValuePerDay(final Optional<Double> maybeValuePerDay,

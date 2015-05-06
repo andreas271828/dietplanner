@@ -1,9 +1,11 @@
 package diet;
 
 import util.Limits2;
+import util.Pair;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +27,10 @@ public enum PersonalDetails {
             false,
             false,
             false,
-            false),
+            false,
+            noConstraints(),
+            noConstraints(),
+            noConstraints()),
     ANDREAS_LOW_CARB(Gender.MALE,
             "14/08/1982",
             1.91,
@@ -39,7 +44,10 @@ public enum PersonalDetails {
             false,
             false,
             false,
-            false);
+            false,
+            noConstraints(),
+            noConstraints(),
+            noConstraints());
 
     public enum Gender {
         MALE,
@@ -61,6 +69,9 @@ public enum PersonalDetails {
     private final boolean lactation;
     private final boolean vegetarian;
     private final boolean vegan;
+    private final ArrayList<Pair<FoodItem, Double>> lowerLimits;
+    private final ArrayList<Pair<FoodItem, Double>> upperLimits;
+    private final ArrayList<Pair<FoodItem, Double>> batchAmounts;
 
     /**
      * @param gender                Gender
@@ -77,6 +88,9 @@ public enum PersonalDetails {
      * @param lactation             boolean
      * @param vegetarian            boolean
      * @param vegan                 boolean
+     * @param lowerLimits           Minimum amount per day for food items
+     * @param upperLimits           Maximum amount per day for food items
+     * @param batchAmounts          The amount of a food item should be close to a multiple of its batch amount.
      */
     PersonalDetails(final Gender gender,
                     final String dateOfBirth,
@@ -91,7 +105,10 @@ public enum PersonalDetails {
                     final boolean pregnancy,
                     final boolean lactation,
                     final boolean vegetarian,
-                    final boolean vegan) {
+                    final boolean vegan,
+                    final ArrayList<Pair<FoodItem, Double>> lowerLimits,
+                    final ArrayList<Pair<FoodItem, Double>> upperLimits,
+                    final ArrayList<Pair<FoodItem, Double>> batchAmounts) {
         this.gender = gender;
         this.age = convertDateOfBirthToAge(dateOfBirth);
         this.bodyHeight = bodyHeight;
@@ -106,6 +123,9 @@ public enum PersonalDetails {
         this.lactation = lactation;
         this.vegetarian = vegetarian;
         this.vegan = vegan;
+        this.lowerLimits = lowerLimits;
+        this.upperLimits = upperLimits;
+        this.batchAmounts = batchAmounts;
     }
 
     private double convertDateOfBirthToAge(final String dateOfBirth) {
@@ -196,6 +216,18 @@ public enum PersonalDetails {
         return vegan;
     }
 
+    public ArrayList<Pair<FoodItem, Double>> getLowerLimits() {
+        return lowerLimits;
+    }
+
+    public ArrayList<Pair<FoodItem, Double>> getUpperLimits() {
+        return upperLimits;
+    }
+
+    public ArrayList<Pair<FoodItem, Double>> getBatchAmounts() {
+        return batchAmounts;
+    }
+
     /**
      * @return kJ per day
      */
@@ -204,5 +236,9 @@ public enum PersonalDetails {
         final double a = gender == Gender.MALE ? 5 : -161;
         final double b = 10 * idealBodyWeight + 625 * bodyHeight - 5 * age;
         return a + b * 4.184;
+    }
+
+    private static ArrayList<Pair<FoodItem, Double>> noConstraints() {
+        return new ArrayList<Pair<FoodItem, Double>>();
     }
 }
