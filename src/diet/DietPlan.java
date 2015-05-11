@@ -211,20 +211,22 @@ public class DietPlan {
         // Food item constraints
         final FoodItems foodItems = getFoodItems();
         final ArrayList<Pair<FoodItem, Double>> lowerLimits = requirements.getLowerLimits();
-        for (final Pair lowerLimit : lowerLimits) {
+        for (final Pair<FoodItem, Double> lowerLimit : lowerLimits) {
             final double score = 0.0; // TODO: std?
             final double weight = 1.0; // TODO
             scores.addScore(Requirement.FOOD_ITEM_LOWER_LIMIT, score, weight);
         }
         final ArrayList<Pair<FoodItem, Double>> upperLimits = requirements.getUpperLimits();
-        for (final Pair upperLimit : upperLimits) {
+        for (final Pair<FoodItem, Double> upperLimit : upperLimits) {
             final double score = 0.0; // TODO: std?
             final double weight = 1.0; // TODO
             scores.addScore(Requirement.FOOD_ITEM_UPPER_LIMIT, score, weight);
         }
+        // TODO: Handle batch amount differently?
         final ArrayList<Pair<FoodItem, Double>> batchAmounts = requirements.getBatchAmounts();
-        for (final Pair batchAmount : batchAmounts) {
-            final double score = 0.0; // TODO: 0 = middle between two batches, 1 = is exactly a multiple of a batch?
+        for (final Pair<FoodItem, Double> batchAmount : batchAmounts) {
+            final double actualAmount = foodItems.get(batchAmount.a());
+            final double score = 2.0 * Math.abs((actualAmount % batchAmount.b()) / batchAmount.b() - 0.5);
             final double weight = 1.0; // TODO
             scores.addScore(Requirement.FOOD_ITEM_BATCH_AMOUNT, score, weight);
         }
