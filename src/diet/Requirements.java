@@ -109,10 +109,6 @@ public class Requirements {
         return upperLimits;
     }
 
-    public ArrayList<Pair<FoodItem, Double>> getBatchAmounts() {
-        return personalDetails.getBatchAmounts();
-    }
-
     private Optional<ScoreParams> getParamsFromValuePerDay(final Optional<Double> maybeValuePerDay,
                                                            final Function<Double, ScoreParams> getParams) {
         return maybeValuePerDay.map(new Function<Double, Double>() {

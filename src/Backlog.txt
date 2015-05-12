@@ -1,5 +1,5 @@
--   See TODOs in DietPlan.getScores() and define limits and batch amounts.
-    ADD WASTE PARAMS TO Requirements. See TODOs around waste and shelf life.
+-   Implement waste criteria properly (incl. shelf life; see TODOs).
+-   See TODOs in DietPlan.getScores() and define limits (e.g. maximum amount of potatoes).
 -   Try and adjust (prices, meal templates, ...).
 -   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

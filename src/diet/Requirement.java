@@ -33,7 +33,6 @@ public enum Requirement {
     VITAMIN_B6("Vitamin B6"),
     VITAMIN_C("Vitamin C"),
     VITAMIN_E("Vitamin E"),
-    WASTE("Waste"),
     ZINC("Zinc"),
 
     MEAL_ALCOHOL("Alcohol in meal"),
@@ -45,7 +44,8 @@ public enum Requirement {
 
     FOOD_ITEM_LOWER_LIMIT("Lower limit for food item"),
     FOOD_ITEM_UPPER_LIMIT("Upper limit for food item"),
-    FOOD_ITEM_BATCH_AMOUNT("Batch amount for food item"); // The amount of a food item should be close to a multiple of its batch amount.
+
+    WASTE("Waste");
 
     private final String name;
 

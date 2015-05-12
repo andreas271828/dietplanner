@@ -217,7 +217,6 @@ public class DietPlan {
         scores.addStandardScore(Requirement.VITAMIN_B6, dietPlanProperties.get(FoodProperty.VITAMIN_B6), requirements);
         scores.addStandardScore(Requirement.VITAMIN_C, dietPlanProperties.get(FoodProperty.VITAMIN_C), requirements);
         scores.addStandardScore(Requirement.VITAMIN_E, dietPlanProperties.get(FoodProperty.VITAMIN_E), requirements);
-        scores.addStandardScore(Requirement.WASTE, getWaste(), requirements);
         scores.addStandardScore(Requirement.ZINC, dietPlanProperties.get(FoodProperty.ZINC), requirements);
 
         // Criteria for individual meals
@@ -247,14 +246,11 @@ public class DietPlan {
             final double weight = 1.0; // TODO
             scores.addScore(Requirement.FOOD_ITEM_UPPER_LIMIT, score, weight);
         }
-        // TODO: Handle batch amount differently?
-        final ArrayList<Pair<FoodItem, Double>> batchAmounts = requirements.getBatchAmounts();
-        for (final Pair<FoodItem, Double> batchAmount : batchAmounts) {
-            final double actualAmount = foodItems.get(batchAmount.a());
-            final double score = 2.0 * Math.abs((actualAmount % batchAmount.b()) / batchAmount.b() - 0.5);
-            final double weight = 1.0; // TODO
-            scores.addScore(Requirement.FOOD_ITEM_BATCH_AMOUNT, score, weight);
-        }
+
+        // Waste (How much food would be left at the end that can't be used anymore?)
+        final double wasteScore = Math.pow(0.99, getWaste()); // TODO: Better equation (find good base)
+        final double wasteWeight = 1.0; // TODO
+        scores.addScore(Requirement.WASTE, wasteScore, wasteWeight);
 
         return scores;
     }

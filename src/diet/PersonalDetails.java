@@ -29,7 +29,6 @@ public enum PersonalDetails {
             false,
             false,
             noConstraints(),
-            noConstraints(),
             noConstraints()),
     ANDREAS_LOW_CARB(Gender.MALE,
             "14/08/1982",
@@ -45,7 +44,6 @@ public enum PersonalDetails {
             false,
             false,
             false,
-            noConstraints(),
             noConstraints(),
             noConstraints());
 
@@ -71,7 +69,6 @@ public enum PersonalDetails {
     private final boolean vegan;
     private final ArrayList<Pair<FoodItem, Double>> lowerLimits;
     private final ArrayList<Pair<FoodItem, Double>> upperLimits;
-    private final ArrayList<Pair<FoodItem, Double>> batchAmounts;
 
     /**
      * @param gender                Gender
@@ -90,7 +87,6 @@ public enum PersonalDetails {
      * @param vegan                 boolean
      * @param lowerLimits           Minimum amount per day for food items
      * @param upperLimits           Maximum amount per day for food items
-     * @param batchAmounts          The amount of a food item should be close to a multiple of its batch amount.
      */
     PersonalDetails(final Gender gender,
                     final String dateOfBirth,
@@ -107,8 +103,7 @@ public enum PersonalDetails {
                     final boolean vegetarian,
                     final boolean vegan,
                     final ArrayList<Pair<FoodItem, Double>> lowerLimits,
-                    final ArrayList<Pair<FoodItem, Double>> upperLimits,
-                    final ArrayList<Pair<FoodItem, Double>> batchAmounts) {
+                    final ArrayList<Pair<FoodItem, Double>> upperLimits) {
         this.gender = gender;
         this.age = convertDateOfBirthToAge(dateOfBirth);
         this.bodyHeight = bodyHeight;
@@ -125,7 +120,6 @@ public enum PersonalDetails {
         this.vegan = vegan;
         this.lowerLimits = lowerLimits;
         this.upperLimits = upperLimits;
-        this.batchAmounts = batchAmounts;
     }
 
     private double convertDateOfBirthToAge(final String dateOfBirth) {
@@ -222,10 +216,6 @@ public enum PersonalDetails {
 
     public ArrayList<Pair<FoodItem, Double>> getUpperLimits() {
         return upperLimits;
-    }
-
-    public ArrayList<Pair<FoodItem, Double>> getBatchAmounts() {
-        return batchAmounts;
     }
 
     /**
