@@ -1,6 +1,5 @@
 -   See TODOs in DietPlan.getScores() and define limits and batch amounts.
-    Batch amount should actually be part of FoodItem and is 1.0 by default. Maybe it's better to define how important it is to be close to the batch amount.
-    Use storability (e.g. the smaller storability, the more important it is that the total amount is close to an integer.
+    ADD WASTE PARAMS TO Requirements. See TODOs around waste and shelf life.
 -   Try and adjust (prices, meal templates, ...).
 -   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

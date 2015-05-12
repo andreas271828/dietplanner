@@ -179,22 +179,22 @@ public enum FoodItem {
     private final Food food;
     private final double weight;
     private final int portions;
-    private final double storability;
+    private final double shelfLife;
     private final double price;
     private final LazyValue<FoodProperties> properties;
 
     /**
-     * @param food        Food
-     * @param weight      Item weight in g
-     * @param portions    Portions per item (After how many meals should an item be finished at the latest?)
-     * @param storability Storability (After how many days should an item be finished?)
-     * @param price       AUD
+     * @param food      Food
+     * @param weight    Item weight in g
+     * @param portions  Portions per item (After how many meals should an item be finished at the latest?)
+     * @param shelfLife Shelf life (After how many days should an item be finished?)
+     * @param price     AUD
      */
-    FoodItem(final Food food, final double weight, final int portions, final double storability, double price) {
+    FoodItem(final Food food, final double weight, final int portions, final double shelfLife, double price) {
         this.food = food;
         this.weight = weight;
         this.portions = portions;
-        this.storability = storability;
+        this.shelfLife = shelfLife;
         this.price = price;
 
         properties = new LazyValue<FoodProperties>() {

@@ -2,12 +2,14 @@ package diet;
 
 import util.LazyValue;
 import util.Limits2;
+import util.Mutable;
 import util.Pair;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
+import static util.Mutable.mutable;
 import static util.Pair.pair;
 
 public class DietPlan {
@@ -16,6 +18,7 @@ public class DietPlan {
     private final LazyValue<FoodItems> foodItems;
     private final LazyValue<FoodProperties> properties;
     private final LazyValue<Double> costs;
+    private final LazyValue<Double> waste;
 
     public static DietPlan dietPlan(final ArrayList<Meal> meals) {
         return new DietPlan(Optional.<DietPlanTemplate>empty(), meals);
@@ -64,6 +67,23 @@ public class DietPlan {
                 return costs;
             }
         };
+
+        waste = new LazyValue<Double>() {
+            @Override
+            protected Double compute() {
+                // TODO: Consider shelf life and maybe also costs
+                final FoodItems foodItems = getFoodItems();
+                final Mutable<Double> waste = mutable(0.0);
+                foodItems.forEach(new BiConsumer<FoodItem, Double>() {
+                    @Override
+                    public void accept(final FoodItem foodItem, final Double amount) {
+                        double foodItemWaste = Math.ceil(amount) - amount;
+                        waste.set(waste.get() + foodItemWaste);
+                    }
+                });
+                return waste.get();
+            }
+        };
     }
 
     public ArrayList<Meal> getMeals() {
@@ -88,6 +108,10 @@ public class DietPlan {
 
     public double getCosts() {
         return costs.get();
+    }
+
+    public double getWaste() {
+        return waste.get();
     }
 
     public ArrayList<Pair<Integer, FoodItem>> getVariableIngredients() {
@@ -193,6 +217,7 @@ public class DietPlan {
         scores.addStandardScore(Requirement.VITAMIN_B6, dietPlanProperties.get(FoodProperty.VITAMIN_B6), requirements);
         scores.addStandardScore(Requirement.VITAMIN_C, dietPlanProperties.get(FoodProperty.VITAMIN_C), requirements);
         scores.addStandardScore(Requirement.VITAMIN_E, dietPlanProperties.get(FoodProperty.VITAMIN_E), requirements);
+        scores.addStandardScore(Requirement.WASTE, getWaste(), requirements);
         scores.addStandardScore(Requirement.ZINC, dietPlanProperties.get(FoodProperty.ZINC), requirements);
 
         // Criteria for individual meals

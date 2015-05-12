@@ -33,6 +33,7 @@ public enum Requirement {
     VITAMIN_B6("Vitamin B6"),
     VITAMIN_C("Vitamin C"),
     VITAMIN_E("Vitamin E"),
+    WASTE("Waste"),
     ZINC("Zinc"),
 
     MEAL_ALCOHOL("Alcohol in meal"),
