@@ -18,7 +18,6 @@ public class DietPlan {
     private final LazyValue<FoodItems> foodItems;
     private final LazyValue<FoodProperties> properties;
     private final LazyValue<Double> costs;
-    private final LazyValue<Double> waste;
 
     public static DietPlan dietPlan(final ArrayList<Meal> meals) {
         return new DietPlan(Optional.<DietPlanTemplate>empty(), meals);
@@ -67,23 +66,6 @@ public class DietPlan {
                 return costs;
             }
         };
-
-        waste = new LazyValue<Double>() {
-            @Override
-            protected Double compute() {
-                // TODO: Consider shelf life and maybe also costs
-                final FoodItems foodItems = getFoodItems();
-                final Mutable<Double> waste = mutable(0.0);
-                foodItems.forEach(new BiConsumer<FoodItem, Double>() {
-                    @Override
-                    public void accept(final FoodItem foodItem, final Double amount) {
-                        double foodItemWaste = Math.ceil(amount) - amount;
-                        waste.set(waste.get() + foodItemWaste);
-                    }
-                });
-                return waste.get();
-            }
-        };
     }
 
     public ArrayList<Meal> getMeals() {
@@ -108,10 +90,6 @@ public class DietPlan {
 
     public double getCosts() {
         return costs.get();
-    }
-
-    public double getWaste() {
-        return waste.get();
     }
 
     public ArrayList<Pair<Integer, FoodItem>> getVariableIngredients() {
@@ -246,9 +224,17 @@ public class DietPlan {
             final double weight = 1.0; // TODO
             scores.addScore(Requirement.FOOD_ITEM_UPPER_LIMIT, score, weight);
         }
-
-        // Waste (How much food would be left at the end that can't be used anymore?)
-        final double wasteScore = Math.pow(0.99, getWaste()); // TODO: Better equation (find good base)
+        final Mutable<Double> waste = mutable(0.0);
+        foodItems.forEach(new BiConsumer<FoodItem, Double>() {
+            @Override
+            public void accept(final FoodItem foodItem, final Double amount) {
+                // TODO: Consider shelf life and maybe also costs
+                // TODO: If days / amount > max(shelf life, days) then reduce score.
+                double foodItemWaste = Math.ceil(amount) - amount;
+                waste.set(waste.get() + foodItemWaste);
+            }
+        });
+        final double wasteScore = Math.pow(0.99, waste.get()); // TODO: Better equation (find good base)
         final double wasteWeight = 1.0; // TODO
         scores.addScore(Requirement.WASTE, wasteScore, wasteWeight);
 
