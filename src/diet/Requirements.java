@@ -27,7 +27,7 @@ public class Requirements {
     private static final double DEFAULT_TOLERANCE = 0.05;
 
     private final PersonalDetails personalDetails;
-    private final double days;
+    private final int days;
     private final int numberOfMeals;
 
     private final EnumMap<Requirement, Optional<ScoreParams>> requirements;
@@ -35,7 +35,7 @@ public class Requirements {
     final ArrayList<Pair<FoodItem, Double>> lowerLimits;
     final ArrayList<Pair<FoodItem, Double>> upperLimits;
 
-    public Requirements(final PersonalDetails personalDetails, final double days, final int numberOfMeals) {
+    public Requirements(final PersonalDetails personalDetails, final int days, final int numberOfMeals) {
         this.personalDetails = personalDetails;
         this.days = days;
         this.numberOfMeals = numberOfMeals;
@@ -91,6 +91,10 @@ public class Requirements {
         for (final Pair<FoodItem, Double> upperLimitPerDay : upperLimitsPerDay) {
             upperLimits.add(pair(upperLimitPerDay.a(), upperLimitPerDay.b() * days));
         }
+    }
+
+    public int getDays() {
+        return days;
     }
 
     public int getNumberOfMeals() {

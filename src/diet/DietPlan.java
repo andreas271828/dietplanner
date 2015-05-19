@@ -225,13 +225,16 @@ public class DietPlan {
             scores.addScore(Requirement.FOOD_ITEM_UPPER_LIMIT, score, weight);
         }
         final Mutable<Double> waste = mutable(0.0);
+        final int days = requirements.getDays();
         foodItems.forEach(new BiConsumer<FoodItem, Double>() {
             @Override
             public void accept(final FoodItem foodItem, final Double amount) {
-                // TODO: Consider shelf life and maybe also costs
-                // TODO: If days / amount > max(shelf life, days) then reduce score.
-                double foodItemWaste = Math.ceil(amount) - amount;
-                waste.set(waste.get() + foodItemWaste);
+                final int timeLimit = Math.max(foodItem.getShelfLife(), days);
+                final double usedUpTime = days / amount;
+                final double wasted = 1.0 - timeLimit / usedUpTime;
+                if (wasted > 0.0) {
+                    waste.set(waste.get() + wasted); // TODO: Consider costs?
+                }
             }
         });
         final double wasteScore = Math.pow(0.99, waste.get()); // TODO: Better equation (find good base)
