@@ -1,5 +1,4 @@
--   Implement waste criteria properly (see TODOs).
--   See TODOs in DietPlan.getScores() and define limits (e.g. maximum amount of potatoes).
+-   See TODOs in DietPlan.getScores().
 -   Try and adjust (prices, meal templates, ...).
 -   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)

@@ -214,15 +214,15 @@ public class DietPlan {
         final FoodItems foodItems = getFoodItems();
         final ArrayList<Pair<FoodItem, Double>> lowerLimits = requirements.getLowerLimits();
         for (final Pair<FoodItem, Double> lowerLimit : lowerLimits) {
-            final double score = 0.0; // TODO: std?
-            final double weight = 1.0; // TODO
-            scores.addScore(Requirement.FOOD_ITEM_LOWER_LIMIT, score, weight);
+            final ScoreParams scoreParams = ScoreParams.scoreParamsLT(lowerLimit.b(), 0.05, 1.0); // TODO
+            final double score = ScoreFunctions.standard(foodItems.get(lowerLimit.a()), scoreParams);
+            scores.addScore(Requirement.FOOD_ITEM_LOWER_LIMIT, score, scoreParams.getWeight());
         }
         final ArrayList<Pair<FoodItem, Double>> upperLimits = requirements.getUpperLimits();
         for (final Pair<FoodItem, Double> upperLimit : upperLimits) {
-            final double score = 0.0; // TODO: std?
-            final double weight = 1.0; // TODO
-            scores.addScore(Requirement.FOOD_ITEM_UPPER_LIMIT, score, weight);
+            final ScoreParams scoreParams = ScoreParams.scoreParamsUT(upperLimit.b(), 0.05, 1.0); // TODO
+            final double score = ScoreFunctions.standard(foodItems.get(upperLimit.a()), scoreParams);
+            scores.addScore(Requirement.FOOD_ITEM_UPPER_LIMIT, score, scoreParams.getWeight());
         }
         final Mutable<Double> waste = mutable(0.0);
         final int days = requirements.getDays();

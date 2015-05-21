@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static util.Limits2.limits2;
+import static util.Pair.pair;
 
 public enum PersonalDetails {
     // If fat, protein and sugar are limited too much, it's difficult to get enough energy without violating other limits.
@@ -28,8 +29,8 @@ public enum PersonalDetails {
             false,
             false,
             false,
-            noConstraints(),
-            noConstraints()),
+            lowerLimitsAndreas(),
+            upperLimitsAndreas()),
     ANDREAS_LOW_CARB(Gender.MALE,
             "14/08/1982",
             1.91,
@@ -230,5 +231,16 @@ public enum PersonalDetails {
 
     private static ArrayList<Pair<FoodItem, Double>> noConstraints() {
         return new ArrayList<Pair<FoodItem, Double>>();
+    }
+
+    private static ArrayList<Pair<FoodItem, Double>> lowerLimitsAndreas() {
+        final ArrayList<Pair<FoodItem, Double>> lowerLimitsAndreas = new ArrayList<Pair<FoodItem, Double>>();
+        return lowerLimitsAndreas;
+    }
+
+    private static ArrayList<Pair<FoodItem, Double>> upperLimitsAndreas() {
+        final ArrayList<Pair<FoodItem, Double>> upperLimitsAndreas = new ArrayList<Pair<FoodItem, Double>>();
+        upperLimitsAndreas.add(pair(FoodItem.COLES_POTATO, FoodItem.COLES_POTATO.weightToAmount(500.0)));
+        return upperLimitsAndreas;
     }
 }
