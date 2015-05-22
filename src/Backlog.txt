@@ -1,11 +1,7 @@
--   See TODOs in DietPlan.getScores().
--   Try and adjust (prices, meal templates, ...).
--   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs
--   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?)
--   Improve optimisation algorithm:
-    Most experiments haven't shown significant improvements of the scores or convergence speed.
-    What could be useful, is to focus on one score in each population, rather than on the total score in all of them.
--   Create user interface
--   Improve parameterisation, calculation of criteria (consider TODOs, "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php), etc.
+-   Try and adjust.
+-   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs.
+-   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?).
+-   Create user interface.
 -   About, warnings and information (calculation of requirements / meaning of limits, only a calculator, ask a professional, use organic products and ethical sources, water, water filter, different types of fat, heating fat, cholesterol, intermittent fasting [http://mysportsdconnect.com/category/sports-nutrition-podcast/], third-party information, names are from database - peel, cook etc. where appropriate)
--   Parallel computation
+    "Ketogenic diets and physical performance.pdf", No-Meat-Athlete-Cheat-Sheet1.jpg, http://www.ewg.org/foodnews/list.php
+-   Implement parallel computation.
