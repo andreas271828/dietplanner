@@ -22,7 +22,7 @@ import static util.Mutable.mutable;
 import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
-    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 7, 21);
+    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 6, 18);
     private static final ArrayList<MealTemplate> MEAL_TEMPLATES = getMealTemplates();
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();
@@ -217,8 +217,8 @@ public class DietPlanner extends JFrame {
         mealTemplates.add(MealTemplate.SALAD);
         mealTemplates.add(MealTemplate.SMOOTHIE);
         mealTemplates.add(MealTemplate.SNACK);
-        mealTemplates.add(MealTemplate.STIR_FRY_WITH_PASTA);
-        mealTemplates.add(MealTemplate.STIR_FRY_WITH_RICE);
+//        mealTemplates.add(MealTemplate.STIR_FRY_WITH_PASTA);
+//        mealTemplates.add(MealTemplate.STIR_FRY_WITH_RICE);
 //        mealTemplates.add(MealTemplate.TEST_MIX);
         return mealTemplates;
     }

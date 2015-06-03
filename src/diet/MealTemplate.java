@@ -53,10 +53,11 @@ public enum MealTemplate {
 
     private static Ingredients getMuesliIngredients() {
         final Ingredients ingredients = new Ingredients();
+        ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 0.0, 200.0);
         ingredients.addByWeight(COLES_MUESLI_FRUIT, 0.0, 400.0);
         ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 200.0);
         ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 200.0);
-        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 50.0, 400.0);
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 100.0, 400.0);
         return ingredients;
     }
 
@@ -86,7 +87,6 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_LETTUCE, 0.0, 200.0);
         ingredients.addByWeight(COLES_MAYONNAISE, 0.0, 300.0);
         ingredients.addByWeight(COLES_MUSHROOM, 0.0, 100.0);
-        ingredients.add(COLES_MUSSEL_DRAINED, 0.0, 1.0);
         ingredients.addByWeight(COLES_OIL_OLIVE, 1.0, 100.0);
         ingredients.addByWeight(COLES_OLIVE_GREEN, 0.0, 50.0);
         ingredients.add(COLES_ONION, 0.0, 0.5);
@@ -135,30 +135,64 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_STRAWBERRY_FROZEN, 0.0, 200.0);
         ingredients.add(COLES_TOMATO, 0.0, 1.0);
         ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 100.0);
-        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL, 0.0, 200.0);
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 200.0);
         ingredients.addByWeight(COLES_WATERCRESS, 0.0, 20.0);
         return ingredients;
     }
 
     private static Ingredients getSnackIngredients() {
         final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 2.0);
         ingredients.add(COLES_AVOCADO, 0.0, 1.0);
+        ingredients.addByWeight(COLES_BACON, 0.0, 200.0);
+        ingredients.add(COLES_BANANA, 0.0, 2.0);
         ingredients.addByWeight(COLES_BREAD_MIXED_GRAIN, 0.0, 400.0);
         ingredients.addByWeight(COLES_BUTTER, 0.0, 100.0);
+        ingredients.add(COLES_CAPSICUM_GREEN, 0.0, 1.0);
+        ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
+        ingredients.add(COLES_CARROT, 0.0, 2.0);
+        ingredients.addByWeight(COLES_CELERY, 0.0, 100.0);
+        ingredients.add(COLES_CHEESE_CHEDDAR, 0.0, 200.0);
+        ingredients.add(COLES_CHEESE_COLBY, 0.0, 200.0);
         ingredients.addByWeight(COLES_CHEESE_COTTAGE_REDUCED_FAT, 0.0, 500.0);
+        ingredients.addByWeight(COLES_CHEESE_CREAM, 0.0, 200.0);
+        ingredients.addByWeight(COLES_CHEESE_GOAT, 0.0, 200.0);
+        ingredients.addByWeight(COLES_CHEESE_GOUDA, 0.0, 200.0);
+        ingredients.addByWeight(COLES_CHEESE_SWISS, 0.0, 200.0);
+        ingredients.addByWeight(COLES_CHOCOLATE_DARK_ORGANIC, 0.0, 200.0);
+        ingredients.add(COLES_CUCUMBER, 0.0, 1.0);
+        ingredients.addByWeight(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 250.0);
+        ingredients.addByWeight(COLES_HAM_LEG, 0.0, 250.0);
+        ingredients.addByWeight(COLES_HONEY, 0.0, 100.0);
+        ingredients.add(COLES_KIWIFRUIT, 0.0, 1.0);
+        ingredients.addByWeight(COLES_LEEK, 0.0, 100.0);
+        ingredients.add(COLES_MACKEREL, 0.0, 1.0);
         ingredients.add(COLES_MANDARIN, 0.0, 3.0);
         ingredients.add(COLES_MANGO, 0.0, 1.0);
+        ingredients.addByWeight(COLES_MAYONNAISE, 0.0, 100.0);
+        ingredients.addByWeight(COLES_MILK_ALMOND, 0.0, 250.0);
+        ingredients.addByWeight(COLES_MILK_GOAT, 0.0, 250.0);
         ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 100.0);
         ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 100.0);
         ingredients.addByWeight(COLES_NUT_MACADAMIA, 0.0, 100.0);
-        ingredients.add(COLES_MACKEREL, 0.0, 1.0);
+        ingredients.addByWeight(COLES_NUT_PECAN, 0.0, 100.0);
         ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 100.0);
         ingredients.addByWeight(COLES_OLIVE_GREEN, 0.0, 100.0);
         ingredients.add(COLES_ORANGE, 0.0, 2.0);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 5.0);
+        ingredients.addByWeight(COLES_RADISH, 0.0, 200.0);
+        ingredients.addByWeight(COLES_SALAMI_HUNGARIAN, 0.0, 250.0);
         ingredients.addByWeight(COLES_SALMON_SMOKED, 0.0, 300.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
+        ingredients.add(COLES_SARDINE_IN_OIL_UNDRAINED, 0.0, 1.0);
+        ingredients.addByWeight(COLES_STRAWBERRY, 0.0, 250.0);
         ingredients.addByWeight(COLES_TEA_CHAMOMILE, 0.0, 2.0);
         ingredients.addByWeight(COLES_TEA_MINT, 0.0, 2.0);
+        ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 250.0);
+        ingredients.add(COLES_TOMATO, 0.0, 2.0);
+        ingredients.add(COLES_TUNA_IN_OIL_DRAINED, 0.0, 1.0);
         ingredients.addByWeight(COLES_WATERCRESS, 0.0, 20.0);
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 250.0);
         return ingredients;
     }
 
@@ -220,14 +254,14 @@ public enum MealTemplate {
     private static Ingredients getStirFryWithPastaIngredients() {
         final Ingredients ingredients = new Ingredients();
         ingredients.addAll(getStirFryIngredients());
-        ingredients.addByWeight(COLES_PASTA_WHOLEMEAL, 0.0, 500.0);
+        ingredients.addByWeight(COLES_PASTA_WHOLEMEAL, 0.0, 350.0);
         return ingredients;
     }
 
     private static Ingredients getStirFryWithRiceIngredients() {
         final Ingredients ingredients = new Ingredients();
         ingredients.addAll(getStirFryIngredients());
-        ingredients.addByWeight(COLES_RICE_BROWN, 0.0, 500.0);
+        ingredients.addByWeight(COLES_RICE_BROWN, 0.0, 350.0);
         return ingredients;
     }
 
@@ -311,7 +345,6 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_MUESLI_FRUIT, 0.0, 500.0);
         ingredients.addByWeight(COLES_MUESLI_FRUIT_NUTS, 0.0, 500.0);
         ingredients.addByWeight(COLES_MUSHROOM, 0.0, 400.0);
-        ingredients.add(COLES_MUSSEL_DRAINED, 0.0, 1.0);
         ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 200.0);
         ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 200.0);
         ingredients.addByWeight(COLES_NUT_MACADAMIA, 0.0, 200.0);

@@ -240,6 +240,7 @@ public enum PersonalDetails {
 
     private static ArrayList<Pair<FoodItem, Double>> upperLimitsAndreas() {
         final ArrayList<Pair<FoodItem, Double>> upperLimitsAndreas = new ArrayList<Pair<FoodItem, Double>>();
+        upperLimitsAndreas.add(pair(FoodItem.COLES_CELERY, FoodItem.COLES_POTATO.weightToAmount(200.0)));
         upperLimitsAndreas.add(pair(FoodItem.COLES_POTATO, FoodItem.COLES_POTATO.weightToAmount(500.0)));
         return upperLimitsAndreas;
     }
