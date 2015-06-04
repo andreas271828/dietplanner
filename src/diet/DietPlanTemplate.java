@@ -15,12 +15,13 @@ public class DietPlanTemplate {
     private final LazyValue<DietPlan> minimalDietPlan;
     private final LazyValue<ArrayList<Pair<Integer, FoodItem>>> variableIngredients;
 
-    public static DietPlanTemplate dietPlanTemplate(final ArrayList<MealTemplate> mealTemplateOptions,
+    public static DietPlanTemplate dietPlanTemplate(final ArrayList<Pair<MealTemplate, Limits2>> mealTemplateOptions,
                                                     final int numberOfMeals) {
+        // TODO: Use templates that have not been used often enough; then those that have been used less than the max. amount.
         final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>(numberOfMeals);
         for (int i = 0; i < numberOfMeals; ++i) {
             final int mealTemplateIndex = RANDOM.nextInt(mealTemplateOptions.size());
-            mealTemplates.add(mealTemplateOptions.get(mealTemplateIndex));
+            mealTemplates.add(mealTemplateOptions.get(mealTemplateIndex).a());
         }
         return new DietPlanTemplate(mealTemplates);
     }

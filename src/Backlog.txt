@@ -1,3 +1,5 @@
+-   Introduce limits for meal templates (max. 3 stir-fries of each type).
+    See TODO in DietPlanTemplate.dietPlanTemplate().
 -   Try and adjust.
 -   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs.
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?).

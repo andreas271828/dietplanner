@@ -19,10 +19,6 @@ public class DietPlan {
     private final LazyValue<FoodProperties> properties;
     private final LazyValue<Double> costs;
 
-    public static DietPlan dietPlan(final ArrayList<Meal> meals) {
-        return new DietPlan(Optional.<DietPlanTemplate>empty(), meals);
-    }
-
     public static DietPlan dietPlan(final DietPlanTemplate template, final ArrayList<Meal> meals) {
         return new DietPlan(Optional.of(template), meals);
     }

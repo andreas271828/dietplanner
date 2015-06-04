@@ -99,7 +99,6 @@ public enum MealTemplate {
         ingredients.add(COLES_TOMATO, 0.0, 2.0);
         ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 200.0);
         ingredients.add(COLES_TUNA_IN_OIL_DRAINED, 0.0, 2.0);
-        ingredients.addByWeight(COLES_WATERCRESS, 0.0, 20.0);
         return ingredients;
     }
 
@@ -136,7 +135,6 @@ public enum MealTemplate {
         ingredients.add(COLES_TOMATO, 0.0, 1.0);
         ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 100.0);
         ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 200.0);
-        ingredients.addByWeight(COLES_WATERCRESS, 0.0, 20.0);
         return ingredients;
     }
 
@@ -146,8 +144,8 @@ public enum MealTemplate {
         ingredients.add(COLES_AVOCADO, 0.0, 1.0);
         ingredients.addByWeight(COLES_BACON, 0.0, 200.0);
         ingredients.add(COLES_BANANA, 0.0, 2.0);
-        ingredients.addByWeight(COLES_BREAD_MIXED_GRAIN, 0.0, 400.0);
-        ingredients.addByWeight(COLES_BUTTER, 0.0, 100.0);
+        ingredients.addByWeight(COLES_BREAD_MIXED_GRAIN, 0.0, 500.0);
+        ingredients.addByWeight(COLES_BUTTER, 0.0, 150.0);
         ingredients.add(COLES_CAPSICUM_GREEN, 0.0, 1.0);
         ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
         ingredients.add(COLES_CARROT, 0.0, 2.0);
@@ -191,7 +189,6 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 250.0);
         ingredients.add(COLES_TOMATO, 0.0, 2.0);
         ingredients.add(COLES_TUNA_IN_OIL_DRAINED, 0.0, 1.0);
-        ingredients.addByWeight(COLES_WATERCRESS, 0.0, 20.0);
         ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 250.0);
         return ingredients;
     }
@@ -402,7 +399,6 @@ public enum MealTemplate {
         ingredients.add(COLES_TUNA_IN_OIL_DRAINED, 0.0, 1.0);
         ingredients.add(COLES_TUNA_IN_WATER_DRAINED, 0.0, 1.0);
         ingredients.addByWeight(COLES_VEAL, 0.0, 400.0);
-        ingredients.addByWeight(COLES_WATERCRESS, 0.0, 200.0);
         ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL, 0.0, 400.0);
         ingredients.add(COLES_ZUCCHINI, 0.0, 1.0);
         return ingredients;

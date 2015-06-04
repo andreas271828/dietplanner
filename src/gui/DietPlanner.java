@@ -2,6 +2,7 @@ package gui;
 
 import diet.*;
 import util.Evaluation;
+import util.Limits2;
 import util.Mutable;
 import util.Pair;
 
@@ -18,12 +19,13 @@ import static diet.DietPlanTemplate.dietPlanTemplate;
 import static java.lang.Math.max;
 import static util.Evaluation.evaluation;
 import static util.Global.RANDOM;
+import static util.Limits2.limits2;
 import static util.Mutable.mutable;
 import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
     private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 6, 18);
-    private static final ArrayList<MealTemplate> MEAL_TEMPLATES = getMealTemplates();
+    private static final ArrayList<Pair<MealTemplate, Limits2>> MEAL_TEMPLATES = getMealTemplates();
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();
     private final long startTime;
@@ -108,7 +110,8 @@ public class DietPlanner extends JFrame {
                         new ArrayList<Pair<Evaluation<DietPlan>, Double>>(numberOfCandidates);
                 final Function<DietPlan, Scores> evaluationFunction = getEvaluationFunction();
                 for (int i = 0; i < numberOfCandidates; ++i) {
-                    final Evaluation<DietPlan> evaluation = evaluation(createStartDietPlan(), evaluationFunction);
+                    final DietPlan dietPlan = createStartDietPlan();
+                    final Evaluation<DietPlan> evaluation = evaluation(dietPlan, evaluationFunction);
                     final double totalScore = evaluation.getTotalScore();
                     candidates.add(pair(evaluation, totalScore));
                 }
@@ -211,14 +214,14 @@ public class DietPlanner extends JFrame {
         };
     }
 
-    private static ArrayList<MealTemplate> getMealTemplates() {
-        final ArrayList<MealTemplate> mealTemplates = new ArrayList<MealTemplate>();
-        mealTemplates.add(MealTemplate.MUESLI);
-        mealTemplates.add(MealTemplate.SALAD);
-        mealTemplates.add(MealTemplate.SMOOTHIE);
-        mealTemplates.add(MealTemplate.SNACK);
-//        mealTemplates.add(MealTemplate.STIR_FRY_WITH_PASTA);
-//        mealTemplates.add(MealTemplate.STIR_FRY_WITH_RICE);
+    private static ArrayList<Pair<MealTemplate, Limits2>> getMealTemplates() {
+        final ArrayList<Pair<MealTemplate, Limits2>> mealTemplates = new ArrayList<Pair<MealTemplate, Limits2>>();
+        mealTemplates.add(pair(MealTemplate.MUESLI, limits2(3.0, 6.0)));
+        mealTemplates.add(pair(MealTemplate.SALAD, limits2(0.0, 9.0)));
+        mealTemplates.add(pair(MealTemplate.SMOOTHIE, limits2(0.0, 9.0)));
+        mealTemplates.add(pair(MealTemplate.SNACK, limits2(0.0, 9.0)));
+        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_PASTA, limits2(0.0, 3.0)));
+        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_RICE, limits2(0.0, 3.0)));
 //        mealTemplates.add(MealTemplate.TEST_MIX);
         return mealTemplates;
     }
