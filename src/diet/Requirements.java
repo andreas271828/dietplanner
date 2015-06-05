@@ -18,11 +18,12 @@ import static util.Pair.pair;
 public class Requirements {
     private static final double DEFAULT_WEIGHT = 1.0;
     private static final double DEFAULT_MEAL_PROPERTY_WEIGHT = 0.2;
-    private static final double CARBOHYDRATES_WEIGHT = 1.0;
-    private static final double COSTS_WEIGHT = 8.0;
-    private static final double FAT_WEIGHT = 5.0;
     private static final double ENERGY_WEIGHT = 10.0;
-    private static final double PROTEIN_WEIGHT = 5.0;
+    private static final double CARBOHYDRATES_WEIGHT = 1.0;
+    private static final double SUGAR_WEIGHT = 5.0;
+    private static final double FAT_WEIGHT = 4.0;
+    private static final double PROTEIN_WEIGHT = 4.0;
+    private static final double COSTS_WEIGHT = 8.0;
 
     private static final double DEFAULT_TOLERANCE = 0.05;
 
@@ -414,7 +415,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getMaxSugarsPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsU(0.0, total, DEFAULT_WEIGHT);
+                return scoreParamsU(0.0, total, SUGAR_WEIGHT);
             }
         });
     }

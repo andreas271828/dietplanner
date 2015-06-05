@@ -216,13 +216,13 @@ public class DietPlanner extends JFrame {
 
     private static ArrayList<Pair<MealTemplate, Limits2>> getMealTemplates() {
         final ArrayList<Pair<MealTemplate, Limits2>> mealTemplates = new ArrayList<Pair<MealTemplate, Limits2>>();
-        mealTemplates.add(pair(MealTemplate.MUESLI, limits2(3.0, 6.0)));
-        mealTemplates.add(pair(MealTemplate.SALAD, limits2(0.0, 9.0)));
-        mealTemplates.add(pair(MealTemplate.SMOOTHIE, limits2(0.0, 9.0)));
-        mealTemplates.add(pair(MealTemplate.SNACK, limits2(0.0, 9.0)));
-        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_PASTA, limits2(0.0, 3.0)));
-        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_RICE, limits2(0.0, 3.0)));
-//        mealTemplates.add(MealTemplate.TEST_MIX);
+        mealTemplates.add(pair(MealTemplate.MUESLI, limits2(0.15, 0.35)));
+        mealTemplates.add(pair(MealTemplate.SALAD, limits2(0.0, 0.5)));
+        mealTemplates.add(pair(MealTemplate.SMOOTHIE, limits2(0.0, 0.5)));
+        mealTemplates.add(pair(MealTemplate.SNACK, limits2(0.0, 0.5)));
+        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_PASTA, limits2(0.0, 0.2)));
+        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_RICE, limits2(0.0, 0.2)));
+//        mealTemplates.add(pair(MealTemplate.TEST_MIX, limits2(0.0, 1.0)));
         return mealTemplates;
     }
 
