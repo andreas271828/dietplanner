@@ -220,8 +220,9 @@ public class DietPlanner extends JFrame {
         mealTemplates.add(pair(MealTemplate.SALAD, limits2(0.0, 0.5)));
         mealTemplates.add(pair(MealTemplate.SMOOTHIE, limits2(0.0, 0.5)));
         mealTemplates.add(pair(MealTemplate.SNACK, limits2(0.0, 0.5)));
-        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_PASTA, limits2(0.0, 0.2)));
-        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_RICE, limits2(0.0, 0.2)));
+        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_GNOCCHI, limits2(0.0, 0.25)));
+        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_PASTA, limits2(0.0, 0.25)));
+        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_RICE, limits2(0.0, 0.25)));
 //        mealTemplates.add(pair(MealTemplate.TEST_MIX, limits2(0.0, 1.0)));
         return mealTemplates;
     }

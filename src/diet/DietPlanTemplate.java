@@ -42,9 +42,13 @@ public class DietPlanTemplate {
             final Integer oldValue = mealTemplates.get(option.a());
             final int oldCount = oldValue == null ? 0 : oldValue;
             final int maxCount = (int) (option.b().getMax() * numberOfMeals);
-            if (oldCount < maxCount) {
-                mealTemplates.put(option.a(), oldCount + 1);
-                mealCount.set(mealCount.get() + 1);
+            final int maxMore = maxCount - oldCount;
+            if (maxMore > 0) {
+                final int oldMealCount = mealCount.get();
+                final int bound = min(maxMore, numberOfMeals - oldMealCount) + 1;
+                final int addend = RANDOM.nextInt(bound);
+                mealTemplates.put(option.a(), oldCount + addend);
+                mealCount.set(oldMealCount + addend);
             } else {
                 options.remove(index);
             }
