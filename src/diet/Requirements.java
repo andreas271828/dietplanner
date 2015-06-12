@@ -26,6 +26,7 @@ public class Requirements {
     private static final double COSTS_WEIGHT = 8.0;
 
     private static final double DEFAULT_TOLERANCE = 0.05;
+    private static final double ENERGY_TOLERANCE = 0.1;
 
     private final PersonalDetails personalDetails;
     private final int days;
@@ -210,7 +211,7 @@ public class Requirements {
         return getParamsFromValuePerDay(getEnergyDemandPerDay(), new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double total) {
-                return scoreParamsT(total, total, DEFAULT_TOLERANCE, ENERGY_WEIGHT);
+                return scoreParamsT(total, total, ENERGY_TOLERANCE, ENERGY_WEIGHT);
             }
         });
     }
