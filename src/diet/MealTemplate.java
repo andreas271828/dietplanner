@@ -4,6 +4,7 @@ import static diet.FoodItem.*;
 import static diet.Meal.meal;
 
 public enum MealTemplate {
+    AVOCADO_ON_TOAST("Avocado on toast", getAvocadoOnToastIngredients()),
     MUESLI("Muesli", getMuesliIngredients()),
     SALAD("Salad", getSaladIngredients()),
     SMOOTHIE("Smoothie", getSmoothieIngredients()),
@@ -52,12 +53,22 @@ public enum MealTemplate {
         return name;
     }
 
+    private static Ingredients getAvocadoOnToastIngredients() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_AVOCADO, 0.0, 2.0);
+        ingredients.addByWeight(COLES_BASIL_DRIED, 0.0, 5.0);
+        ingredients.addByWeight(COLES_BREAD_MIXED_GRAIN, 0.0, 250.0);
+        ingredients.add(COLES_LEMON, 0.0, 0.25);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 5.0);
+        return ingredients;
+    }
+
     private static Ingredients getMuesliIngredients() {
         final Ingredients ingredients = new Ingredients();
         ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 0.0, 200.0);
-        ingredients.addByWeight(COLES_MUESLI_FRUIT, 0.0, 400.0);
-        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 80.0);
-        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 200.0);
+        ingredients.addByWeight(COLES_MUESLI_FRUIT, 0.0, 200.0);
+        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 60.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 60.0);
         ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 100.0, 400.0);
         return ingredients;
     }
@@ -128,7 +139,7 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 50.0);
         ingredients.addByWeight(COLES_PARSLEY, 0.0, 10.0);
         ingredients.addByWeight(COLES_ROCKET, 0.0, 200.0);
-        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 80.0);
+        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 60.0);
         ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 200.0);
         ingredients.addByWeight(COLES_SPINACH, 0.0, 200.0);
         ingredients.add(COLES_SQUASH, 0.0, 1.0);

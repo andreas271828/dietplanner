@@ -102,7 +102,7 @@ public class DietPlanner extends JFrame {
         return new SwingWorker<Optional<Evaluation<DietPlan>>, Evaluation<DietPlan>>() {
             @Override
             protected Optional<Evaluation<DietPlan>> doInBackground() throws Exception {
-                final int numberOfCandidates = 500;
+                final int numberOfCandidates = 1000;
                 final int numberOfActions = 20;
                 final int eliminationInterval = 50;
 
@@ -216,7 +216,8 @@ public class DietPlanner extends JFrame {
 
     private static ArrayList<Pair<MealTemplate, Limits2>> getMealTemplates() {
         final ArrayList<Pair<MealTemplate, Limits2>> mealTemplates = new ArrayList<Pair<MealTemplate, Limits2>>();
-        mealTemplates.add(pair(MealTemplate.MUESLI, limits2(0.15, 0.35)));
+        mealTemplates.add(pair(MealTemplate.AVOCADO_ON_TOAST, limits2(0.0, 0.3)));
+        mealTemplates.add(pair(MealTemplate.MUESLI, limits2(0.15, 0.4)));
         mealTemplates.add(pair(MealTemplate.SALAD, limits2(0.0, 0.5)));
         mealTemplates.add(pair(MealTemplate.SMOOTHIE, limits2(0.0, 0.5)));
         mealTemplates.add(pair(MealTemplate.SNACK, limits2(0.0, 0.5)));
