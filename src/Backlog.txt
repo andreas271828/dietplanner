@@ -1,4 +1,7 @@
--   Try and adjust.
+-   New strategy:
+    Create three meals that have an optimal combination for 2 full days and I can create mostly by cutting things in the blender and heating them up.
+    One day is more flexible (can be spread out over the week): eating out, fasting, cooking something special
+-   Improve looking for meal template combinations; move ingredients between meals; make direct connections between properties and scores and search for ingredients that influence them.
 -   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs.
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?).
 -   Create user interface.
