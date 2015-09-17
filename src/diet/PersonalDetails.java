@@ -19,7 +19,7 @@ public enum PersonalDetails {
             "14/08/1982",
             1.91,
             80.0,
-            2.0,
+            1.8,
             Optional.<Double>empty(),
             100.0,
             Optional.of(30.0),

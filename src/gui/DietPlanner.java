@@ -24,7 +24,7 @@ import static util.Mutable.mutable;
 import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
-    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 6, 18);
+    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 6, 16);
     private static final ArrayList<Pair<MealTemplate, Limits2>> MEAL_TEMPLATES = getMealTemplates();
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();
@@ -216,11 +216,11 @@ public class DietPlanner extends JFrame {
 
     private static ArrayList<Pair<MealTemplate, Limits2>> getMealTemplates() {
         final ArrayList<Pair<MealTemplate, Limits2>> mealTemplates = new ArrayList<Pair<MealTemplate, Limits2>>();
-        mealTemplates.add(pair(MealTemplate.AVOCADO_ON_TOAST, limits2(0.0, 0.3)));
-        mealTemplates.add(pair(MealTemplate.MUESLI, limits2(0.15, 0.4)));
+        mealTemplates.add(pair(MealTemplate.AVOCADO_ON_TOAST, limits2(0.0, 0.4)));
+        mealTemplates.add(pair(MealTemplate.MUESLI, limits2(0.2, 0.4)));
         mealTemplates.add(pair(MealTemplate.SALAD, limits2(0.0, 0.5)));
         mealTemplates.add(pair(MealTemplate.SMOOTHIE, limits2(0.0, 0.5)));
-        mealTemplates.add(pair(MealTemplate.SNACK, limits2(0.0, 0.5)));
+        mealTemplates.add(pair(MealTemplate.SNACK, limits2(0.1, 0.5)));
         mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_GNOCCHI, limits2(0.0, 0.25)));
         mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_PASTA, limits2(0.0, 0.25)));
         mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_RICE, limits2(0.0, 0.25)));
