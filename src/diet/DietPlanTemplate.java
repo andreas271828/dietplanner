@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import static diet.DietPlan.dietPlan;
-import static java.lang.Math.min;
 import static util.Global.RANDOM;
 import static util.Mutable.mutable;
 import static util.Pair.pair;
@@ -20,37 +19,44 @@ public class DietPlanTemplate {
     private final LazyValue<DietPlan> minimalDietPlan;
     private final LazyValue<ArrayList<Pair<Integer, FoodItem>>> variableIngredients;
 
-    public static DietPlanTemplate dietPlanTemplate(final ArrayList<Pair<MealTemplate, Limits2>> mealTemplateOptions,
+    public static DietPlanTemplate dietPlanTemplate(final ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> mealTemplateOptions,
                                                     final int numberOfMeals) {
         final Map<MealTemplate, Integer> mealTemplates = new HashMap<MealTemplate, Integer>(numberOfMeals);
-        final ArrayList<Pair<MealTemplate, Limits2>> options =
-                new ArrayList<Pair<MealTemplate, Limits2>>(mealTemplateOptions);
+        final ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> options =
+                new ArrayList<Pair<ArrayList<MealTemplate>, Limits2>>(mealTemplateOptions);
         final Mutable<Integer> mealCount = mutable(0);
-        for (final Pair<MealTemplate, Limits2> option : options) {
+        for (final Pair<ArrayList<MealTemplate>, Limits2> option : options) {
             final int minCount = (int) Math.ceil(option.b().getMin() * numberOfMeals);
             final int oldMealCount = mealCount.get();
-            final int availableCount = numberOfMeals - oldMealCount;
-            final int addCount = min(minCount, availableCount);
-            if (addCount > 0) {
-                mealTemplates.put(option.a(), addCount);
-                mealCount.set(oldMealCount + addCount);
+            while (mealCount.get() - oldMealCount < minCount && mealCount.get() < numberOfMeals) {
+                // TODO: Refactor - code duplication
+                final int index = RANDOM.nextInt(option.a().size());
+                final MealTemplate mealTemplate = option.a().get(index);
+                final Integer val = mealTemplates.get(mealTemplate);
+                mealTemplates.put(mealTemplate, (val == null ? 0 : val) + 1);
+                mealCount.set(mealCount.get() + 1);
             }
         }
         while (mealCount.get() < numberOfMeals && !options.isEmpty()) {
-            final int index = RANDOM.nextInt(options.size());
-            final Pair<MealTemplate, Limits2> option = options.get(index);
-            final Integer oldValue = mealTemplates.get(option.a());
-            final int oldCount = oldValue == null ? 0 : oldValue;
+            final int optionsIndex = RANDOM.nextInt(options.size());
+            final Pair<ArrayList<MealTemplate>, Limits2> option = options.get(optionsIndex);
+            final Mutable<Integer> oldCount = mutable(0);
+            for (final MealTemplate mealTemplate : option.a()) {
+                final Integer val = mealTemplates.get(mealTemplate);
+                if (val != null) {
+                    oldCount.set(oldCount.get() + val);
+                }
+            }
             final int maxCount = (int) (option.b().getMax() * numberOfMeals);
-            final int maxMore = maxCount - oldCount;
-            if (maxMore > 0) {
-                final int oldMealCount = mealCount.get();
-                final int bound = min(maxMore, numberOfMeals - oldMealCount) + 1;
-                final int addend = RANDOM.nextInt(bound);
-                mealTemplates.put(option.a(), oldCount + addend);
-                mealCount.set(oldMealCount + addend);
+            if (oldCount.get() < maxCount) {
+                // TODO: Refactor - code duplication
+                final int index = RANDOM.nextInt(option.a().size());
+                final MealTemplate mealTemplate = option.a().get(index);
+                final Integer val = mealTemplates.get(mealTemplate);
+                mealTemplates.put(mealTemplate, (val == null ? 0 : val) + 1);
+                mealCount.set(mealCount.get() + 1);
             } else {
-                options.remove(index);
+                options.remove(optionsIndex);
             }
         }
         return new DietPlanTemplate(mealTemplates);

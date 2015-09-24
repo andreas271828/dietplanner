@@ -1,4 +1,14 @@
--   With the meal templates I need an option to set limits for a group of templates, not just a single one.
+-   Improve randomness for how many of the meal templates are chosen (otherwise there might always be a similar distribution).
+    Choose randomly how many to add rather than always adding 1.
+-   Reduce probability for already chosen meal templates to be chosen again (otherwise meal templates with higher minimum amounts will actually be chosen overproportionally often).
+-   Provide probabilities for meal template groups to be selected, not only lower and upper limits.
+
+-   New algorithm:
+    Select new diet plans by distance from old ones
+    When selecting new diet plans use those with better score more often as origin
+    Choose distances randomly with higher probability for smaller distance
+    Use threshold for individual scores when calculating total score (abort with 0)
+    Lazy and parallel evaluation of scores
 -   Improve looking for meal template combinations; move ingredients between meals; make direct connections between properties and scores and search for ingredients that influence them.
 -   Refactor code; remove unused code; improve threading with SwingWorker; see TODOs.
 -   Write tests (to test correctness but also execution time; avoid randomness; e.g. calculating requirements; use JUnit?).

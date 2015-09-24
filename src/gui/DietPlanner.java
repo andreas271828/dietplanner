@@ -25,7 +25,7 @@ import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
     private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 6, 16);
-    private static final ArrayList<Pair<MealTemplate, Limits2>> MEAL_TEMPLATES = getMealTemplates();
+    private static final ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> MEAL_TEMPLATES = getMealTemplates();
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();
     private final long startTime;
@@ -214,17 +214,27 @@ public class DietPlanner extends JFrame {
         };
     }
 
-    private static ArrayList<Pair<MealTemplate, Limits2>> getMealTemplates() {
-        final ArrayList<Pair<MealTemplate, Limits2>> mealTemplates = new ArrayList<Pair<MealTemplate, Limits2>>();
-        mealTemplates.add(pair(MealTemplate.AVOCADO_ON_TOAST, limits2(0.0, 0.4)));
-        mealTemplates.add(pair(MealTemplate.MUESLI, limits2(0.2, 0.4)));
-        mealTemplates.add(pair(MealTemplate.SALAD, limits2(0.0, 0.5)));
-        mealTemplates.add(pair(MealTemplate.SMOOTHIE, limits2(0.0, 0.5)));
-        mealTemplates.add(pair(MealTemplate.SNACK, limits2(0.1, 0.5)));
-        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_GNOCCHI, limits2(0.0, 0.25)));
-        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_PASTA, limits2(0.0, 0.25)));
-        mealTemplates.add(pair(MealTemplate.STIR_FRY_WITH_RICE, limits2(0.0, 0.25)));
-//        mealTemplates.add(pair(MealTemplate.TEST_MIX, limits2(0.0, 1.0)));
+    private static ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> getMealTemplates() {
+        final ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> mealTemplates =
+                new ArrayList<Pair<ArrayList<MealTemplate>, Limits2>>();
+
+        final ArrayList<MealTemplate> breakfastList = new ArrayList<MealTemplate>();
+        breakfastList.add(MealTemplate.AVOCADO_ON_TOAST);
+        breakfastList.add(MealTemplate.MUESLI);
+        breakfastList.add(MealTemplate.SNACK);
+        mealTemplates.add(pair(breakfastList, limits2(0.3, 1.0)));
+
+        final ArrayList<MealTemplate> stirFryList = new ArrayList<MealTemplate>();
+        stirFryList.add(MealTemplate.STIR_FRY_WITH_GNOCCHI);
+        stirFryList.add(MealTemplate.STIR_FRY_WITH_PASTA);
+        stirFryList.add(MealTemplate.STIR_FRY_WITH_RICE);
+        mealTemplates.add(pair(stirFryList, limits2(0.0, 0.4)));
+
+        final ArrayList<MealTemplate> otherList = new ArrayList<MealTemplate>();
+        otherList.add(MealTemplate.SALAD);
+        otherList.add(MealTemplate.SMOOTHIE);
+        mealTemplates.add(pair(otherList, limits2(0.0, 1.0)));
+
         return mealTemplates;
     }
 
