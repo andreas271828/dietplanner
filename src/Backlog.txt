@@ -1,7 +1,4 @@
--   Improve randomness for how many of the meal templates are chosen (otherwise there might always be a similar distribution).
-    Choose randomly how many to add rather than always adding 1.
--   Reduce probability for already chosen meal templates to be chosen again (otherwise meal templates with higher minimum amounts will actually be chosen overproportionally often).
--   Provide probabilities for meal template groups to be selected, not only lower and upper limits.
+-   Set probability of a meal template group for being chosen after taking care of the lower limits.
 
 -   New algorithm:
     Select new diet plans by distance from old ones
