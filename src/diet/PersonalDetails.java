@@ -234,14 +234,17 @@ public enum PersonalDetails {
     }
 
     private static ArrayList<Pair<FoodItem, Double>> lowerLimitsAndreas() {
+        // Minimum amounts per day
         final ArrayList<Pair<FoodItem, Double>> lowerLimitsAndreas = new ArrayList<Pair<FoodItem, Double>>();
         return lowerLimitsAndreas;
     }
 
     private static ArrayList<Pair<FoodItem, Double>> upperLimitsAndreas() {
+        // Maximum amounts per day
         final ArrayList<Pair<FoodItem, Double>> upperLimitsAndreas = new ArrayList<Pair<FoodItem, Double>>();
-        upperLimitsAndreas.add(pair(FoodItem.COLES_CELERY, FoodItem.COLES_POTATO.weightToAmount(200.0)));
-        upperLimitsAndreas.add(pair(FoodItem.COLES_POTATO, FoodItem.COLES_POTATO.weightToAmount(500.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_CELERY, FoodItem.COLES_CELERY.weightToAmount(100.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_POTATO, FoodItem.COLES_POTATO.weightToAmount(200.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_ROCKET, FoodItem.COLES_ROCKET.weightToAmount(50.0)));
         return upperLimitsAndreas;
     }
 }
