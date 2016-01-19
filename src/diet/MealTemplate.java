@@ -67,10 +67,10 @@ public enum MealTemplate {
         final Ingredients ingredients = new Ingredients();
         ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 0.0, 200.0);
         ingredients.addByWeight(COLES_MUESLI_FRUIT, 0.0, 200.0);
-        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 60.0);
+        // ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 60.0);
         ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 60.0);
-        // ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 100.0, 400.0);
-        ingredients.addByWeight(COLES_ALPINE_COCONUT_MILK_YOGHURT, 50.0, 200.0);
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 100.0, 400.0);
+        // ingredients.addByWeight(COLES_ALPINE_COCONUT_MILK_YOGHURT, 50.0, 200.0);
         return ingredients;
     }
 
@@ -135,18 +135,19 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_LEEK, 0.0, 50.0);
         ingredients.add(COLES_LEMON, 0.0, 1.0);
         // ingredients.add(COLES_MANGO, 0.0, 1.0);
+        ingredients.addByWeight(COLES_MILK_ALMOND, 0.0, 250.0);
         ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 50.0);
         ingredients.addByWeight(COLES_PARSLEY, 0.0, 10.0);
         ingredients.addByWeight(COLES_ROCKET, 0.0, 200.0);
-        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 60.0);
+        // ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 60.0);
         ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 200.0);
         ingredients.addByWeight(COLES_SPINACH, 0.0, 200.0);
-        ingredients.add(COLES_SQUASH, 0.0, 1.0);
+        // ingredients.add(COLES_SQUASH, 0.0, 1.0);
         ingredients.addByWeight(COLES_STRAWBERRY_FROZEN, 0.0, 200.0);
         ingredients.add(COLES_TOMATO, 0.0, 1.0);
         ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 100.0);
-        // ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 200.0);
-        ingredients.addByWeight(COLES_ALPINE_COCONUT_MILK_YOGHURT, 0.0, 200.0);
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 200.0);
+        // ingredients.addByWeight(COLES_ALPINE_COCONUT_MILK_YOGHURT, 0.0, 200.0);
         return ingredients;
     }
 
@@ -188,8 +189,8 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 250.0);
         ingredients.add(COLES_TOMATO, 0.0, 2.0);
         ingredients.add(COLES_TUNA_IN_OIL_DRAINED, 0.0, 1.0);
-        // ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 250.0);
-        ingredients.addByWeight(COLES_ALPINE_COCONUT_MILK_YOGHURT, 0.0, 200.0);
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 250.0);
+        // ingredients.addByWeight(COLES_ALPINE_COCONUT_MILK_YOGHURT, 0.0, 200.0);
         return ingredients;
     }
 
@@ -235,7 +236,7 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_SALMON, 0.0, 500.0);
         ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
         ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 300.0);
-        ingredients.add(COLES_SQUASH, 0.0, 2.0);
+        // ingredients.add(COLES_SQUASH, 0.0, 2.0);
         ingredients.addByWeight(COLES_SQUID, 0.0, 500.0);
         ingredients.add(COLES_SWEET_POTATO, 0.0, 2.0);
         ingredients.addByWeight(COLES_SWEETCORN_FROZEN, 0.0, 200.0);

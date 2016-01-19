@@ -21,7 +21,7 @@ public enum PersonalDetails {
             80.0,
             1.8,
             Optional.<Double>empty(),
-            100.0,
+            120.0,
             Optional.of(30.0),
             limits2(0.9, 1.5),
             Optional.of(limits2(3000.0, 5000.0)),
@@ -242,9 +242,10 @@ public enum PersonalDetails {
     private static ArrayList<Pair<FoodItem, Double>> upperLimitsAndreas() {
         // Maximum amounts per day
         final ArrayList<Pair<FoodItem, Double>> upperLimitsAndreas = new ArrayList<Pair<FoodItem, Double>>();
+        upperLimitsAndreas.add(pair(FoodItem.COLES_CHICKPEA, FoodItem.COLES_CHICKPEA.weightToAmount(80.0)));
         upperLimitsAndreas.add(pair(FoodItem.COLES_CELERY, FoodItem.COLES_CELERY.weightToAmount(100.0)));
         upperLimitsAndreas.add(pair(FoodItem.COLES_POTATO, FoodItem.COLES_POTATO.weightToAmount(200.0)));
-        upperLimitsAndreas.add(pair(FoodItem.COLES_ROCKET, FoodItem.COLES_ROCKET.weightToAmount(50.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_ROCKET, FoodItem.COLES_ROCKET.weightToAmount(40.0)));
         return upperLimitsAndreas;
     }
 }
