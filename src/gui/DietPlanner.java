@@ -1,3 +1,23 @@
+/**********************************************************************
+ DietPlanner
+
+ Copyright (C) 2015-2016 Andreas Huemer
+
+ This file is part of DietPlanner.
+
+ DietPlanner is free software: you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the
+ Free Software Foundation, either version 3 of the License, or (at
+ your option) any later version.
+
+ DietPlanner is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ **********************************************************************/
 package gui;
 
 import diet.*;
@@ -24,7 +44,7 @@ import static util.Mutable.mutable;
 import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
-    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 6, 16);
+    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 5, 15);
     private static final ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> MEAL_TEMPLATES = getMealTemplates();
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();

@@ -1,7 +1,29 @@
+/**********************************************************************
+ DietPlanner
+
+ Copyright (C) 2015-2016 Andreas Huemer
+
+ This file is part of DietPlanner.
+
+ DietPlanner is free software: you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the
+ Free Software Foundation, either version 3 of the License, or (at
+ your option) any later version.
+
+ DietPlanner is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ **********************************************************************/
 package diet;
 
 import static diet.FoodProperty.*;
 
+// Most of the values here were taken from the database that is managed by Food Standards Australia New Zealand:
+// http://www.foodstandards.gov.au/science/monitoringnutrients/ausnut/ausnutdatafiles/Pages/foodnutrient.aspx
 public enum Food {
     ALPINE_COCONUT_MILK_YOGHURT("Alpine Coconut Milk Yoghurt (custom)", 787, 787, 0, 2, 16, 4, 4, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0),
     APPLE_RED_DELICIOUS_UNPEELED_RAW("Apple, red delicious, unpeeled, raw", 248, 230, 84.5, 0.3, 0, 13.8, 13.5, 0.5, 13, 2.3, 0, 0.2, 0, 10, 15, 2, 0.02, 0.01, 0.1, 0.14, 0, 0, 0, 0, 0.02, 0, 6, 0.2, 0.22, 5, 0.5, 0.16, 4, 9, 102, 0.5, 1, 0.06, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
