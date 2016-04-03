@@ -1,22 +1,22 @@
 /**********************************************************************
- DietPlanner
-
- Copyright (C) 2015-2016 Andreas Huemer
-
- This file is part of DietPlanner.
-
- DietPlanner is free software: you can redistribute it and/or modify it
- under the terms of the GNU General Public License as published by the
- Free Software Foundation, either version 3 of the License, or (at
- your option) any later version.
-
- DietPlanner is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * DietPlanner
+ * <p/>
+ * Copyright (C) 2015-2016 Andreas Huemer
+ * <p/>
+ * This file is part of DietPlanner.
+ * <p/>
+ * DietPlanner is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at
+ * your option) any later version.
+ * <p/>
+ * DietPlanner is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  **********************************************************************/
 package diet;
 
@@ -212,6 +212,14 @@ public class DietPlan {
         scores.addStandardScore(Requirement.VITAMIN_C, dietPlanProperties.get(FoodProperty.VITAMIN_C), requirements);
         scores.addStandardScore(Requirement.VITAMIN_E, dietPlanProperties.get(FoodProperty.VITAMIN_E), requirements);
         scores.addStandardScore(Requirement.ZINC, dietPlanProperties.get(FoodProperty.ZINC), requirements);
+
+        // Restrictions
+        final boolean meetsVegetarianRequirement = !requirements.getVegetarian() ||
+                dietPlanProperties.get(FoodProperty.VEGETARIAN) == 0.0; // TODO: epsi
+        scores.addScore(Requirement.VEGETARIAN, meetsVegetarianRequirement ? 1.0 : 0.0, 10.0); // TODO
+        final boolean meetsVeganRequirement = !requirements.getVegan() ||
+                dietPlanProperties.get(FoodProperty.VEGAN) == 0.0; // TODO: epsi
+        scores.addScore(Requirement.VEGAN, meetsVeganRequirement ? 1.0 : 0.0, 10.0); // TODO
 
         // Criteria for individual meals
         final int numberOfMeals = getNumberOfMeals();

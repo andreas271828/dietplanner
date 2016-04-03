@@ -116,9 +116,9 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_LEEK, 0.0, 50.0);
         ingredients.add(COLES_LEMON, 0.0, 0.5);
         ingredients.addByWeight(COLES_LETTUCE, 0.0, 200.0);
-        ingredients.addByWeight(COLES_MAYONNAISE, 0.0, 300.0);
+        ingredients.addByWeight(COLES_MAYONNAISE, 40.0, 300.0);
         ingredients.addByWeight(COLES_MUSHROOM, 0.0, 100.0);
-        ingredients.addByWeight(COLES_OIL_OLIVE, 1.0, 100.0);
+        ingredients.addByWeight(COLES_OIL_OLIVE, 0.0, 100.0);
         ingredients.addByWeight(COLES_OLIVE_GREEN, 0.0, 50.0);
         ingredients.add(COLES_ONION, 0.0, 0.5);
         ingredients.addByWeight(COLES_PARSLEY, 0.0, 10.0);

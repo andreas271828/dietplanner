@@ -1,3 +1,4 @@
+-   Vegetarian / vegan: instead of using scores, teh database should be cleaned from foods that can't be used.
 -   Set probability of a meal template group for being chosen after taking care of the lower limits.
 
 -   New algorithm:
