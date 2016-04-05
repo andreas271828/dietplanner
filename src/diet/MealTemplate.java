@@ -194,6 +194,7 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_MAYONNAISE, 0.0, 100.0);
         ingredients.addByWeight(COLES_MILK_ALMOND, 0.0, 250.0);
         ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 100.0);
+        ingredients.addByWeight(COLES_NUT_BRAZIL, 0.0, 100.0);
         ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 100.0);
         ingredients.addByWeight(COLES_NUT_MACADAMIA, 0.0, 100.0);
         ingredients.addByWeight(COLES_NUT_PECAN, 0.0, 100.0);
@@ -371,6 +372,7 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_MUESLI_FRUIT_NUTS, 0.0, 500.0);
         ingredients.addByWeight(COLES_MUSHROOM, 0.0, 400.0);
         ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 200.0);
+        ingredients.addByWeight(COLES_NUT_BRAZIL, 0.0, 200.0);
         ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 200.0);
         ingredients.addByWeight(COLES_NUT_MACADAMIA, 0.0, 200.0);
         ingredients.addByWeight(COLES_NUT_PECAN, 0.0, 200.0);

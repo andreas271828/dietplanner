@@ -1,22 +1,22 @@
 /**********************************************************************
- DietPlanner
-
- Copyright (C) 2015-2016 Andreas Huemer
-
- This file is part of DietPlanner.
-
- DietPlanner is free software: you can redistribute it and/or modify it
- under the terms of the GNU General Public License as published by the
- Free Software Foundation, either version 3 of the License, or (at
- your option) any later version.
-
- DietPlanner is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * DietPlanner
+ * <p/>
+ * Copyright (C) 2015-2016 Andreas Huemer
+ * <p/>
+ * This file is part of DietPlanner.
+ * <p/>
+ * DietPlanner is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at
+ * your option) any later version.
+ * <p/>
+ * DietPlanner is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  **********************************************************************/
 package diet;
 
@@ -129,6 +129,7 @@ public enum FoodItem {
     COLES_MUSHROOM(Food.MUSHROOM_COMMON_FRESH_OR_FROZEN_RAW, 200, 4, 7, 2.00),
     COLES_MUSSEL_DRAINED(Food.MUSSEL_SMOKED_CANNED_IN_OIL_DRAINED, 85, 1, 7, 2.31),
     COLES_NUT_ALMOND(Food.NUT_ALMOND_WITH_OR_WITHOUT_SKIN_RAW_UNSALTED, 200, 10, 21, 4.20),
+    COLES_NUT_BRAZIL(Food.NUT_BRAZIL_WITH_OR_WITHOUT_SKIN_RAW_UNSALTED, 350, 15, 21, 10.67),
     COLES_NUT_CASHEW(Food.NUT_CASHEW_RAW_UNSALTED, 350, 15, 21, 9.35),
     COLES_NUT_MACADAMIA(Food.NUT_MACADAMIA_RAW_UNSALTED, 350, 15, 21, 15.00),
     COLES_NUT_PECAN(Food.NUT_PECAN_RAW_UNSALTED, 300, 15, 21, 11.00),
