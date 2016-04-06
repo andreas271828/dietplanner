@@ -1,22 +1,22 @@
 /**********************************************************************
- DietPlanner
-
- Copyright (C) 2015-2016 Andreas Huemer
-
- This file is part of DietPlanner.
-
- DietPlanner is free software: you can redistribute it and/or modify it
- under the terms of the GNU General Public License as published by the
- Free Software Foundation, either version 3 of the License, or (at
- your option) any later version.
-
- DietPlanner is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * DietPlanner
+ * <p/>
+ * Copyright (C) 2015-2016 Andreas Huemer
+ * <p/>
+ * This file is part of DietPlanner.
+ * <p/>
+ * DietPlanner is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at
+ * your option) any later version.
+ * <p/>
+ * DietPlanner is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  **********************************************************************/
 package diet;
 
@@ -87,7 +87,9 @@ public enum MealTemplate {
         final Ingredients ingredients = new Ingredients();
         ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 0.0, 200.0);
         ingredients.addByWeight(COLES_MUESLI_FRUIT, 0.0, 200.0);
-        // ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 60.0);
+        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 25.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 60.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 60.0);
         ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 60.0);
         ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 100.0, 400.0);
         // ingredients.addByWeight(COLES_ALPINE_COCONUT_MILK_YOGHURT, 50.0, 200.0);
@@ -408,6 +410,8 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_SAUSAGE_PORK, 0.0, 400.0);
         ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 300.0);
         ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 300.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 300.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 300.0);
         ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 300.0);
         ingredients.addByWeight(COLES_SHALLOT, 0.0, 300.0);
         ingredients.addByWeight(COLES_SNOW_PEA, 0.0, 300.0);
