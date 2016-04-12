@@ -55,18 +55,18 @@ public enum PersonalDetails {
             "14/08/1982",
             1.91,
             80.0,
-            2.0,
+            1.8,
             Optional.of(60.0),
-            30.0,
+            40.0,
             Optional.<Double>empty(),
-            limits2(0.9, 1.1),
+            limits2(0.9, 1.5),
             Optional.of(limits2(3000.0, 5000.0)),
             false,
             false,
             false,
             false,
-            noConstraints(),
-            noConstraints());
+            lowerLimitsAndreas(),
+            upperLimitsAndreas());
 
     public enum Gender {
         MALE,

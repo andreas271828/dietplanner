@@ -44,7 +44,7 @@ import static util.Mutable.mutable;
 import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
-    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 5, 15);
+    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS_LOW_CARB, 5, 15);
     private static final ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> MEAL_TEMPLATES = getMealTemplates();
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();
