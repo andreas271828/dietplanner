@@ -238,6 +238,11 @@ public class DietPlanner extends JFrame {
         final ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> mealTemplates =
                 new ArrayList<Pair<ArrayList<MealTemplate>, Limits2>>();
 
+        final ArrayList<MealTemplate> genericList = new ArrayList<MealTemplate>();
+        genericList.add(MealTemplate.GENERIC_MEAL);
+        mealTemplates.add(pair(genericList, limits2(0.0, 1.0)));
+
+        /*
         final ArrayList<MealTemplate> breakfastList = new ArrayList<MealTemplate>();
         breakfastList.add(MealTemplate.AVOCADO_ON_TOAST);
         breakfastList.add(MealTemplate.MUESLI);
@@ -254,6 +259,7 @@ public class DietPlanner extends JFrame {
         otherList.add(MealTemplate.SALAD);
         otherList.add(MealTemplate.SMOOTHIE);
         mealTemplates.add(pair(otherList, limits2(0.0, 1.0)));
+        */
 
         return mealTemplates;
     }
