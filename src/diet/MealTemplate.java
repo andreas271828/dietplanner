@@ -143,6 +143,7 @@ public enum MealTemplate {
 //        ingredients.add(COLES_CHICKEN_ORGANIC, 0.0, 10.0);
 //maybe//        ingredients.add(COLES_CHICKEN_WING, 0.0, 10.0);
         ingredients.add(COLES_CHICKPEA, 0.0, 1.0);
+        ingredients.addByWeight(COLES_CHILLI, 0.0, 50.0);
         ingredients.add(COLES_CHOCOLATE_DARK_ORGANIC, 0.0, 1.0);
         ingredients.addByWeight(COLES_COCONUT_OIL_ORGANIC, 0.0, 200.0);
         ingredients.add(COLES_CREAM_PURE, 0.0, 1.0);
@@ -517,6 +518,7 @@ public enum MealTemplate {
         ingredients.add(COLES_CHICKEN_FREE_RANGE, 0.0, 750.0);
         ingredients.addByWeight(COLES_CHICKEN_WING, 0.0, 500.0);
         ingredients.addByWeight(COLES_CHICKPEA, 0.0, 400.0);
+        ingredients.addByWeight(COLES_CHILLI, 0.0, 50.0);
         ingredients.addByWeight(COLES_CHOCOLATE_DARK_ORGANIC, 0.0, 200.0);
         ingredients.addByWeight(COLES_COCONUT_OIL_ORGANIC, 0.0, 100.0);
         ingredients.addByWeight(COLES_CREAM_PURE, 0.0, 300.0);
