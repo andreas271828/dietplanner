@@ -1,3 +1,6 @@
+-   Consider different package sizes and prices.
+-   More meal-based settings/algorithm to account for recovery meals etc.
+-   Prefer simpler plans over more complex plans (easier to buy ingredients and to prepare; user defined parameter?).
 -   Vegetarian / vegan: instead of using scores, teh database should be cleaned from foods that can't be used.
 -   Set probability of a meal template group for being chosen after taking care of the lower limits.
 

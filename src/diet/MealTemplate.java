@@ -26,6 +26,17 @@ import static diet.Meal.meal;
 public enum MealTemplate {
     GENERIC_MEAL("Generic meal", getGenericMealIngredients()),
 
+    BREAKFAST_1("Breakfast 1", getBreakfast1()),
+    BREAKFAST_2_WITH_CREAM("Breakfast 2 with cream", getBreakfast2WithCream()),
+    BREAKFAST_2_WITH_DOUBLE_CREAM("Breakfast 2 with double cream", getBreakfast2WithDoubleCream()),
+    BREAKFAST_2_WITH_YOGHURT("Breakfast 2 with yoghurt", getBreakfast2WithYoghurt()),
+    SALAD_1_WITH_MAYONNAISE("Salad 1 with mayonnaise", getSalad1WithMayonnaise()),
+    SALAD_1_WITH_SOUR_CREAM("Salad 1 with sour cream", getSalad1WithSourCream()),
+    SALAD_1_WITH_YOGHURT("Salad 1 with yoghurt", getSalad1WithYoghurt()),
+    SMOOTHIE_1_WITH_ALMONDS("Smoothie 1 with almonds", getSmoothie1WithAlmonds()),
+    SMOOTHIE_1_WITH_YOGHURT("Smoothie 1 with yoghurt", getSmoothie1WithYoghurt()),
+    STIR_FRY_1("Stir-fry 1", getStirFry1()),
+
     AVOCADO_ON_TOAST("Avocado on toast", getAvocadoOnToastIngredients()),
     MUESLI("Muesli", getMuesliIngredients()),
     SALAD("Salad", getSaladIngredients()),
@@ -151,7 +162,7 @@ public enum MealTemplate {
         ingredients.add(COLES_CREAM_SOUR, 0.0, 1.0);
         ingredients.add(COLES_CUCUMBER, 0.0, 2.0);
         ingredients.add(COLES_DILL, 0.0, 1.0);
-        ingredients.add(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 350.0);
+        ingredients.addByWeight(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 350.0);
 //        ingredients.add(COLES_EGG_CHICKEN_ORGANIC, 0.0, 10.0);
         ingredients.add(COLES_GARLIC, 0.0, 1.0);
 //        ingredients.add(COLES_GHEE, 0.0, 10.0);
@@ -247,6 +258,242 @@ public enum MealTemplate {
 //        ingredients.add(COLES_YOGHURT_GREEK_STYLE_NATURAL_LIGHT, 0.0, 10.0);
         ingredients.add(COLES_ZUCCHINI, 0.0, 3.0);
 //        ingredients.add(COLES_ZUCCHINI_ORGANIC, 0.0, 10.0);
+        return ingredients;
+    }
+
+    private static Ingredients getBreakfast1() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 1.0);
+        ingredients.add(COLES_AVOCADO, 0.0, 2.0);
+        ingredients.addByWeight(COLES_BASIL_DRIED, 0.0, 5.0);
+        ingredients.addByWeight(COLES_BASIL, 0.0, 5.0);
+        ingredients.add(COLES_CAPSICUM_GREEN, 0.0, 1.0);
+        ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
+        ingredients.add(COLES_CARROT, 0.0, 1.0);
+        ingredients.addByWeight(COLES_CELERY, 0.0, 50.0);
+        ingredients.add(COLES_CHEESE_BRIE, 0.0, 1.0);
+        ingredients.add(COLES_CHEESE_CAMEMBERT, 0.0, 1.0);
+        ingredients.add(COLES_CHOCOLATE_DARK_ORGANIC, 0.0, 1.0);
+        ingredients.add(COLES_CUCUMBER, 0.0, 0.5);
+        ingredients.add(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 250.0);
+        ingredients.add(COLES_KIWIFRUIT, 0.0, 1.0);
+        ingredients.add(COLES_MANDARIN, 0.0, 2.0);
+        ingredients.add(COLES_MANGO, 0.0, 1.0);
+        ingredients.addByWeight(COLES_MAYONNAISE, 0.0, 200.0);
+        ingredients.addByWeight(COLES_MILK_ALMOND, 0.0, 200.0);
+        ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_BRAZIL, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_MACADAMIA, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_PECAN, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 50.0);
+        ingredients.addByWeight(COLES_OLIVE_GREEN, 0.0, 50.0);
+        ingredients.add(COLES_ORANGE, 0.0, 2.0);
+        ingredients.addByWeight(COLES_PAPRIKA, 0.0, 2.0);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 2.0);
+        ingredients.addByWeight(COLES_RADISH, 0.0, 100.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
+        ingredients.addByWeight(COLES_STRAWBERRY, 0.0, 200.0);
+        ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 100.0);
+        ingredients.add(COLES_TOMATO, 0.0, 1.0);
+        return ingredients;
+    }
+
+    private static Ingredients getBreakfast2() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 1.0);
+        ingredients.add(COLES_BANANA, 0.0, 1.0);
+        ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 0.0, 200.0);
+        ingredients.add(COLES_CHOCOLATE_DARK_ORGANIC, 0.0, 1.0);
+        ingredients.addByWeight(COLES_HONEY, 0.0, 50.0);
+        ingredients.add(COLES_KIWIFRUIT, 0.0, 1.0);
+        ingredients.add(COLES_LEMON, 0.0, 0.5);
+        ingredients.add(COLES_LIME, 0.0, 0.5);
+        ingredients.add(COLES_MANDARIN, 0.0, 2.0);
+        ingredients.addByWeight(COLES_MUESLI_FRUIT, 0.0, 300.0);
+        ingredients.addByWeight(COLES_MUESLI_FRUIT_NUTS, 0.0, 300.0);
+        ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 25.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 50.0);
+        ingredients.addByWeight(COLES_STRAWBERRY, 0.0, 200.0);
+        return ingredients;
+    }
+
+    private static Ingredients getBreakfast2WithCream() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getBreakfast2());
+        ingredients.addByWeight(COLES_CREAM_PURE, 50.0, 300.0);
+        return ingredients;
+    }
+
+    private static Ingredients getBreakfast2WithDoubleCream() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getBreakfast2());
+        ingredients.addByWeight(COLES_CREAM_DOUBLE, 50.0, 300.0);
+        return ingredients;
+    }
+
+    private static Ingredients getBreakfast2WithYoghurt() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getBreakfast2());
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL, 50.0, 300.0);
+        return ingredients;
+    }
+
+    private static Ingredients getSalad1() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 1.0);
+        ingredients.add(COLES_AVOCADO, 0.0, 1.0);
+        ingredients.addByWeight(COLES_BASIL_DRIED, 0.0, 2.0);
+        ingredients.addByWeight(COLES_BASIL, 0.0, 5.0);
+        ingredients.addByWeight(COLES_BROCCOLI, 0.0, 100.0);
+        ingredients.add(COLES_CABBAGE_RED, 0.0, 0.5);
+        ingredients.add(COLES_CABBAGE_WHITE, 0.0, 0.5);
+        ingredients.add(COLES_CAPSICUM_GREEN, 0.0, 1.0);
+        ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
+        ingredients.add(COLES_CARROT, 0.0, 2.0);
+        ingredients.addByWeight(COLES_CELERY, 0.0, 100.0);
+        ingredients.add(COLES_CHEESE_BRIE, 0.0, 1.0);
+        ingredients.add(COLES_CHEESE_CAMEMBERT, 0.0, 1.0);
+        ingredients.add(COLES_CUCUMBER, 0.0, 1.0);
+        ingredients.addByWeight(COLES_DILL, 0.0, 20.0);
+        ingredients.addByWeight(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 300.0);
+        ingredients.addByWeight(COLES_GARLIC, 0.0, 20.0);
+        ingredients.addByWeight(COLES_HONEY, 0.0, 10.0);
+        ingredients.addByWeight(COLES_KALE, 0.0, 100.0);
+        ingredients.add(COLES_LEMON, 0.0, 0.5);
+        ingredients.addByWeight(COLES_LETTUCE, 0.0, 300.0);
+        ingredients.add(COLES_LIME, 0.0, 0.5);
+        ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_BRAZIL, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_MACADAMIA, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_PECAN, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 50.0);
+        ingredients.addByWeight(COLES_OLIVE_GREEN, 0.0, 50.0);
+        ingredients.add(COLES_ONION, 0.0, 0.5);
+        ingredients.addByWeight(COLES_PARSLEY, 0.0, 15.0);
+        ingredients.addByWeight(COLES_QUINOA_ORGANIC, 0.0, 100.0);
+        ingredients.addByWeight(COLES_RADISH, 0.0, 100.0);
+        ingredients.addByWeight(COLES_ROCKET, 0.0, 100.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
+        ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 25.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 25.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 25.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 25.0);
+        ingredients.addByWeight(COLES_SPINACH, 0.0, 200.0);
+        ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 150.0);
+        ingredients.add(COLES_TOMATO, 0.0, 2.0);
+        return ingredients;
+    }
+
+    private static Ingredients getSalad1WithMayonnaise() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getSalad1());
+        ingredients.addByWeight(COLES_MAYONNAISE, 20.0, 200.0);
+        ingredients.addByWeight(COLES_OIL_OLIVE, 0.0, 100.0);
+        return ingredients;
+    }
+
+    private static Ingredients getSalad1WithSourCream() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getSalad1());
+        ingredients.addByWeight(COLES_CREAM_SOUR, 50.0, 300.0);
+        ingredients.addByWeight(COLES_OIL_OLIVE, 10.0, 200.0);
+        return ingredients;
+    }
+
+    private static Ingredients getSalad1WithYoghurt() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getSalad1());
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL, 50.0, 300.0);
+        ingredients.addByWeight(COLES_OIL_OLIVE, 10.0, 200.0);
+        return ingredients;
+    }
+
+    private static Ingredients getSmoothie1() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 1.0);
+        ingredients.add(COLES_BANANA, 1.0, 2.0);
+        ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 0.0, 200.0);
+        ingredients.add(COLES_CARROT, 0.0, 1.0);
+        ingredients.add(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 2.0);
+        ingredients.addByWeight(COLES_GINGER, 0.0, 10.0);
+        ingredients.addByWeight(COLES_HONEY, 0.0, 50.0);
+        ingredients.addByWeight(COLES_KALE, 0.0, 50.0);
+        ingredients.add(COLES_KIWIFRUIT, 0.0, 1.0);
+        ingredients.add(COLES_LEMON, 0.0, 1.0);
+        ingredients.add(COLES_LIME, 0.0, 1.0);
+        ingredients.add(COLES_ROCKET, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SPINACH, 0.0, 100.0);
+        ingredients.addByWeight(COLES_STRAWBERRY_FROZEN, 0.0, 200.0);
+        return ingredients;
+    }
+
+    private static Ingredients getSmoothie1WithAlmonds() {
+        // Make butter or milk from almonds
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getSmoothie1());
+        ingredients.addByWeight(COLES_NUT_ALMOND, 10.0, 100.0);
+        return ingredients;
+    }
+
+    private static Ingredients getSmoothie1WithYoghurt() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getSmoothie1());
+        ingredients.addByWeight(COLES_YOGHURT_GREEK_STYLE_NATURAL, 50.0, 250.0);
+        return ingredients;
+    }
+
+    private static Ingredients getStirFry1() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addByWeight(COLES_BASIL_DRIED, 0.0, 15.0);
+        ingredients.addByWeight(COLES_BASIL, 0.0, 20.0);
+        ingredients.add(COLES_BOK_CHOY, 0.0, 1.0);
+        ingredients.add(COLES_BROCCOLI, 0.0, 0.5);
+        ingredients.addByWeight(COLES_BUTTER, 0.0, 100.0);
+        ingredients.add(COLES_CAPSICUM_GREEN, 0.0, 1.0);
+        ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
+        ingredients.add(COLES_CARROT, 0.0, 1.0);
+        ingredients.add(COLES_CELERY, 0.0, 0.5);
+        ingredients.addByWeight(COLES_CHILLI, 0.0, 50.0);
+        ingredients.addByWeight(COLES_COCONUT_OIL_ORGANIC, 0.0, 100.0);
+        ingredients.addByWeight(COLES_GARLIC, 0.0, 20.0);
+        ingredients.add(COLES_LEEK, 0.0, 0.5);
+        ingredients.addByWeight(COLES_MUSHROOM, 0.0, 300.0);
+        ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 50.0);
+        ingredients.addByWeight(COLES_OIL_OLIVE, 0.0, 50.0);
+        ingredients.addByWeight(COLES_OKRA, 0.0, 100.0);
+        ingredients.add(COLES_ONION, 0.0, 1.0);
+        ingredients.addByWeight(COLES_OREGANO, 0.0, 10.0);
+        ingredients.addByWeight(COLES_PAPRIKA, 0.0, 10.0);
+        ingredients.addByWeight(COLES_PARSLEY, 0.0, 20.0);
+        ingredients.addByWeight(COLES_PEA_FROZEN, 0.0, 200.0);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 5.0);
+        ingredients.add(COLES_POTATO, 0.0, 5.0);
+        ingredients.addByWeight(COLES_TAMARI, 0.0, 50.0);
+        ingredients.addByWeight(COLES_QUINOA_ORGANIC, 0.0, 200.0);
+        ingredients.addByWeight(COLES_RICE_BROWN, 0.0, 200.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
+        ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SPINACH, 0.0, 100.0);
+        ingredients.addByWeight(COLES_SQUASH, 0.0, 2.0);
+        ingredients.add(COLES_SWEET_POTATO, 0.0, 2.0);
+        ingredients.addByWeight(COLES_SWEETCORN_FROZEN, 0.0, 200.0);
+        ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 100.0);
+        ingredients.add(COLES_TOMATO, 0.0, 2.0);
+        ingredients.add(COLES_ZUCCHINI, 0.0, 1.0);
         return ingredients;
     }
 

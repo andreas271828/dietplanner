@@ -238,9 +238,30 @@ public class DietPlanner extends JFrame {
         final ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> mealTemplates =
                 new ArrayList<Pair<ArrayList<MealTemplate>, Limits2>>();
 
+        /* Generic meals
         final ArrayList<MealTemplate> genericList = new ArrayList<MealTemplate>();
         genericList.add(MealTemplate.GENERIC_MEAL);
         mealTemplates.add(pair(genericList, limits2(0.0, 1.0)));
+        */
+
+        final ArrayList<MealTemplate> breakfastList = new ArrayList<MealTemplate>();
+        breakfastList.add(MealTemplate.BREAKFAST_1);
+        breakfastList.add(MealTemplate.BREAKFAST_2_WITH_CREAM);
+        breakfastList.add(MealTemplate.BREAKFAST_2_WITH_DOUBLE_CREAM);
+        breakfastList.add(MealTemplate.BREAKFAST_2_WITH_YOGHURT);
+        breakfastList.add(MealTemplate.SMOOTHIE_1_WITH_ALMONDS);
+        breakfastList.add(MealTemplate.SMOOTHIE_1_WITH_YOGHURT);
+        mealTemplates.add(pair(breakfastList, limits2(0.3, 1.0)));
+
+        final ArrayList<MealTemplate> saladList = new ArrayList<MealTemplate>();
+        saladList.add(MealTemplate.SALAD_1_WITH_MAYONNAISE);
+        saladList.add(MealTemplate.SALAD_1_WITH_SOUR_CREAM);
+        saladList.add(MealTemplate.SALAD_1_WITH_YOGHURT);
+        mealTemplates.add(pair(saladList, limits2(0.1, 1.0)));
+
+        final ArrayList<MealTemplate> stirFryList = new ArrayList<MealTemplate>();
+        stirFryList.add(MealTemplate.STIR_FRY_1);
+        mealTemplates.add(pair(stirFryList, limits2(0.1, 0.3)));
 
         /*
         final ArrayList<MealTemplate> breakfastList = new ArrayList<MealTemplate>();
