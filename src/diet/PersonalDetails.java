@@ -1,22 +1,22 @@
 /**********************************************************************
- DietPlanner
-
- Copyright (C) 2015-2016 Andreas Huemer
-
- This file is part of DietPlanner.
-
- DietPlanner is free software: you can redistribute it and/or modify it
- under the terms of the GNU General Public License as published by the
- Free Software Foundation, either version 3 of the License, or (at
- your option) any later version.
-
- DietPlanner is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * DietPlanner
+ * <p/>
+ * Copyright (C) 2015-2016 Andreas Huemer
+ * <p/>
+ * This file is part of DietPlanner.
+ * <p/>
+ * DietPlanner is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at
+ * your option) any later version.
+ * <p/>
+ * DietPlanner is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  **********************************************************************/
 package diet;
 
@@ -38,13 +38,13 @@ public enum PersonalDetails {
     ANDREAS(Gender.MALE,
             "14/08/1982",
             1.91,
-            80.0,
-            1.8,
+            78.0,
+            1.6,
+            Optional.of(90.0),
+            60.0,
             Optional.<Double>empty(),
-            120.0,
-            Optional.of(30.0),
-            limits2(0.9, 1.5),
-            Optional.of(limits2(3000.0, 5000.0)),
+            limits2(0.9, 1.2),
+            Optional.of(limits2(1000.0, 2000.0)),
             false,
             false,
             false,
@@ -61,6 +61,22 @@ public enum PersonalDetails {
             Optional.<Double>empty(),
             limits2(0.9, 1.5),
             Optional.of(limits2(3000.0, 5000.0)),
+            false,
+            false,
+            false,
+            false,
+            lowerLimitsAndreas(),
+            upperLimitsAndreas()),
+    MEL(Gender.FEMALE,
+            "27/02/1980",
+            1.6,
+            62.0,
+            1.6,
+            Optional.of(50.0),
+            40.0,
+            Optional.<Double>empty(),
+            limits2(0.8, 1.2),
+            Optional.of(limits2(460.0, 920.0)),
             false,
             false,
             false,

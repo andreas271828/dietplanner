@@ -26,6 +26,14 @@ import static diet.Meal.meal;
 public enum MealTemplate {
     GENERIC_MEAL("Generic meal", getGenericMealIngredients()),
 
+    RANDOM_MIX("Random mix", getRandomMix()),
+    AVOCADO_ON_TOAST("Avocado on toast", getAvocadoOnToast()),
+    BOILED_EGGS("Boiled eggs", getBoiledEggs()),
+    FRIED_EGGS("Fried eggs", getFriedEggs()),
+    AVOCADO_ON_TOAST_WITH_FRIED_EGGS("Avocado on toast with fried eggs", getAvocadoOnToastWithFriedEggs()),
+    BOILED_EGGS_WITH_RANDOM_MIX("Boiled eggs with random mix", getBoiledEggsWithRandomMix()),
+    FRIED_EGGS_WITH_RANDOM_MIX("Fried eggs with random mix", getFriedEggsWithRandomMix()),
+
     BREAKFAST_1("Breakfast 1", getBreakfast1()),
     BREAKFAST_2_WITH_CREAM("Breakfast 2 with cream", getBreakfast2WithCream()),
     BREAKFAST_2_WITH_DOUBLE_CREAM("Breakfast 2 with double cream", getBreakfast2WithDoubleCream()),
@@ -37,14 +45,14 @@ public enum MealTemplate {
     SMOOTHIE_1_WITH_YOGHURT("Smoothie 1 with yoghurt", getSmoothie1WithYoghurt()),
     STIR_FRY_1("Stir-fry 1", getStirFry1()),
 
-    AVOCADO_ON_TOAST("Avocado on toast", getAvocadoOnToastIngredients()),
-    MUESLI("Muesli", getMuesliIngredients()),
-    SALAD("Salad", getSaladIngredients()),
-    SMOOTHIE("Smoothie", getSmoothieIngredients()),
-    SNACK("Snack", getSnackIngredients()),
-    STIR_FRY_WITH_GNOCCHI("Stir-fry with gnocchi", getStirFryWithGnocchiIngredients()),
-    STIR_FRY_WITH_PASTA("Stir-fry with pasta", getStirFryWithPastaIngredients()),
-    STIR_FRY_WITH_RICE("Stir-fry with rice", getStirFryWithRiceIngredients()),
+    OLD_AVOCADO_ON_TOAST("Avocado on toast", getAvocadoOnToastIngredients()),
+    OLD_MUESLI("Muesli", getMuesliIngredients()),
+    OLD_SALAD("Salad", getSaladIngredients()),
+    OLD_SMOOTHIE("Smoothie", getSmoothieIngredients()),
+    OLD_SNACK("Snack", getSnackIngredients()),
+    OLD_STIR_FRY_WITH_GNOCCHI("Stir-fry with gnocchi", getStirFryWithGnocchiIngredients()),
+    OLD_STIR_FRY_WITH_PASTA("Stir-fry with pasta", getStirFryWithPastaIngredients()),
+    OLD_STIR_FRY_WITH_RICE("Stir-fry with rice", getStirFryWithRiceIngredients()),
 
     STANDARD_DAY_MIX("Standard Day Mix", getStandardDayMixIngredients()),
     TEST_MIX("Test Mix", getTestMixIngredients());
@@ -197,7 +205,7 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_NUT_PECAN, 0.0, 200.0);
         ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 200.0);
         ingredients.addByWeight(COLES_OIL_OLIVE, 0.0, 200.0);
-        ingredients.add(COLES_OKRA, 0.0, 5.0);
+//        ingredients.add(COLES_OKRA, 0.0, 5.0);
         ingredients.addByWeight(COLES_OLIVE_GREEN, 0.0, 200.0);
         ingredients.add(COLES_ONION, 0.0, 2.0);
         ingredients.add(COLES_ORANGE, 0.0, 5.0);
@@ -261,6 +269,72 @@ public enum MealTemplate {
         return ingredients;
     }
 
+    private static Ingredients getRandomMix() {
+        // Food items that can all be consumed individually.
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 1.0);
+        ingredients.add(COLES_BANANA, 0.0, 1.0);
+        ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
+        ingredients.add(COLES_CHEESE_BRIE, 0.0, 1.0);
+        ingredients.add(COLES_CHEESE_CAMEMBERT, 0.0, 1.0);
+        ingredients.addByWeight(COLES_NUT_ALMOND, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_BRAZIL, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_MACADAMIA, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_PECAN, 0.0, 50.0);
+        ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 50.0);
+        return ingredients;
+    }
+
+    private static Ingredients getAvocadoOnToast() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_AVOCADO, 1.0, 1.0);
+        ingredients.addByWeight(COLES_BASIL_DRIED, 0.0, 2.0);
+        ingredients.addByWeight(COLES_BREAD_MIXED_GRAIN, 40.0, 150.0);
+        ingredients.add(COLES_LEMON, 0.0, 0.2);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 2.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 4.0);
+        return ingredients;
+    }
+
+    private static Ingredients getBoiledEggs() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addByWeight(COLES_EGG_CHICKEN_FREE_RANGE, 50.0, 250.0);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 2.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 4.0);
+        return ingredients;
+    }
+
+    private static Ingredients getFriedEggs() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addByWeight(COLES_BUTTER, 10.0, 50.0);
+        ingredients.addByWeight(COLES_EGG_CHICKEN_FREE_RANGE, 50.0, 250.0);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 2.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 4.0);
+        return ingredients;
+    }
+
+    private static Ingredients getAvocadoOnToastWithFriedEggs() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getAvocadoOnToast());
+        ingredients.addAll(getFriedEggs());
+        return ingredients;
+    }
+
+    private static Ingredients getBoiledEggsWithRandomMix() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getBoiledEggs());
+        ingredients.addAll(getRandomMix());
+        return ingredients;
+    }
+
+    private static Ingredients getFriedEggsWithRandomMix() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getFriedEggs());
+        ingredients.addAll(getRandomMix());
+        return ingredients;
+    }
+
     private static Ingredients getBreakfast1() {
         final Ingredients ingredients = new Ingredients();
         ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 1.0);
@@ -303,7 +377,7 @@ public enum MealTemplate {
         final Ingredients ingredients = new Ingredients();
         ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 1.0);
         ingredients.add(COLES_BANANA, 0.0, 1.0);
-        ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 0.0, 200.0);
+        ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 50.0, 200.0);
         ingredients.add(COLES_CHOCOLATE_DARK_ORGANIC, 0.0, 1.0);
         ingredients.addByWeight(COLES_HONEY, 0.0, 50.0);
         ingredients.add(COLES_KIWIFRUIT, 0.0, 1.0);
@@ -314,11 +388,11 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_MUESLI_FRUIT_NUTS, 0.0, 300.0);
         ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 50.0);
         ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 50.0);
-        ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 50.0);
-        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 25.0);
-        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 50.0);
-        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 50.0);
-        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 10.0);
         ingredients.addByWeight(COLES_STRAWBERRY, 0.0, 200.0);
         return ingredients;
     }
@@ -333,7 +407,7 @@ public enum MealTemplate {
     private static Ingredients getBreakfast2WithDoubleCream() {
         final Ingredients ingredients = new Ingredients();
         ingredients.addAll(getBreakfast2());
-        ingredients.addByWeight(COLES_CREAM_DOUBLE, 50.0, 300.0);
+        ingredients.addByWeight(COLES_CREAM_DOUBLE, 50.0, 150.0);
         return ingredients;
     }
 
@@ -381,10 +455,10 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_RADISH, 0.0, 100.0);
         ingredients.addByWeight(COLES_ROCKET, 0.0, 100.0);
         ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
-        ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 25.0);
-        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 25.0);
-        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 25.0);
-        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 25.0);
+        ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 10.0);
         ingredients.addByWeight(COLES_SPINACH, 0.0, 200.0);
         ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 150.0);
         ingredients.add(COLES_TOMATO, 0.0, 2.0);
@@ -429,7 +503,7 @@ public enum MealTemplate {
         ingredients.add(COLES_LEMON, 0.0, 1.0);
         ingredients.add(COLES_LIME, 0.0, 1.0);
         ingredients.add(COLES_ROCKET, 0.0, 50.0);
-        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_LINSEED, 0.0, 10.0);
         ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 50.0);
         ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 50.0);
         ingredients.addByWeight(COLES_SPINACH, 0.0, 100.0);
@@ -465,13 +539,15 @@ public enum MealTemplate {
         ingredients.add(COLES_CELERY, 0.0, 0.5);
         ingredients.addByWeight(COLES_CHILLI, 0.0, 50.0);
         ingredients.addByWeight(COLES_COCONUT_OIL_ORGANIC, 0.0, 100.0);
+        ingredients.addByWeight(COLES_CREAM_PURE, 0.0, 300.0);
+        ingredients.addByWeight(COLES_CREAM_DOUBLE, 0.0, 300.0);
+        ingredients.addByWeight(COLES_CREAM_SOUR, 0.0, 300.0);
         ingredients.addByWeight(COLES_GARLIC, 0.0, 20.0);
         ingredients.add(COLES_LEEK, 0.0, 0.5);
         ingredients.addByWeight(COLES_MUSHROOM, 0.0, 300.0);
         ingredients.addByWeight(COLES_NUT_CASHEW, 0.0, 50.0);
         ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 50.0);
         ingredients.addByWeight(COLES_OIL_OLIVE, 0.0, 50.0);
-        ingredients.addByWeight(COLES_OKRA, 0.0, 100.0);
         ingredients.add(COLES_ONION, 0.0, 1.0);
         ingredients.addByWeight(COLES_OREGANO, 0.0, 10.0);
         ingredients.addByWeight(COLES_PAPRIKA, 0.0, 10.0);
@@ -483,10 +559,10 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_QUINOA_ORGANIC, 0.0, 200.0);
         ingredients.addByWeight(COLES_RICE_BROWN, 0.0, 200.0);
         ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
-        ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 50.0);
-        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 50.0);
-        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 50.0);
-        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 50.0);
+        ingredients.addByWeight(COLES_SEED_CHIA, 0.0, 30.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 30.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 30.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 30.0);
         ingredients.addByWeight(COLES_SPINACH, 0.0, 100.0);
         ingredients.addByWeight(COLES_SQUASH, 0.0, 2.0);
         ingredients.add(COLES_SWEET_POTATO, 0.0, 2.0);

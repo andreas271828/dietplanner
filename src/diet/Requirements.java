@@ -596,12 +596,10 @@ public class Requirements {
      * @return kJ
      */
     private Optional<ScoreParams> getMealEnergyParams() {
-        // http://www.nrv.gov.au/dietary-energy
-        // Limit energy intake per meal to energy demand per day.
         return getEnergyDemandPerDay().map(new Function<Double, ScoreParams>() {
             @Override
             public ScoreParams apply(final Double targetPerDay) {
-                return scoreParamsT(0.2 * targetPerDay, 0.4 * targetPerDay, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
+                return scoreParamsUT(0.7 * targetPerDay, DEFAULT_TOLERANCE, DEFAULT_MEAL_PROPERTY_WEIGHT);
             }
         });
     }
@@ -711,7 +709,7 @@ public class Requirements {
     private Optional<Double> getDietaryFibreAIPerDay() {
         // http://www.nrv.gov.au/nutrients/dietary-fibre
         // TODO: Consider age, etc.
-        return Optional.of(30.0);
+        return Optional.of(40.0); // According to http://www.nrv.gov.au/nutrients/dietary-fibre: 30g
     }
 
     /**
@@ -771,7 +769,7 @@ public class Requirements {
     private Optional<Double> getMagnesiumRDIPerDay() {
         // http://www.nrv.gov.au/nutrients/magnesium
         // TODO: Gender, age, pregnancy, lactation
-        return Optional.of(420.0);
+        return Optional.of(450.0); // TODO: return Optional.of(420.0);
     }
 
     /**

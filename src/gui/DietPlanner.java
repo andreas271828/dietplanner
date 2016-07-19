@@ -44,7 +44,7 @@ import static util.Mutable.mutable;
 import static util.Pair.pair;
 
 public class DietPlanner extends JFrame {
-    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS_LOW_CARB, 5, 15);
+    private static final Requirements REQUIREMENTS = new Requirements(PersonalDetails.ANDREAS, 4, 12);
     private static final ArrayList<Pair<ArrayList<MealTemplate>, Limits2>> MEAL_TEMPLATES = getMealTemplates();
 
     private Optional<Evaluation<DietPlan>> best = Optional.empty();
@@ -245,6 +245,17 @@ public class DietPlanner extends JFrame {
         */
 
         final ArrayList<MealTemplate> breakfastList = new ArrayList<MealTemplate>();
+        breakfastList.add(MealTemplate.RANDOM_MIX);
+        breakfastList.add(MealTemplate.AVOCADO_ON_TOAST);
+        breakfastList.add(MealTemplate.BOILED_EGGS);
+        breakfastList.add(MealTemplate.FRIED_EGGS);
+        breakfastList.add(MealTemplate.AVOCADO_ON_TOAST_WITH_FRIED_EGGS);
+        breakfastList.add(MealTemplate.BOILED_EGGS_WITH_RANDOM_MIX);
+        breakfastList.add(MealTemplate.FRIED_EGGS_WITH_RANDOM_MIX);
+        mealTemplates.add(pair(breakfastList, limits2(0.0, 1.0)));
+
+        /*
+        final ArrayList<MealTemplate> breakfastList = new ArrayList<MealTemplate>();
         breakfastList.add(MealTemplate.BREAKFAST_1);
         breakfastList.add(MealTemplate.BREAKFAST_2_WITH_CREAM);
         breakfastList.add(MealTemplate.BREAKFAST_2_WITH_DOUBLE_CREAM);
@@ -262,6 +273,7 @@ public class DietPlanner extends JFrame {
         final ArrayList<MealTemplate> stirFryList = new ArrayList<MealTemplate>();
         stirFryList.add(MealTemplate.STIR_FRY_1);
         mealTemplates.add(pair(stirFryList, limits2(0.1, 0.3)));
+        */
 
         /*
         final ArrayList<MealTemplate> breakfastList = new ArrayList<MealTemplate>();
