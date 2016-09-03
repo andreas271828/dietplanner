@@ -27,12 +27,20 @@ public enum MealTemplate {
     GENERIC_MEAL("Generic meal", getGenericMealIngredients()),
 
     RANDOM_MIX("Random mix", getRandomMix()),
+    ALMOND_MILK_SMOOTHIE("Almond milk smoothie", getAlmondMilkSmoothie()),
     AVOCADO_ON_TOAST("Avocado on toast", getAvocadoOnToast()),
+    AVOCADO_SALAD("Avocado salad", getAvocadoSalad()),
     BOILED_EGGS("Boiled eggs", getBoiledEggs()),
+    CABBAGE_SALAD("Cabbage salad", getCabbageSalad()),
     FRIED_EGGS("Fried eggs", getFriedEggs()),
+    QUINOA_SALAD("Quinoa salad", getQuinoaSalad()),
+    STIR_FRY("Stir-fry", getStirFry()),
     AVOCADO_ON_TOAST_WITH_FRIED_EGGS("Avocado on toast with fried eggs", getAvocadoOnToastWithFriedEggs()),
+    AVOCADO_SALAD_WITH_RANDOM_MIX("Avocado salad with random mix", getAvocadoSaladWithRandomMix()),
     BOILED_EGGS_WITH_RANDOM_MIX("Boiled eggs with random mix", getBoiledEggsWithRandomMix()),
+    CABBAGE_SALAD_WITH_BOILED_EGGS("Cabbage salad", getCabbageSaladWithBoiledEggs()),
     FRIED_EGGS_WITH_RANDOM_MIX("Fried eggs with random mix", getFriedEggsWithRandomMix()),
+    QUINOA_SALAD_WITH_RANDOM_MIX("Quinoa salad with random mix", getQuinoaSaladWithRandomMix()),
 
     BREAKFAST_1("Breakfast 1", getBreakfast1()),
     BREAKFAST_2_WITH_CREAM("Breakfast 2 with cream", getBreakfast2WithCream()),
@@ -270,7 +278,7 @@ public enum MealTemplate {
     }
 
     private static Ingredients getRandomMix() {
-        // Food items that can all be consumed individually.
+        // Food items that can all be consumed anytime individually without preparation.
         final Ingredients ingredients = new Ingredients();
         ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.0, 1.0);
         ingredients.add(COLES_BANANA, 0.0, 1.0);
@@ -283,6 +291,16 @@ public enum MealTemplate {
         ingredients.addByWeight(COLES_NUT_MACADAMIA, 0.0, 50.0);
         ingredients.addByWeight(COLES_NUT_PECAN, 0.0, 50.0);
         ingredients.addByWeight(COLES_NUT_WALNUT, 0.0, 50.0);
+        ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 200.0);
+        return ingredients;
+    }
+
+    private static Ingredients getAlmondMilkSmoothie() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_BANANA, 0.0, 2.0);
+        ingredients.addByWeight(COLES_BLUEBERRY_FROZEN, 50.0, 200.0);
+        ingredients.add(COLES_EGG_CHICKEN_FREE_RANGE, 0.0, 1.0);
+        ingredients.addByWeight(COLES_SPINACH, 0.0, 100.0);
         return ingredients;
     }
 
@@ -297,9 +315,29 @@ public enum MealTemplate {
         return ingredients;
     }
 
+    private static Ingredients getAvocadoSalad() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_AVOCADO, 1.0, 2.0);
+        ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
+        ingredients.add(COLES_CUCUMBER, 0.5, 1.0);
+        ingredients.addByWeight(COLES_GARLIC, 5.0, 20.0);
+        ingredients.add(COLES_LEMON, 0.1, 1.0);
+        ingredients.addByWeight(COLES_OIL_OLIVE, 10.0, 100.0);
+        ingredients.add(COLES_ONION, 0.0, 1.0);
+        ingredients.addByWeight(COLES_PARSLEY, 0.0, 25.0);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 2.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 4.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 10.0);
+        ingredients.add(COLES_TOMATO, 1.0, 2.0);
+        return ingredients;
+    }
+
     private static Ingredients getBoiledEggs() {
         final Ingredients ingredients = new Ingredients();
         ingredients.addByWeight(COLES_EGG_CHICKEN_FREE_RANGE, 50.0, 250.0);
+        ingredients.addByWeight(COLES_MAYONNAISE, 0.0, 100.0);
         ingredients.addByWeight(COLES_PEPPER, 0.0, 2.0);
         ingredients.addByWeight(COLES_SALT_SEA, 0.0, 4.0);
         return ingredients;
@@ -314,10 +352,79 @@ public enum MealTemplate {
         return ingredients;
     }
 
+    private static Ingredients getQuinoaSalad() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_AVOCADO, 0.0, 2.0);
+        ingredients.add(COLES_BROCCOLI, 0.0, 0.5);
+        ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
+        ingredients.add(COLES_CUCUMBER, 0.0, 1.0);
+        ingredients.addByWeight(COLES_GARLIC, 0.0, 20.0);
+        ingredients.add(COLES_LEMON, 0.0, 1.0);
+        ingredients.addByWeight(COLES_OIL_OLIVE, 10.0, 100.0);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 2.0);
+        ingredients.addByWeight(COLES_QUINOA_ORGANIC, 50.0, 200.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 4.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SPINACH, 50.0, 200.0);
+        ingredients.addByWeight(COLES_TOMATO_CHERRY, 20.0, 200.0);
+        return ingredients;
+    }
+
+    private static Ingredients getCabbageSalad() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.add(COLES_APPLE_RED_DELICIOUS, 0.5, 1.0);
+        ingredients.addByWeight(COLES_BROCCOLI, 0.0, 100.0);
+        ingredients.add(COLES_CABBAGE_RED, 0.3, 0.5);
+        ingredients.add(COLES_CAPSICUM_RED, 0.0, 1.0);
+        ingredients.addByWeight(COLES_DILL, 0.0, 20.0);
+        ingredients.addByWeight(COLES_MAYONNAISE, 20.0, 200.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
+        ingredients.addByWeight(COLES_SEED_PUMPKIN, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SESAME, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SEED_SUNFLOWER, 0.0, 10.0);
+        ingredients.addByWeight(COLES_SPINACH, 0.0, 100.0);
+        ingredients.addByWeight(COLES_TOMATO_CHERRY, 20.0, 150.0);
+        return ingredients;
+    }
+
+    private static Ingredients getStirFry() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addByWeight(COLES_BASIL_DRIED, 0.0, 10.0);
+        ingredients.add(COLES_BROCCOLI, 0.0, 1.0);
+        ingredients.add(COLES_CAPSICUM_GREEN, 0.0, 1.0);
+        ingredients.addByWeight(COLES_CHILLI, 0.0, 20.0);
+        ingredients.addByWeight(COLES_COCONUT_OIL_ORGANIC, 10.0, 100.0);
+        ingredients.addByWeight(COLES_GARLIC, 0.0, 20.0);
+        ingredients.addByWeight(COLES_MUSHROOM, 0.0, 300.0);
+        ingredients.add(COLES_ONION, 0.0, 1.0);
+        ingredients.addByWeight(COLES_OREGANO, 0.0, 10.0);
+        ingredients.addByWeight(COLES_PAPRIKA, 0.0, 10.0);
+        ingredients.addByWeight(COLES_PEA_FROZEN, 0.0, 200.0);
+        ingredients.addByWeight(COLES_PEPPER, 0.0, 5.0);
+        ingredients.addByWeight(COLES_TAMARI, 0.0, 50.0);
+        ingredients.addByWeight(COLES_QUINOA_ORGANIC, 0.0, 200.0);
+        ingredients.addByWeight(COLES_SALT_SEA, 0.0, 5.0);
+        ingredients.addByWeight(COLES_SPINACH, 0.0, 100.0);
+        ingredients.add(COLES_SWEET_POTATO, 0.0, 2.0);
+        ingredients.addByWeight(COLES_SWEETCORN_FROZEN, 0.0, 200.0);
+        ingredients.addByWeight(COLES_TOMATO_CHERRY, 0.0, 100.0);
+        ingredients.add(COLES_TOMATO, 0.0, 2.0);
+        return ingredients;
+    }
+
     private static Ingredients getAvocadoOnToastWithFriedEggs() {
         final Ingredients ingredients = new Ingredients();
         ingredients.addAll(getAvocadoOnToast());
         ingredients.addAll(getFriedEggs());
+        return ingredients;
+    }
+
+    private static Ingredients getAvocadoSaladWithRandomMix() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getAvocadoSalad());
+        ingredients.addAll(getRandomMix());
         return ingredients;
     }
 
@@ -328,9 +435,23 @@ public enum MealTemplate {
         return ingredients;
     }
 
+    private static Ingredients getCabbageSaladWithBoiledEggs() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getCabbageSalad());
+        ingredients.addAll(getBoiledEggs());
+        return ingredients;
+    }
+
     private static Ingredients getFriedEggsWithRandomMix() {
         final Ingredients ingredients = new Ingredients();
         ingredients.addAll(getFriedEggs());
+        ingredients.addAll(getRandomMix());
+        return ingredients;
+    }
+
+    private static Ingredients getQuinoaSaladWithRandomMix() {
+        final Ingredients ingredients = new Ingredients();
+        ingredients.addAll(getQuinoaSalad());
         ingredients.addAll(getRandomMix());
         return ingredients;
     }
