@@ -40,43 +40,11 @@ public enum PersonalDetails {
             1.91,
             78.0,
             1.6,
-            Optional.of(50.0),
-            30.0,
+            Optional.of(30.0),
+            20.0,
             Optional.<Double>empty(),
             limits2(0.9, 1.2),
-            Optional.of(limits2(1000.0, 2000.0)),
-            false,
-            false,
-            false,
-            false,
-            lowerLimitsAndreas(),
-            upperLimitsAndreas()),
-    ANDREAS_LOW_CARB(Gender.MALE,
-            "14/08/1982",
-            1.91,
-            80.0,
-            1.8,
-            Optional.of(60.0),
-            40.0,
-            Optional.<Double>empty(),
-            limits2(0.9, 1.5),
-            Optional.of(limits2(3000.0, 5000.0)),
-            false,
-            false,
-            false,
-            false,
-            lowerLimitsAndreas(),
-            upperLimitsAndreas()),
-    MEL(Gender.FEMALE,
-            "27/02/1980",
-            1.6,
-            62.0,
-            1.6,
-            Optional.of(50.0),
-            40.0,
-            Optional.<Double>empty(),
-            limits2(0.8, 1.2),
-            Optional.of(limits2(460.0, 920.0)),
+            Optional.of(limits2(1500.0, 2000.0)),
             false,
             false,
             false,
@@ -283,6 +251,12 @@ public enum PersonalDetails {
         upperLimitsAndreas.add(pair(FoodItem.COLES_CHEESE_CAMEMBERT, 0.25));
         upperLimitsAndreas.add(pair(FoodItem.COLES_CHICKPEA, FoodItem.COLES_CHICKPEA.weightToAmount(80.0)));
         upperLimitsAndreas.add(pair(FoodItem.COLES_CELERY, FoodItem.COLES_CELERY.weightToAmount(100.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_NUT_ALMOND, FoodItem.COLES_CELERY.weightToAmount(100.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_NUT_BRAZIL, FoodItem.COLES_CELERY.weightToAmount(100.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_NUT_CASHEW, FoodItem.COLES_CELERY.weightToAmount(100.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_NUT_MACADAMIA, FoodItem.COLES_CELERY.weightToAmount(100.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_NUT_PECAN, FoodItem.COLES_CELERY.weightToAmount(100.0)));
+        upperLimitsAndreas.add(pair(FoodItem.COLES_NUT_WALNUT, FoodItem.COLES_CELERY.weightToAmount(100.0)));
         upperLimitsAndreas.add(pair(FoodItem.COLES_POTATO, FoodItem.COLES_POTATO.weightToAmount(200.0)));
         upperLimitsAndreas.add(pair(FoodItem.COLES_ROCKET, FoodItem.COLES_ROCKET.weightToAmount(40.0)));
         return upperLimitsAndreas;

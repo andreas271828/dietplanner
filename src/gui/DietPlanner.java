@@ -255,7 +255,7 @@ public class DietPlanner extends JFrame {
         workList.add(MealTemplate.BOILED_EGGS_WITH_RANDOM_MIX);
         workList.add(MealTemplate.CABBAGE_SALAD_WITH_BOILED_EGGS);
         workList.add(MealTemplate.QUINOA_SALAD_WITH_RANDOM_MIX);
-        mealTemplates.add(pair(workList, limits2(0.0, 1.0)));
+        mealTemplates.add(pair(workList, limits2(0.34, 1.0)));
 
         final ArrayList<MealTemplate> homeList = new ArrayList<MealTemplate>();
         homeList.add(MealTemplate.RANDOM_MIX);
@@ -266,17 +266,19 @@ public class DietPlanner extends JFrame {
         homeList.add(MealTemplate.CABBAGE_SALAD);
         homeList.add(MealTemplate.FRIED_EGGS);
         homeList.add(MealTemplate.QUINOA_SALAD);
+        homeList.add(MealTemplate.SCRAMBLED_EGGS);
         homeList.add(MealTemplate.AVOCADO_ON_TOAST_WITH_FRIED_EGGS);
         homeList.add(MealTemplate.AVOCADO_SALAD_WITH_RANDOM_MIX);
         homeList.add(MealTemplate.BOILED_EGGS_WITH_RANDOM_MIX);
         homeList.add(MealTemplate.CABBAGE_SALAD_WITH_BOILED_EGGS);
         homeList.add(MealTemplate.FRIED_EGGS_WITH_RANDOM_MIX);
         homeList.add(MealTemplate.QUINOA_SALAD_WITH_RANDOM_MIX);
+        homeList.add(MealTemplate.SCRAMBLED_EGGS_WITH_RANDOM_MIX);
         mealTemplates.add(pair(homeList, limits2(0.0, 0.66)));
 
-        final ArrayList<MealTemplate> cookingList = new ArrayList<MealTemplate>();
-        cookingList.add(MealTemplate.STIR_FRY);
-        mealTemplates.add(pair(cookingList, limits2(0.0, 0.2)));
+        final ArrayList<MealTemplate> elaborateList = new ArrayList<MealTemplate>();
+        elaborateList.add(MealTemplate.STIR_FRY);
+        mealTemplates.add(pair(elaborateList, limits2(0.0, 0.2)));
 
         /*
         final ArrayList<MealTemplate> breakfastList = new ArrayList<MealTemplate>();
